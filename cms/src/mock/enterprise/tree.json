@@ -1,99 +1,457 @@
 {
-	"err": 0,
-	"data": [
-		{
-			"id":1,
-			"company": "铁西区人民政府",
-			"children": [
-				{
+	"status": 1,
+	"msg": "OK",
+	"data": [{
+		"id": 1,
+		"company": "铁西区政府",
+		"children": [{
+			"id": 1,
+			"substation": "S-变电所",
+			"type": "变电所",
+			"children": [{
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
 					"id": 1,
-					"substationname": "变电所1",
-					"type": "变电所",
-					"children": [
-						{
-							"id": 1,
-							"status": 0,
-							"cabinettype": 0,
-							"children": [
-								{
-									"id": 1,
-									"cabinettype": 0,
-									"circuitname": "进线柜总表"
-								}
-							]
-						},
-						{
-							"id": 1,
-							"status": 0,
-							"cabinettype": 1
-						},
-						{
-							"id": 1,
-							"status": 0,
-							"cabinettype": 2,
-							"children": [
-								{
-									"id": 2,
-									"cabinettype": 2,
-									"circuitname": "馈电柜表1#"
-								},
-								{
-									"id": 3,
-									"cabinettype": 2,
-									"circuitname": "馈电柜表1#"
-								},
-								{
-									"id": 4,
-									"cabinettype": 2,
-									"circuitname": "馈电柜表1#"
-								}
-							]
-						}
-					]
-				},
-				{
+					"circuitname": "S变电站进线柜总表",
+					"typedeviceid": 1
+				}],
+				"id": 1,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 41,
+					"circuitname": "测试企业进线柜总表",
+					"typedeviceid": 1
+				}],
+				"id": 14,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [],
+				"id": 15,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [],
+				"id": 16,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [],
+				"id": 17,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 1,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 15,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
 					"id": 2,
-					"substationname": "变电所2",
-					"type": "箱变",
-					"children": [
-						{
-							"id": 1,
-							"status": 0,
-							"cabinettype": 0,
-							"children": [
-								{
-									"id": 1,
-									"circuitname": "进线柜总表"
-								}
-							]
-						},
-						{
-							"id": 1,
-							"status": 0,
-							"cabinettype": 1
-						},
-						{
-							"id": 1,
-							"status": 0,
-							"cabinettype": 2,
-							"children": [
-								{
-									"id": 2,
-									"circuitname": "馈电柜表1#"
-								},
-								{
-									"id": 3,
-									"circuitname": "馈电柜表1#"
-								},
-								{
-									"id": 4,
-									"circuitname": "馈电柜表1#"
-								}
-							]
-						}
-					]
-				}
-			]
-		}
-	]
+					"circuitname": "S1办公楼A座",
+					"typedeviceid": 1
+				}],
+				"id": 1,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 3,
+					"circuitname": "S1办公楼B座",
+					"typedeviceid": 1
+				}],
+				"id": 2,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 4,
+					"circuitname": "S1换热站",
+					"typedeviceid": 1
+				}, {
+					"cabinettype": 2,
+					"id": 5,
+					"circuitname": "S1办公楼C座",
+					"typedeviceid": 1
+				}],
+				"id": 28,
+				"status": "0"
+			}]
+		}, {
+			"id": 2,
+			"substation": "X-箱变11",
+			"type": "箱变",
+			"children": [{
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 6,
+					"circuitname": "X1进线柜1总表",
+					"typedeviceid": 1
+				}],
+				"id": 2,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 12,
+					"circuitname": "X1进线柜2",
+					"typedeviceid": 1
+				}],
+				"id": 3,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [],
+				"id": 4,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [],
+				"id": 5,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 2,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 16,
+				"status": "1"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 7,
+					"circuitname": "X1C座实验室",
+					"typedeviceid": 1
+				}],
+				"id": 3,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 8,
+					"circuitname": "X1政协纪委",
+					"typedeviceid": 1
+				}, {
+					"cabinettype": 2,
+					"id": 9,
+					"circuitname": "X1园区亮化",
+					"typedeviceid": 1
+				}, {
+					"cabinettype": 2,
+					"id": 10,
+					"circuitname": "X1西门卫室",
+					"typedeviceid": 1
+				}],
+				"id": 4,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 11,
+					"circuitname": "X1区委",
+					"typedeviceid": 1
+				}],
+				"id": 5,
+				"status": "0"
+			}]
+		}]
+	}, {
+		"id": 2,
+		"company": "物流园",
+		"children": [{
+			"id": 4,
+			"substation": "物流园变电所",
+			"type": "变电所",
+			"children": [{
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 18,
+					"circuitname": "1#变压器进线柜",
+					"typedeviceid": 2
+				}],
+				"id": 8,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 40,
+					"circuitname": "2#变压器进线柜总",
+					"typedeviceid": 2
+				}],
+				"id": 9,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 5,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 6,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 19,
+					"circuitname": "1#馈出柜总",
+					"typedeviceid": 2
+				}],
+				"id": 9,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 20,
+					"circuitname": "2#馈出柜总",
+					"typedeviceid": 2
+				}],
+				"id": 10,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 21,
+					"circuitname": "3#馈出柜总",
+					"typedeviceid": 2
+				}],
+				"id": 11,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 22,
+					"circuitname": "4#馈出柜总",
+					"typedeviceid": 2
+				}],
+				"id": 12,
+				"status": "0"
+			}]
+		}]
+	}, {
+		"id": 3,
+		"company": "铸造厂",
+		"children": [{
+			"id": 5,
+			"substation": "铸造厂变电所",
+			"type": "变电所",
+			"children": [{
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 25,
+					"circuitname": "D1进线柜总",
+					"typedeviceid": 2
+				}],
+				"id": 10,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 26,
+					"circuitname": "D7进线柜总",
+					"typedeviceid": 2
+				}],
+				"id": 11,
+				"status": "0"
+			}, {
+				"cabinettype": 0,
+				"children": [{
+					"cabinettype": 0,
+					"id": 27,
+					"circuitname": "D17进线柜总",
+					"typedeviceid": 2
+				}],
+				"id": 12,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 7,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 8,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 9,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 10,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 11,
+				"status": "0"
+			}, {
+				"cabinettype": 1,
+				"id": 12,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 28,
+					"circuitname": "D2馈出柜1",
+					"typedeviceid": 2
+				}],
+				"id": 13,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 29,
+					"circuitname": "D5馈出柜2",
+					"typedeviceid": 2
+				}],
+				"id": 14,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 30,
+					"circuitname": "D6馈出柜3",
+					"typedeviceid": 2
+				}],
+				"id": 15,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 31,
+					"circuitname": "D10-1馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 16,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 32,
+					"circuitname": "D10-2馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 17,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 33,
+					"circuitname": "D11-1馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 18,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 34,
+					"circuitname": "D11-2馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 19,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 35,
+					"circuitname": "D12-1馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 20,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 36,
+					"circuitname": "D12-2馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 21,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 37,
+					"circuitname": "D14-1馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 22,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 42,
+					"circuitname": "D14-2馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 23,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 43,
+					"circuitname": "D15-1馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 24,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 44,
+					"circuitname": "D15-2馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 25,
+				"status": "0"
+			}, {
+				"cabinettype": 2,
+				"children": [{
+					"cabinettype": 2,
+					"id": 45,
+					"circuitname": "D16馈出柜",
+					"typedeviceid": 2
+				}],
+				"id": 26,
+				"status": "0"
+			}]
+		}]
+	}],
+	"succeeded": true,
+	"ok": true
 }

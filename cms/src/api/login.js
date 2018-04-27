@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 
+let isLocal = /-local$/.test(process.env.NODE_ENV);
+
 export function login(username, password) {
   return request({
-    url: '/user/login?account='+username+'&password='+password,
-    // url: '/userlogin.json',
-    method: 'post',
+    url: isLocal ? '/userlogin.json' : '/user/login?account='+username+'&password='+password,
+    method: isLocal? 'get' : 'post',
     /*data: {
       username,
       password
@@ -14,9 +15,9 @@ export function login(username, password) {
 
 export function getInfo(token) {
   return request({
-    url: '/user/getUserInfo',
+    url: isLocal ? '/userinfo.json' : '/user/getUserInfo',
     // url: '/userinfo.json',
-    method: 'post',
+    method: isLocal? 'get' : 'post',
     // params: { token }
   })
 }
@@ -24,6 +25,6 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: '/user/logout',
-    method: 'post'
+    method: isLocal? 'get' : 'post',
   })
 }

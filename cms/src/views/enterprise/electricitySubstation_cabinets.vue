@@ -75,7 +75,6 @@
 
 import Grid from "@/components/grid/grid"
 import StepWrapper from "./components/stepWrapper"
-// import { deviceTransformerList } from "@/api/common"
 import tableConfig from "@/views/_config/table"
 
 

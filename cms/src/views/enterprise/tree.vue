@@ -86,7 +86,6 @@
 import Grid from "@/components/grid/grid"
 import tableConfig from '@/views/_config/table'
 import { fetchList, fetchTreeList } from '@/api/api'
-// import { fetchList } from "@/api/common"
 
 export default {
   components: {

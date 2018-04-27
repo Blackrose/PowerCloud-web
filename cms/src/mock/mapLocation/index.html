@@ -45,6 +45,10 @@
 	let winParent
 	let key
 	let currentLocation
+	/*格式 {
+		lat: 23123123,
+		lng: 123123,
+	}*/
 
 	let map
 	let local
@@ -108,6 +112,23 @@
 			if(event.data && event.data.title == "powerCloudCMS-message-location") {
 				winParent = event.source
 				key = event.data.key
+				console.log(event.data.str)
+				try {
+					let location = JSON.parse(event.data.str)
+					currentLocation = {
+						lat: location.latitude,
+						lng: location.longitude
+					}
+					//如果带着位置参数过来，则定位到该位置
+					let marker = new BMap.Marker(currentLocation);  // 创建标注
+					map.addOverlay(marker)             // 将标注添加到地图中
+					let pt = new BMap.Point(+currentLocation.lng, +currentLocation.lat);
+					map.panTo(pt)
+					showLocation(currentLocation)
+				}catch(e){
+					console.error(e)
+				}
+
 			}
 		}, false)
 

@@ -29,7 +29,6 @@ service.interceptors.response.use(
   */
     const res = response.data
     if (res.succeeded !== true && res.err !== 0) {
-      alert(111)
       Message({
         message: res,
         type: 'error',

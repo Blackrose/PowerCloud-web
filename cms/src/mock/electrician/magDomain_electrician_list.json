@@ -1,28 +1,22 @@
 {
-  "err": 0,
+  "status": 1,
+  "msg": "OK",
   "data": {
-    "total": 3,
+    "total": 2,
     "items": [{
-      "id": 1,
-      "magdomainid": 1,
-      "electricianid": 2,
-      "post": "东北大学",
-      "status": 0,
-      "description": "aaaaa"
+      "id": 16,
+      "magdomainid": 4,
+      "electricianid": 15,
+      "post": 3,
+      "status": "0"
     }, {
-      "id": 2,
-      "magdomainid": 2,
-      "electricianid": 2,
-      "post": "东北大学",
-      "status": 0,
-      "description": "aaaaa"
-    },{
-      "id": 3,
+      "id": 9,
       "magdomainid": 1,
-      "electricianid": 2,
-      "post": "东北大学",
-      "status": 0,
-      "description": "aaaaa"
+      "electricianid": 15,
+      "post": 1,
+      "status": "0"
     }]
-  }
+  },
+  "succeeded": true,
+  "ok": true
 }

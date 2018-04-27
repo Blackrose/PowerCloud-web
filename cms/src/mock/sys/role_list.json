@@ -1,0 +1,22 @@
+{
+	"status": 1,
+	"msg": "OK",
+	"data": {
+		"total": 3,
+		"items": [{
+			"id": 1,
+			"rolename": "超级管理员",
+			"status": "0"
+		}, {
+			"id": 2,
+			"rolename": "管理员",
+			"status": "0"
+		}, {
+			"id": 3,
+			"rolename": "电工",
+			"status": "0"
+		}]
+	},
+	"succeeded": true,
+	"ok": true
+}

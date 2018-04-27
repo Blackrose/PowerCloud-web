@@ -1384,6 +1384,7 @@ export default {
         key: "userid",
         label: "电工",
         type: "select",
+        isEdit: false
       },
       {
         key: "roleid",
@@ -1523,7 +1524,6 @@ export default {
         key: "functionid",
         label: "功能",
         type: "number",
-        isEdit: false,
         required: true,
         errorMessage: "必填"
       },

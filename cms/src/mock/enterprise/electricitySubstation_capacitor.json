@@ -1,20 +1,22 @@
 {
-  "err": 0,
+  "status": 1,
+  "msg": "OK",
   "data": {
     "total": 2,
     "items": [{
-      "id": 1,
-      "electricitysubstationid": 1,
+      "id": 16,
+      "electricitysubstationid": 2,
       "num": 1,
-      "manufacturer": "HUAWEI",
-      "status": "0"
-    },
-    {
-      "id": 2,
-      "electricitysubstationid": 1,
-      "num": 2,
-      "manufacturer": "HUAWEI",
+      "manufacturer": null,
       "status": "1"
+    }, {
+      "id": 2,
+      "electricitysubstationid": 2,
+      "num": 1,
+      "manufacturer": null,
+      "status": "0"
     }]
-  }
+  },
+  "succeeded": true,
+  "ok": true
 }

@@ -1,6 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+/*let _import;
+if(/^development/.test(process.env.NODE_ENV)) {
+  _import = require('./_import_development')
+}
+else {
+  _import = require('./_import_production')
+}*/
 // in development-env not use lazy-loading, because lazy-loading too many pages will cause webpack hot update too slow. so only in production use lazy-loading;
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
 
@@ -9,7 +15,9 @@ Vue.use(Router)
 /* Layout */
 import Layout from '../views/layout/Layout'
 
-import SysGraph from '../views/sysGraph/index'
+// import SysGraph from '../views/sysGraph/index'
+
+const SysGraph = r => require.ensure([], () => r(require('../views/sysGraph/index')))
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length

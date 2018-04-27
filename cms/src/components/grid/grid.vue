@@ -3,7 +3,7 @@
     <div class="filter-container" v-if="!treeRoute.path">
       <el-button v-if="isSubTable" class="filter-item" style="margin-left: 10px;" @click="handleBack" type="primary" plain icon="el-icon-back">返回上一级</el-button>
       <!-- 添加按钮 -->
-      <el-button v-if="allowed.add" class="filter-item" style="margin-left: 10px;" @click="handleAdd" type="primary" icon="el-icon-edit-outline">{{$t('table.add')}}</el-button>
+      <el-button v-if="allowed.add" class="filter-item" style="margin-left: 10px;" @click="handleAdd" type="primary" icon="el-icon-edit-outline">Add</el-button>
     </div>
     <el-alert v-if="!allowed.list"
       title="Sorry，您没有权限访问该模块T_T"
@@ -143,7 +143,7 @@
               </el-col>
               <el-col :span="1">&nbsp;</el-col>
               <el-col :span="5">
-                <el-button  @click="goToLocateMap(item.key)" type="primary" plain>定位</el-button>
+                <el-button  @click="goToLocateMap(item.key, temp[item.key])" type="primary" plain>定位</el-button>
               </el-col>
             </el-row>
 
@@ -167,7 +167,7 @@
 <script>
 import { Message, MessageBox } from 'element-ui'
 import { parseTime } from '@/utils'
-import { API_URL, fetchList, insertData, editData, deleteData } from '@/api/api'
+import { API_MAP, fetchList, insertData, editData, deleteData } from '@/api/api'
 import request from '@/utils/request'
 
 import Upload from '@/components/Upload/uploadImage.vue'
@@ -177,7 +177,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'grid',
   props: {
-    moduleName: {
+    moduleName: {   //当前模块的名称：对应src/api/api.js中API_URL的KEY
       type: String,
       default: function () {
         return ""
@@ -252,7 +252,7 @@ export default {
 
     if(Array.isArray(this.permissions)) {
       this.permissions.forEach( (permission,i) => {
-        if(permission.functionname == API_URL[this.moduleName]) {
+        if(permission.functionname == API_MAP[this.moduleName]) {
           this.allowed.list = permission.selectfunction == 0
           this.allowed.add = permission.addfunction == 0
           this.allowed.update = permission.updatefunction == 0
@@ -685,7 +685,8 @@ export default {
       return path + filename
     },
     goToSysGraph(key) {
-      let win = window.open("/PowerCloud/#/sysGraph")
+      let url = location.href.split("#")[0] + "#/sysGraph"
+      let win = window.open(url)
       setTimeout( () => {
          win.postMessage({title:"powerCloudCMS-message", key: key}, '*');
       }, 1000)
@@ -695,10 +696,17 @@ export default {
         dangerouslyUseHTMLString: true
       });
     },
-    goToLocateMap(key) {
-      let win = window.open("/PowerCloud/cms/mapLocation/index.html")
+    goToLocateMap(key, locationStr) {
+      //locationStr是当前编辑的位置的字符串
+      let win
+      if(/^development/.test(process.env.NODE_ENV)){
+        win = window.open("/api/mapLocation/index.html")
+      }
+      else {
+        win = window.open("/PowerCloud/cms/mapLocation/index.html")
+      }
       setTimeout( () => {
-         win.postMessage({title:"powerCloudCMS-message-location", key: key}, '*');
+         win.postMessage({title:"powerCloudCMS-message-location", key: key, str: locationStr}, '*');
       }, 1000)
     },
     onImgSrcChange(val, key) {

@@ -1,3 +1,7 @@
 {
-  "err": 0
+	"status": 1,
+	"msg": "OK",
+	"data": "成功",
+	"succeeded": true,
+	"ok": true
 }
