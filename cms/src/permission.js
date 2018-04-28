@@ -17,10 +17,10 @@ router.beforeEach((to, from, next) => {
         store.dispatch('GetInfo').then(res => { // 拉取用户信息
           next()
         }).catch((e) => {
-          console.error(e)
           store.dispatch('FedLogOut').then(() => {
             Message.error('验证失败,请重新登录')
             next({ path: '/login' })
+            NProgress.done()
           })
         })
       } else {

@@ -750,4 +750,8 @@ export default {
     }
 
   }
+  .el-form-item.is-required .el-form-item__label {
+    transform: translateX(-10px);
+  }
+
 </style>

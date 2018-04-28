@@ -51,12 +51,17 @@ const user = {
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo(state.token).then(response => {
-          const data = JSON.parse(response.data)
-          commit('SET_PERMISSIONS', data.permission)     //权限
-          commit('SET_NAME', data.name)          //用户的名称
-          commit('SET_ACCOUNT', data.account)    //用户的账号
-          // commit('SET_AVATAR', data.avatar)
-          resolve(response)
+          if(response.ok) {
+            const data = JSON.parse(response.data)
+            commit('SET_PERMISSIONS', data.permission)     //权限
+            commit('SET_NAME', data.name)          //用户的名称
+            commit('SET_ACCOUNT', data.account)    //用户的账号
+            // commit('SET_AVATAR', data.avatar)
+            resolve(response)
+          }
+          else {
+            reject(response.data)
+          }
         }).catch(error => {
           reject(error)
         })

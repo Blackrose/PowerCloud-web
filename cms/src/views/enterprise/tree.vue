@@ -45,11 +45,18 @@
 
 <template>
   <div class="app-container">
+    <el-alert v-if="emptyText"
+      :title="emptyText"
+      type="warning"
+      center
+      show-icon>
+    </el-alert>
     <el-row justify="space-between">
       <el-col :span="7" min-width="400">
         <el-tree
         v-loading="loading"
         element-loading-text="加载中"
+        empty-text=""
         :data="treeData"
         default-expand-all
         :expand-on-click-node="false"
@@ -94,6 +101,7 @@ export default {
   data() {
     return {
       loading: true,
+      emptyText: '',
       filterText: '',
       treeData: null,
       levelArr: ['企业','变电所', '柜','电表'],
@@ -114,8 +122,13 @@ export default {
   created () {
     fetchTreeList().then( response => {
       this.loading = false
-      let data = response.data
-      this.treeData = response.data
+      if(response.ok) {
+        this.treeData = response.data || []
+      }
+      else {
+        this.treeData = []
+        this.emptyText = response.data || "暂无数据"
+      }
     })
     fetchList("typeDevice").then( response => {
       let list = response.data.items || [];
