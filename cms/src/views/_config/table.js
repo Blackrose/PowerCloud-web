@@ -1175,7 +1175,15 @@ export default {
       {
           key: "scduty",
           label: "职务（安全证）主要负责人",
-          type: "string",
+          type: "select",
+          options: [
+            {
+                value: "主管"
+            },
+            {
+                value: "电工"
+            }
+          ],
           // required: true,
           // errorMessage: "必填",
           isDetail: true
