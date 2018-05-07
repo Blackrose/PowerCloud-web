@@ -1,0 +1,155 @@
+.BMap_cpyCtrl {
+    display: none;
+}
+
+.anchorBL {
+    display: none;
+}
+
+#allmap {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.p-staff {
+	display: inline-block;
+	width: 0.65rem;
+	height: 0.65rem;
+	background: url(./assets/p-staff.png);
+	background-size: cover;
+	border-radius: 50%;
+  /*border:2px #F56C6C solid;*/
+}
+
+.p-tag {
+  position: absolute;
+  left: calc(100% + 0.066667rem);
+  /*top: -0.05rem;*/
+  background: rgba(255,255,255,.8);
+  padding: 0.133333rem;
+  z-index: 100;
+  box-shadow: 0 0 0.4rem rgba(0,0,0,0.3);
+  transform: translate3d(0,0,0) scale(0);
+  transition: transform .2s ease;
+  transform-origin: 0 50%;
+  border-radius: 0.066667rem;
+  margin-left: 0.2rem;
+  white-space: nowrap;
+  font-size: 0.4rem;
+}
+.p-tag:after {
+  content: '';
+  width: 0;
+  height: 0;
+  border: 0.106667rem #fff solid;
+  border-color: transparent transparent rgba(255,255,255,.9) rgba(255,255,255,.8)   ;
+  position: absolute;
+  top: 0.16rem;
+  left: -0.106667rem;
+  transform: rotate(45deg);
+  background: transparent;
+}
+.p-tag.on{
+	transform: translate3d(0,0,0) scale(1);
+	/*display: block;*/
+}
+
+
+.bottom {
+  width: 100%;
+  height: 1.2rem;
+  position: fixed;
+  bottom: 0;
+  background: rgba(90, 161, 249, 0.32);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.bottom .tag-text {
+  margin-right: 0.2rem;
+  font-size: 0.4rem;
+  font-weight: bold;
+  color: #37474f;
+}
+
+.toggle {
+  position: relative;
+  margin-right: 0.32rem;
+  width: 2.133333rem;
+  background-color: #409EFF;
+  border-radius: 1.333333rem;
+  color: white;
+  height: 0.78rem;
+  align-self: center;
+  overflow: hidden;
+  display: inline-block;
+  zoom: 1;
+  -webkit-transition: 0.25s;
+  -moz-transition: 0.25s;
+  -o-transition: 0.25s;
+  transition: 0.25s;
+  -webkit-backface-visibility: hidden;
+}
+.toggle:before, .toggle:after {
+    display: table;
+    content: "";
+}
+.toggle.toggle-off {
+    background-color: #7aa4d0;
+}
+
+.toggle .toggle-radio:first-child {
+    margin-bottom: -0.78rem;
+    left: -2%;
+}
+.toggle .toggle-radio {
+  font-size: 0.4rem;
+  cursor: pointer;
+  background: url(./assets/icon-on.png) right top no-repeat;
+  background-size: 0.72rem 0.72rem;
+  color: #fff;
+  display: block;
+  /*font-weight: 700;*/
+  height: 0.6rem;
+  left: 120%;
+  margin-left: -0.2rem;
+  padding: 0.18rem 0.866667rem 0.066667rem;
+  position: absolute;
+  text-align: center;
+  z-index: 2;
+  -webkit-transition: 0.25s;
+  -moz-transition: 0.25s;
+  -o-transition: 0.25s;
+  transition: 0.25s;
+  -webkit-backface-visibility: hidden;
+}
+.toggle.toggle-off .toggle-radio {
+    background-image: url(./assets/icon-off.png);
+    background-position: 0 0.02rem;
+    color: white;
+    left: 0;
+    margin-left: 0.013333rem;
+    margin-right: -0.266667rem;
+    z-index: 1;
+}
+.toggle.toggle-off .toggle-radio:first-child {
+    left: -120%;
+}
+.toggle input {
+    display: none;
+    position: absolute;
+    outline: none !important;
+    display: block\9;
+    opacity: 0.01;
+    filter: alpha(opacity=1);
+    zoom: 1;
+}
+input[type="radio"], input[type="checkbox"] {
+    margin: 0.093333rem 0 0;
+    margin-top: 0.026667rem \9;
+    line-height: normal;
+}
