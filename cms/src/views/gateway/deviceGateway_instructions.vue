@@ -33,6 +33,7 @@ export default {
         myKey: "deviceid",
         connectKey: "id",
         displayKey: "circuitname",
+        searchKey: "gatewayid"
       }]
     }
 

@@ -203,6 +203,7 @@ export default {
           myKey: "createrid",         //本模块中关联的数据库字段
           connectKey: "id",           //关联的模块中的对应数据库字段
           displayKey: "name",         //显示在前端的字段
+          searchKey: "",              //get关联模块对应字段的数据时，如果要做过滤，这里加上过滤的字段名
         }]
       */
       default: function () {
@@ -479,7 +480,25 @@ export default {
       var function_arr = []
       this.connectModule.forEach( (o,i) => {
         if(o.moduleName && o.myKey && o.connectKey && o.displayKey) {
-          function_arr.push(fetchList(o.moduleName))
+          /*如果获取的关联的模块的下拉列表options需要根据某个参数过滤的话
+          这里要再fetchList的时候加上过滤的参数，崩溃... T_T
+          这种情况只会在子表的时候出现，所以这个过滤的参数肯定是父页面的路由上的参数*/
+
+          /*例如：配置网关指令页面deviceGateway_instructions，配置“设备”时，下拉列表只会选择当前网关对应变电站下的电表设备，所以这里fetch电表的list时，要加上gatewayid作为过滤*/
+          if(o.searchKey && this.$route.params.hasOwnProperty(o.searchKey)) {
+            let connectModulelistQuery = {
+              page: 1,
+              limit: 10000
+            }
+            let searchParams = {}
+            searchParams[o.searchKey] = this.$route.params[o.searchKey]
+            connectModulelistQuery.search = JSON.stringify(searchParams)
+            function_arr.push(fetchList(o.moduleName, connectModulelistQuery))
+          }
+          else {
+            function_arr.push(fetchList(o.moduleName))
+          }
+
         }
       })
       Promise.all(function_arr).then( response_arr => {

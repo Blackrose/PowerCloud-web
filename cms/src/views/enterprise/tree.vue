@@ -151,7 +151,7 @@ export default {
       return data.label.indexOf(value) !== -1
     },
     showDetail(data, node) {
-      console.log(data)
+      // console.log(data)
       let path
       let level = node.level
       this.moduleName = ""
