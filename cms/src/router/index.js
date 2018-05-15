@@ -15,9 +15,10 @@ Vue.use(Router)
 /* Layout */
 import Layout from '../views/layout/Layout'
 
-// import SysGraph from '../views/sysGraph/index'
 
 const SysGraph = r => require.ensure([], () => r(require('../views/sysGraph/index')))
+const CircuitAlarmRule = r => require.ensure([], () => r(require('../views/circuitAlarmRule/index')))
+
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -42,8 +43,6 @@ export const constantRouterMap = [
     name: 'Dashboard',
     hidden: true,
     children: [{
-      // path: 'dashboard',
-      // component: () => import('@/views/dashboard/index')
       path: 'tree',
       name: 'Tree1',
       component: () => import('@/views/enterprise/tree'),
@@ -365,6 +364,14 @@ export const constantRouterMap = [
     component: SysGraph,
     name: 'SysGraph',
     meta: { title: '系统图编辑', icon: 'network' },
+    hidden: true,
+  },
+  //回路告警条件
+  {
+    path: '/CircuitAlarmRule',
+    component: CircuitAlarmRule,
+    name: 'CircuitAlarmRule',
+    meta: { title: '回路告警条件', icon: 'network' },
     hidden: true,
   },
 

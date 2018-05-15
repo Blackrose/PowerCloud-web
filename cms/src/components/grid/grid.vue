@@ -38,7 +38,7 @@
           </template>
         </el-table-column>
 
-
+        <!-- 列表显示 -->
         <el-table-column v-if="!item.isDetail" v-for="item in listColumn" :key="item.key" align="center" :label="item.label"
           :width= "(item.mainKey ? '60px' : (item.key == 'status' ? '80px' : ''))">
           <template slot-scope="scope">
@@ -56,6 +56,10 @@
             <span v-else-if="item.type == 'image'"><a :href="filterImageUrl(scope.row[item.key])" target="_blank"><img class="table-image" :src="filterImageUrl(scope.row[item.key])"/></a></span>
             <!-- 坐标 -->
             <span v-else-if="item.type == 'location'">{{scope.row[item.key] | locationFilter}}</span>
+            <!-- 坐标 -->
+            <span v-else-if="item.type == 'alarmRule'">
+              <el-button v-if="scope.row[item.key]"  size="mini" type="text" icon="el-icon-search" @click="handleViewAlarmRule(scope.row[item.key])">查看告警规则</el-button>
+            </span>
           </template>
         </el-table-column>
 
@@ -85,8 +89,6 @@
         </el-table-column>
 
       </el-table>
-
-
 
       <!-- 分页 -->
       <div class="pagination-container" v-if="!treeRoute.path">
@@ -134,6 +136,16 @@
               <el-col :span="1">&nbsp;</el-col>
               <el-col :span="5">
                 <el-button  @click="goToSysGraph(item.key)" type="primary" plain>编辑</el-button>
+              </el-col>
+            </el-row>
+            <!-- 设备告警规则 -->
+            <el-row v-else-if="item.type == 'alarmRule'">
+              <el-col :span="18">
+                <el-input v-model="temp[item.key]" width="80%"></el-input>
+              </el-col>
+              <el-col :span="1">&nbsp;</el-col>
+              <el-col :span="5">
+                <el-button  @click="goToAlarmRule(item.key, temp[item.key])" type="primary" plain>编辑</el-button>
               </el-col>
             </el-row>
             <!-- 坐标 -->
@@ -278,12 +290,17 @@ export default {
     //用于监听系统图配置页面传来的参数
     let _self = this
     window.addEventListener("message", function(event) {
+      console.log(event.data)
       if(event.data && event.data.title == "powerCloudCMS-message") {
         //event.data.key是该系统图数据库字段的名称
         _self.temp[event.data.key] = event.data.svg
       }
       if(event.data && event.data.title == "powerCloudCMS-message-location") {
         //event.data.key是该系统图数据库字段的名称
+        _self.temp[event.data.key] = event.data.str
+      }
+      if(event.data && event.data.title == "powerCloudCMS-message-alarmRule") {
+        //event.data.key是该表数据库字段的名称
         _self.temp[event.data.key] = event.data.str
       }
     }, false);
@@ -704,7 +721,7 @@ export default {
       return path + filename
     },
     goToSysGraph(key) {
-      let url = location.href.split("#")[0] + "#/sysGraph"
+      let url = location.href.split("#")[0] + "#/SysGraph"
       let win = window.open(url)
       setTimeout( () => {
          win.postMessage({title:"powerCloudCMS-message", key: key}, '*');
@@ -730,6 +747,25 @@ export default {
     },
     onImgSrcChange(val, key) {
       this.temp[key] = val
+    },
+    //告警规则配置
+    goToAlarmRule(key, ruleStr) {
+      let url = location.href.split("#")[0] + "#/CircuitAlarmRule"
+      let win = window.open(url)
+      setTimeout( () => {
+         win.postMessage({title:"powerCloudCMS-message-alarmRule", key: key, str: ruleStr}, '*');
+      }, 1000)
+    },
+    handleViewAlarmRule(ruleStr) {
+      // let url = location.href.split("#")[0] + "#/CircuitAlarmRule?type=view"
+      // this.$alert(`<iframe id="alarmRuleFrame" src="${url}"/>`, '系统图', {
+      //   dangerouslyUseHTMLString: true
+      // });
+      let url = location.href.split("#")[0] + "#/CircuitAlarmRule?type=view"
+      let win = window.open(url)
+      setTimeout( () => {
+         win.postMessage({title:"powerCloudCMS-message-alarmRule", str: ruleStr}, '*');
+      }, 1000)
     }
   }
 

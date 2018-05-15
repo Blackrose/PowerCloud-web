@@ -35,6 +35,13 @@ export default {
   			required: true,
   			errorMessage: "必填"
   		},
+      {
+        key: "alarmcondition",
+        label: "告警规则",
+        type: "alarmRule",
+        required: true,
+        errorMessage: "必填"
+      },
   		{
   			key: "description",
   			label: "备注说明",
