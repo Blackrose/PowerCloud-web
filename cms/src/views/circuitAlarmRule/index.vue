@@ -39,10 +39,18 @@
     font-weight: bold;
     line-height: 40px;
 	}
+
+	.rule-key {
+		font-family: '宋体';
+		padding: 0 10px 0 0;
+	}
 	.btn {
 		padding: 10px;
 	}
 
+	.align-center {
+		text-align: center;
+	}
 	.el-row {
 		margin-bottom: 20px;
 	}
@@ -60,13 +68,22 @@
 	  	</el-row>
 	  	<el-row>
 				<el-col :span="18" :offset="3">
-					<el-form  :rules="validRules" ref="myForm" label-width="0px" :model="config[0]">
+					<el-form  :rules="validRules" ref="myForm" label-width="0px" :model="data">
 			  	<ul class="rule-list">
-			  		<li v-for="(item, index) in config">
+			  		<li v-for="(item, index) in data.config">
 			  			<el-row class="list-rule-item">
 			  				<el-col :span="3" class="list-title">
 				  					规则{{index+1}}:
 				  			</el-col>
+				  			<el-col :span="3">
+				  				<el-form-item prop="type">
+					  				<el-select v-model="item.type" placeholder="参数">
+								      <el-option label="电流" value="I"></el-option>
+								      <el-option label="电压" value="V"></el-option>
+								    </el-select>
+								  </el-form-item>
+				  			</el-col>
+				  			<el-col :span="1"></el-col>
 				  			<el-col :span="3" v-if="!isView">
 				  				<el-button class="btn" type="danger" plain icon="el-icon-delete" @click="onDeleteRule(index)">删除规则</el-button>
 				  			</el-col>
@@ -74,45 +91,46 @@
 			  			<el-row class="list-rule-item" >
 			  				<el-col :span="3" >告警提示：</el-col>
 								<el-col :span="10" >
-									<el-form-item prop="tip">
+									<el-form-item :prop="'config.'+index+'.tip'" :rules="{required: true, message: '告警提示不能为空', trigger: 'blur'}">
 										<el-input v-model="item.tip" placeholder="请输入告警提示"></el-input>
 									</el-form-item>
 								</el-col>
 			  			</el-row>
-		  				<el-row class="list-rule-item">
+			  			<!-- 电流 -->
+		  				<el-row v-if="item.type == 'I'" class="list-rule-item">
 		  					<el-col :span="3" >配置条件：</el-col>
-				  			<el-col :span="5" class="list-rule-item" v-for="(_item, _index) in item.ruleArr">
-				  				<el-tag v-if="_index > 0">and</el-tag>
-				  				<el-form-item prop="key">
-					  				<el-select v-model="_item.key" placeholder="参数">
-								      <el-option label="Ia" value="Ia"></el-option>
-								      <el-option label="Ib" value="Ib"></el-option>
-								      <el-option label="Ic" value="Ic"></el-option>
-								      <el-option label="Ua" value="Ua"></el-option>
-								      <el-option label="Ub" value="Ub"></el-option>
-								      <el-option label="Uc" value="Uc"></el-option>
-								    </el-select>
-								  </el-form-item>
-							    &nbsp;
-							    <el-form-item prop="condition">
-					  				<el-select v-model="_item.value" placeholder="条件">
-								      <el-option label="= 0" value="eq_0"></el-option>
-								      <el-option label="≠ 0" value="neq_0"></el-option>
-								    </el-select>
-								  </el-form-item>
-						    </el-col>
-
-						    <el-col :span="1">&nbsp;</el-col>
-						    <el-col :span="3" v-if="!isView">
-						    	<el-button class="btn" type="primary" plain icon="el-icon-plus" circle @click="onAdd(index, _index)"></el-button>
-									<el-button class="btn" type="danger" plain icon="el-icon-delete" circle  @click="onDelete(index, _index)"></el-button>
-						    </el-col>
-						  </el-row>
-
-
+		  					<template class="list-rule-item" v-for="(_item, _index) in ['Ia','Ib', 'Ic']">
+		  						<el-col :span="2" class="align-center" v-if="_index > 0"><el-tag>and</el-tag></el-col>
+		  						<el-col :span="4" class="list-rule-item" >
+			  						<span class="rule-key">{{_item}}</span>
+			  						<el-form-item prop="condition">
+						  				<el-select v-model="item.ruleArr[_index]" placeholder="条件">
+									      <el-option label="= 0" value="0"></el-option>
+									      <el-option label="≠ 0" value="1"></el-option>
+									    </el-select>
+									  </el-form-item>
+									 </el-col>
+		  					</template>
+		  				</el-row>
+		  				<!-- 电压 -->
+	  					<el-row v-else-if="item.type == 'V'" class="list-rule-item">
+	  						<el-col :span="3" >配置条件：</el-col>
+		  					<template class="list-rule-item" v-for="(_item, _index) in ['Ua','Ub', 'Uc']">
+		  						<el-col :span="2" class="align-center" v-if="_index > 0"><el-tag>and</el-tag></el-col>
+		  						<el-col :span="4" class="list-rule-item" >
+			  						<span class="rule-key">{{_item}}</span>
+			  						<el-form-item prop="condition">
+						  				<el-select v-model="item.ruleArr[_index]" placeholder="条件">
+									      <el-option label="= 0" value="0"></el-option>
+									      <el-option label="≠ 0" value="1"></el-option>
+									    </el-select>
+									  </el-form-item>
+									 </el-col>
+		  					</template>
+		  				</el-row>
 			  		</li>
 			  		<li>
-			  			<el-form :rules="validRules" ref="powerForm" :model="powerConfig">
+			  			<el-form :rules="validRules" ref="powerForm" :model="data.powerConfig">
 				  			<el-row>
 				  				<el-col class="list-title">
 					  					功率条件:&nbsp;
@@ -122,30 +140,27 @@
 				  				<el-col :span="3" >告警提示：</el-col>
 									<el-col :span="10" >
 										<el-form-item prop="tip">
-											<el-input v-model="powerConfig.tip" placeholder="请输入告警提示"></el-input>
+											<el-input v-model="data.powerConfig.tip" placeholder="请输入告警提示"></el-input>
 										</el-form-item>
 									</el-col>
 				  			</el-row>
 				  			<el-row class="list-rule-item">
-				  				<el-col :span="3" >功率: </el-col>
-				  				<el-col :span="21">
-				  						<el-form-item class="list-rule-item">
-											  <el-col :span="15" class="list-rule-item">
-											    <el-select v-model="powerConfig.condition">
-											      <el-option label="大于" value="gt"></el-option>
-											      <el-option label="大于等于" value="geq"></el-option>
-											      <el-option label="等于" value="eq"></el-option>
-											      <el-option label="小于等于" value="leq"></el-option>
-											      <el-option label="小于" value="lt"></el-option>
-											    </el-select>
-											    &nbsp;&nbsp;&nbsp;
-		 											<el-input prop="power" v-model.number="powerConfig.value" placeholder="百分比"></el-input>
-										    </el-col>
-										    <el-col :span="1">&nbsp;%</el-col>
-
+				  				<el-col :span="3" >配置条件: </el-col>
+				  				<el-col :span="21" class="list-rule-item">
+				  					<span class="rule-key">功率&nbsp;≤&nbsp;</span>
+										<el-col :span="3">
+											<el-form-item prop="power">
+												<el-input v-model.number="data.powerConfig.power" placeholder="百分比"></el-input>
 											</el-form-item>
-
-
+										</el-col>
+		 								<el-col :span="1">&nbsp;%</el-col>
+									    <!-- <el-select v-model="powerConfig.condition">
+									      <el-option label="大于" value="gt"></el-option>
+									      <el-option label="大于等于" value="geq"></el-option>
+									      <el-option label="等于" value="eq"></el-option>
+									      <el-option label="小于等于" value="leq"></el-option>
+									      <el-option label="小于" value="lt"></el-option>
+									    </el-select> -->
 				  				</el-col>
 				  			</el-row>
 			  			</el-form>
@@ -173,33 +188,51 @@ let key
 export default {
 	name: 'circuitAlarmRule',
 	data() {
+		let checkPower = (rule, value, callback) => {
+			if (!value) {
+				return callback(new Error('不能为空'));
+			}
+			if (!Number.isInteger(value)) {
+				callback(new Error('请输入数值'));
+			}
+			else {
+				if (value > 100 || value < 0) {
+					callback(new Error('请输入0-100的数值'));
+				}
+				else {
+					callback();
+				}
+			}
+		};
 		return {
 			//是否只查看数据，不编辑数据（从列表点进来时，只是查看数据，不编辑）
 			isView: true,
 			//是否正在加载中，监听message传递
 			isLoading: true,
 			//普通规则的配置
-			config: [
-				{
-					tip: "",
-					ruleStr: "",
-					ruleArr: [{  //每个规则中的条件组成的数组，条件间为“且”关系
-						key: "Ia",
-						value: "eq_0"
-					}]
-				}
-			],
-			//功率条件的配置
-			powerConfig: {
-				tip: "功率过低",
-				condition: "leq",
-				value: "85"
+			data: {
+				config: [
+					{
+						tip: "",
+						type: "I", //电流=I、电压=V、功率=P
+						ruleStr: "",
+						ruleArr: ["0","0","0"] //每个规则中的条件组成的数组，条件间为“且”关系
+					}
+				],
+				//功率条件的配置
+				powerConfig: {
+					tip: "功率过低",
+					type: "P",
+					power: 85,
+					ruleStr: ""
+				},
 			},
 			//表单验证
 			validRules: {
-				tip: [{ required: true, message: '请输入告警提示', trigger: 'blur' }],
-				power: [{ required: true, type: 'number', message: '必须为数字', trigger: 'blur' }],
+				tip: [{ required: true, message: '告警提示不能为空', trigger: 'blur' }],
+				power: [{ validator: checkPower, trigger: 'blur' }],
 			},
+
 		}
 	},
 	created() {
@@ -219,44 +252,28 @@ export default {
 						let currentConfig = JSON.parse(event.data.str);
 						//规则格式样例：
 						/*[
-							{
-								tip: "告警1",
-								rule: "Ia_eq_0|Ib_neq_0"
-							},
-							{
-								tip: "告警2",
-								rule:"Ua_eq_0|Ub_neq_0"
-							},
-							{
-								ruleStr: "power_leq_85"
-								tip: "功率过低"
-							}
-						]*/
+								{"tip":"电压报警","type":"V","ruleStr":"010"},
+								{"tip":"电流报警","type":"I","ruleStr":"001"},
+								{"tip":"功率过低","type":"P","ruleStr":"50"}
+							]*/
 						//解析功率的配置,config的最后一个是功率配置
 						let currentPowserConfig = currentConfig.pop();
-						_self.powerConfig = {
+						_self.data.powerConfig = {
 							tip: currentPowserConfig.tip,
-							condition: currentPowserConfig.ruleStr.split("_")[1],
-							value: currentPowserConfig.ruleStr.split("_")[2]
+							type: currentPowserConfig.type,
+							ruleStr: currentPowserConfig.ruleStr,
+							power: +currentPowserConfig.ruleStr,
 						}
 
 						//解析其他规则配置
 						currentConfig.forEach( (o, i) => {
 							let obj = {
 								tip: o.tip,
+								type: o.type,
 								ruleStr: o.ruleStr,
-								ruleArr: []
+								ruleArr: o.ruleStr.split("")
 							}
-							//将字符串解析成数组
-							let _ruleArr = o.ruleStr.split("|");
-							_ruleArr.forEach( (_o, _i) => {
-								obj.ruleArr.push({
-									key: _o.split("_")[0],
-									value:  _o.split("_")[1]+"_"+_o.split("_")[2]
-								})
-							})
-
-							_self.$set(_self.config, i, obj)
+							_self.$set(_self.data.config, i, obj)
 
 						})
 					} catch(e) {
@@ -269,45 +286,24 @@ export default {
 	},
 	methods: {
 		onAddRule() {
-			this.config.push({
+			this.data.config.push({
 				tip: "",
+				type: "I", //电流=I、电压=V、功率=P
 				ruleStr: "",
-				ruleArr: [{  //每个规则中的条件组成的数组，条件间为“且”关系
-					key: "Ia",
-					value: "eq_0"
-				}]
+				ruleArr: ["0","0","0"] //每个规则中的条件组成的数组，条件间为“且”关系
 			})
 		},
 		onDeleteRule(index) {
-			if(this.config.length == 1) {
-				this.config = [{
+			if(this.data.config.length == 1) {
+				this.data.config = [{
 					tip: "",
+					type: "I", //电流=I、电压=V、功率=P
 					ruleStr: "",
-					ruleArr: [{  //每个规则中的条件组成的数组，条件间为“且”关系
-						key: "Ia",
-						value: "eq_0"
-					}]
+					ruleArr: ["0","0","0"] //每个规则中的条件组成的数组，条件间为“且”关系
 				}]
 			}
 			else {
-				this.config.splice(index, 1)
-			}
-		},
-		onAdd(index, _index) {
-			this.config[index].ruleArr.push({
-				key: "Ia",
-				value: "eq_0"
-			})
-		},
-		onDelete(index, _index) {
-			if(this.config[index].ruleArr.length == 1) {
-				this.config[index].ruleArr = [{
-					key: "Ia",
-					value: "eq_0"
-				}]
-			}
-			else {
-				this.config[index].ruleArr.splice(_index, 1)
+				this.data.config.splice(index, 1)
 			}
 		},
 		onSubmit() {
@@ -315,25 +311,20 @@ export default {
 				if(!valid1) { return }
 				this.$refs["powerForm"].validate((valid) => {
 	        if (valid) {
-	          this.config.forEach( (o, index) => {
-							if(Array.isArray(o.ruleArr)) {
-								let arr = []
-								o.ruleArr.forEach( (_o, _i) => {
-									let str = _o.key+ "_" + _o.value
-									arr.push(str)
-								})
-								o.ruleStr = arr.join("|")
-							}
+	          this.data.config.forEach( (o, index) => {
+							o.ruleStr = o.ruleArr.join("")
 						})
 
 						let power = {};
-						power.tip = this.powerConfig.tip;
-						power.ruleStr = "power_" + [this.powerConfig.condition, this.powerConfig.value].join("_");
+						power.tip = this.data.powerConfig.tip;
+						power.type = this.data.powerConfig.type;
+						power.ruleStr = ""+this.data.powerConfig.power;
 
 						let submitConfig = []
-						this.config.forEach( (o, i) => {
+						this.data.config.forEach( (o, i) => {
 							submitConfig.push({
 								tip: o.tip,
+								type: o.type,
 								ruleStr: o.ruleStr
 							})
 						})
@@ -354,20 +345,17 @@ export default {
 			});
 		},
 		onClear() {
-			this.config = [
-				{
-					tip: "",
-					ruleStr: "",
-					ruleArr: [{  //每个规则中的条件组成的数组，条件间为“且”关系
-						key: "Ia",
-						value: "eq_0"
-					}]
-				}
-			]
-			this.powerConfig = {
+			this.data.config = [{
+				tip: "",
+				type: "I", //电流=I、电压=V、功率=P
+				ruleStr: "",
+				ruleArr: ["0","0","0"] //每个规则中的条件组成的数组，条件间为“且”关系
+			}]
+			this.data.powerConfig = {
 				tip: "功率过低",
-				condition: "leq",
-				value: "85"
+				type: "P",
+				value: 85,
+				ruleStr: ""
 			}
 		}
 	}

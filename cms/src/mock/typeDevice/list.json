@@ -7,12 +7,14 @@
       "typedevicename": "硕码电表",
       "functionname": "parseparse",
       "classname": "com.neu.cse.powercloud.util.ammeter.parser.SampleAmmeterParser",
+      "alarmcondition": "[{\"tip\":\"111\",\"type\":\"V\",\"ruleStr\":\"111\"},{\"tip\":\"功率过低\",\"type\":\"P\",\"ruleStr\":\"82\"}]",
       "description": "硕码电表解析函数"
     }, {
       "id": 2,
       "typedevicename": "正麦电表",
       "functionname": "parseparse",
       "classname": "com.neu.cse.powercloud.util.ammeter.parser.ZhengMaiAmmeterParser",
+      "alarmcondition": null,
       "description": "正麦电表解析函数"
     }]
   }

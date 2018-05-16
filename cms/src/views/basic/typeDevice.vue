@@ -17,8 +17,8 @@ export default {
 	},
 	data () {
 		return {
-      moduleName: "typeDevice",
-      column: tableConfig["typeDevice"].column
+			moduleName: "typeDevice",
+			column: tableConfig["typeDevice"].column
 		}
 	}
 }
