@@ -102,6 +102,7 @@ export default {
         case "electricitySubstation_pic":
           type = "substation"
           break
+        case "electricitySubstation_low":
         case "electricitySubstation_low_pic":
           type = "cabinet"
         break

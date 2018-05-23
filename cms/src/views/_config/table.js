@@ -657,6 +657,11 @@ export default {
         // isEdit: false
       },
       {
+        key: "name",
+        label: "名称",
+        type: "string"
+      },
+      {
         key: "manufacturer",
         label: "进线柜生产企业",
         type: "string",
@@ -835,6 +840,11 @@ export default {
         // isEdit: false
       },
       {
+        key: "name",
+        label: "名称",
+        type: "string"
+      },
+      {
         key: "manufacturer",
         label: "生产企业",
         type: "string"
@@ -881,6 +891,11 @@ export default {
         label: "所内编号",
         type: "number",
         isEdit: false
+      },
+      {
+        key: "name",
+        label: "名称",
+        type: "string"
       },
       {
         key: "lowcabinettype",
@@ -1051,7 +1066,7 @@ export default {
         key: "num",
         label: "回路编号",
         type: "number",
-        isEdit: false
+        // isEdit: false
       },
       {
         key: "circuitname",
@@ -1234,14 +1249,14 @@ export default {
           // errorMessage: "必填",
           isDetail: true
       },
-      {
+      /*{
           key: "password",
           label: "登录密码",
           type: "string",
           // required: true,
           // errorMessage: "必填",
           isDetail: true
-      },
+      },*/
       {
           key: "pic",
           label: "照片",

@@ -1,8 +1,8 @@
 -- MySQL dump 10.13  Distrib 5.7.21, for Win64 (x86_64)
 --
--- Host: 202.118.26.77    Database: power_cloud
+-- Host: 202.118.26.39    Database: power_cloud
 -- ------------------------------------------------------
--- Server version	5.5.56-MariaDB
+-- Server version	5.7.14-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -55,12 +55,12 @@ CREATE TABLE `biz_customer` (
   `financeChiefPhone` varchar(11) NOT NULL COMMENT '财务负责人移动电话',
   `companyTypeCode` varchar(10) NOT NULL COMMENT '企业类型代码（01：工业，02：商业，03：农业）',
   `dataAuthorityID` int(11) DEFAULT NULL COMMENT '数据权限ID，将权限控制到用户级别',
-  `isSpecialPower` tinyint(4) NOT NULL COMMENT '是否特殊用电企业',
+  `isSpecialPower` int(4) NOT NULL COMMENT '是否特殊用电企业',
   `superiorUnitCode` int(11) NOT NULL COMMENT '上级单位代码，如果为空，则为独立单位',
   `endTime` datetime DEFAULT NULL COMMENT '用户有效期，判断用户',
   `pic` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='客户表，记录客户信息';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='客户表，记录客户信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,16 +90,20 @@ CREATE TABLE `biz_data_deviceelecmeter` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `gatewayID` int(11) DEFAULT NULL COMMENT '网关ID',
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '变电所ID',
-  `voltageA` varchar(10) DEFAULT NULL COMMENT 'A电压',
-  `voltageB` varchar(10) DEFAULT NULL COMMENT 'B电压',
-  `voltageC` varchar(10) DEFAULT NULL COMMENT 'C电压',
-  `currentA` varchar(10) DEFAULT NULL COMMENT 'A电流',
-  `currentB` varchar(10) DEFAULT NULL COMMENT 'B电流',
-  `currentC` varchar(10) DEFAULT NULL COMMENT 'C电流',
-  `type` varchar(10) DEFAULT NULL COMMENT '类型（总回路|分回路）',
+  `circleName` varchar(100) DEFAULT NULL COMMENT '回路名称',
+  `voltageA` varchar(20) DEFAULT NULL COMMENT 'A电压',
+  `voltageB` varchar(20) DEFAULT NULL COMMENT 'B电压',
+  `voltageC` varchar(20) DEFAULT NULL COMMENT 'C电压',
+  `currentA` varchar(20) DEFAULT NULL COMMENT 'A电流',
+  `currentB` varchar(20) DEFAULT NULL COMMENT 'B电流',
+  `currentC` varchar(20) DEFAULT NULL COMMENT 'C电流',
+  `activepower` varchar(20) DEFAULT NULL COMMENT '有功功率总和',
+  `reactivepower` varchar(20) DEFAULT NULL COMMENT '无功功率总和',
+  `powerfactor` varchar(20) DEFAULT NULL COMMENT '功率因子总和',
+  `type` varchar(20) DEFAULT NULL COMMENT '类型（总回路|分回路）',
   `dataTime` datetime DEFAULT NULL COMMENT '时间戳',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34924 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5260259 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +144,7 @@ CREATE TABLE `biz_device_elecmeter` (
   `circuitType` varchar(5) DEFAULT NULL COMMENT '回路类型（总表|其它）',
   `gatewayID` int(11) DEFAULT NULL COMMENT '网关ID号',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COMMENT='电表表';
+) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8 COMMENT='电表表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,9 +185,9 @@ CREATE TABLE `biz_device_gateway` (
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '安装的变电所ID',
   `gatewayUSR` varchar(11) DEFAULT NULL COMMENT '网关用户名',
   `gatewayPSW` varchar(11) DEFAULT NULL COMMENT '网关密码',
-  `desc` varchar(45) DEFAULT NULL COMMENT '说明',
+  `description` varchar(45) DEFAULT NULL COMMENT '说明',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='网关表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='网关表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,6 +222,7 @@ DROP TABLE IF EXISTS `biz_device_lowcabinet`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `biz_device_lowcabinet` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '低压柜ID',
+  `name` varchar(100) DEFAULT NULL COMMENT '名称',
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '变电所ID',
   `num` int(5) DEFAULT NULL COMMENT '所内编号',
   `lowCabinetType` varchar(10) DEFAULT NULL COMMENT '进线柜、电容器柜、馈线柜、联络柜\nbiz_code_lowcabinet_type\n',
@@ -233,7 +238,7 @@ CREATE TABLE `biz_device_lowcabinet` (
   `PELineModel` varchar(20) DEFAULT NULL COMMENT 'PE线型号',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）0 正常，1 停用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COMMENT='低压柜表';
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 COMMENT='低压柜表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +263,7 @@ CREATE TABLE `biz_device_transformer` (
   `InsulationClass` varchar(10) DEFAULT NULL COMMENT '绝缘耐热等级（A、E、B、F、H、C、N、R级）',
   `manufacturDate` date DEFAULT NULL COMMENT '生产日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='变压器箱';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='变压器箱';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -270,12 +275,13 @@ DROP TABLE IF EXISTS `biz_devicecapacitorcabinet`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `biz_devicecapacitorcabinet` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(100) DEFAULT NULL COMMENT '名称',
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '变电所ID',
   `num` int(5) DEFAULT NULL COMMENT '所内编号',
   `manufacturer` varchar(40) DEFAULT NULL COMMENT '生产企业',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）0正常，1停用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -293,7 +299,7 @@ CREATE TABLE `biz_devicegateway_instructions` (
   `typeDeviceName` varchar(40) DEFAULT NULL COMMENT '设备类型（电表）ElecMeter01，ElecMeter01',
   `instruction` varchar(40) DEFAULT NULL COMMENT '指令',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -305,13 +311,14 @@ DROP TABLE IF EXISTS `biz_deviceincomingcabinet`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `biz_deviceincomingcabinet` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(100) DEFAULT NULL COMMENT '名称',
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '变电所ID',
   `num` int(5) DEFAULT NULL COMMENT '所内编号',
   `manufacturer` varchar(40) DEFAULT NULL COMMENT '生产企业',
   `transformerID` int(11) DEFAULT NULL COMMENT '变压器ID',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）0正常，1停用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -379,7 +386,7 @@ CREATE TABLE `biz_electrician` (
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）',
   `password` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='电工表';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='电工表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -412,7 +419,7 @@ CREATE TABLE `biz_electrician_position` (
   `lacation` varchar(50) DEFAULT NULL COMMENT '地图位置，X经度，Y纬度 {“lng”: “103.12”, “lat”: “223.11”}',
   `dataTime` datetime DEFAULT NULL COMMENT '时间戳',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='电工位置';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='电工位置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -440,7 +447,7 @@ CREATE TABLE `biz_electricity_substation` (
   `pic` varchar(100) DEFAULT NULL COMMENT '图纸，多张中间以“；”进行分割',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）0 正常，1 停用，2 维修中',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='变电所表';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='变电所表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -473,7 +480,7 @@ CREATE TABLE `biz_electricitysubstation_video` (
   `manufacturer` varchar(40) DEFAULT NULL COMMENT '生产企业',
   `URL` varchar(100) DEFAULT NULL COMMENT '视频URL',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -507,7 +514,7 @@ CREATE TABLE `biz_magdomain` (
   `createTime` datetime DEFAULT NULL COMMENT '创建时间',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用），0正常，1停用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='管理域表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='管理域表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -524,7 +531,7 @@ CREATE TABLE `biz_magdomain_customer` (
   `post` varchar(10) DEFAULT NULL COMMENT '岗位代码，1 经理，2组长，3组员',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用），0 正常，1 停用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='管理域_客户关联表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='管理域_客户关联表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -541,7 +548,7 @@ CREATE TABLE `biz_magdomain_electrician` (
   `post` int(11) DEFAULT NULL,
   `status` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -557,7 +564,7 @@ CREATE TABLE `biz_magdomain_electricitysubstation` (
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '变电所ID',
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）0正常，1停用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -590,8 +597,9 @@ CREATE TABLE `biz_type_device` (
   `functionName` varchar(100) DEFAULT NULL COMMENT '解析函数名称',
   `className` varchar(100) DEFAULT NULL COMMENT '解析类名称',
   `description` varchar(45) DEFAULT NULL COMMENT '备注说明',
+  `alarmcondition` varchar(1000) DEFAULT NULL COMMENT '告警条件',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='设备类型表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='设备类型表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -630,7 +638,7 @@ CREATE TABLE `biz_worktask` (
   `startTime` datetime DEFAULT NULL COMMENT '工单生成时间',
   `acceptTime` datetime DEFAULT NULL COMMENT '工单接收时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='工单表';
+) ENGINE=InnoDB AUTO_INCREMENT=326 DEFAULT CHARSET=utf8 COMMENT='工单表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -646,7 +654,7 @@ CREATE TABLE `biz_worktask_finish` (
   `description` varchar(45) DEFAULT NULL COMMENT '异常说明',
   `reason` varchar(200) DEFAULT NULL COMMENT '事故原因',
   `action` varchar(200) DEFAULT NULL COMMENT '处理办法',
-  `pic` varchar(100) DEFAULT NULL COMMENT '图片',
+  `pic` varchar(1024) DEFAULT NULL COMMENT '图片',
   `electricianID` int(11) DEFAULT NULL COMMENT '当前处理电工',
   `companyID` int(11) DEFAULT NULL COMMENT '企业',
   `electricitySubstationID` int(11) DEFAULT NULL COMMENT '变电所',
@@ -657,7 +665,7 @@ CREATE TABLE `biz_worktask_finish` (
   `acceptTime` datetime DEFAULT NULL,
   `finishedTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='工单完成表';
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8 COMMENT='工单完成表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -673,7 +681,7 @@ CREATE TABLE `biz_worktaskback` (
   `electricianID` int(11) DEFAULT NULL COMMENT '当前处理电工',
   `backtime` datetime DEFAULT NULL COMMENT '退回时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -702,9 +710,10 @@ CREATE TABLE `sys_function` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID，系统唯一标识',
   `functionName` varchar(45) NOT NULL COMMENT '功能名称，系统唯一',
   `functionURL` varchar(255) NOT NULL COMMENT '功能URL，指定URL的位置',
+  `displayName` varchar(500) DEFAULT NULL,
   `status` varchar(10) NOT NULL COMMENT '状态\n',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='系统功能表';
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='系统功能表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -719,7 +728,7 @@ CREATE TABLE `sys_role` (
   `roleName` varchar(45) NOT NULL COMMENT '角色名称：（命名规则，角色由超级管理员设置）',
   `status` varchar(10) NOT NULL COMMENT '用户状态，0正常、1注销、2暂停',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='系统角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='系统角色表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -734,8 +743,12 @@ CREATE TABLE `sys_role_function` (
   `roleID` int(11) NOT NULL,
   `functionID` int(11) NOT NULL,
   `status` varchar(10) NOT NULL,
+  `addfunction` varchar(4) DEFAULT NULL,
+  `deletefunction` varchar(4) DEFAULT NULL,
+  `updatefunction` varchar(4) DEFAULT NULL,
+  `selectfunction` varchar(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色功能表';
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='角色功能表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -785,7 +798,7 @@ CREATE TABLE `sys_user_role` (
   `roleID` int(11) NOT NULL,
   `status` varchar(10) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='用户角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='用户角色表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -797,4 +810,4 @@ CREATE TABLE `sys_user_role` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-11 16:33:07
+-- Dump completed on 2018-05-23 14:47:29
