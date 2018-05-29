@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- 引入 ECharts 文件 -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.0.4/echarts.js"></script>
+    </head>
+
+    <body>
+    <p style="font-size: 2rem; text-align: center">变压器有效负载</p>
+    <div id="chart1" style="width: 100%;height:400px;"></div>
+    <p style="font-size: 2rem; text-align: center">总电流环比图</p>
+    <div id="chart2" style="width: 100%;height:400px;"></div>
+    </body>
+    <script>
+        optionA = {
+            tooltip : {
+                formatter: "{a} <br/>{b} : {c}%"
+            },
+            toolbox: {
+                feature: {
+                }
+            },
+            series: [
+                {
+                    name: '',
+                    type: 'gauge',
+                    detail: {formatter:'{value}%'},
+                    data: [{value: 81.5, name: ''}]
+                }
+            ]
+        };
+        myChart = echarts.init(document.getElementById('chart1'));
+        myChart.setOption(optionA);
+        setInterval(function () {
+            optionA.series[0].data[0].value = (Math.random() * 20 + 70).toFixed(2) - 0;
+            myChart.setOption(optionA, true);
+        },2000);
+
+        let chartBSource = [
+            ['product', '上月', '当月'],
+            // ['Matcha Latte', 43.3, 85.8],
+        ];
+        optionB = {
+            legend: {},
+            tooltip: {},
+            dataset: {
+                source: chartBSource
+            },
+            xAxis: {type: 'category'},
+            yAxis: {},
+            // Declare several bar series, each will be mapped
+            // to a column of dataset.source by default.
+            series: [
+                {type: 'bar'},
+                {type: 'bar'}
+            ]
+        };
+        day = new Date().getDate();
+        for (let i=1; i <= day; ++i) {
+            chartBSource.push([i.toString(), (Math.random() * 1000).toFixed(3), (Math.random() * 1000).toFixed(3)])
+        }
+        myChart2 = echarts.init(document.getElementById('chart2'));
+        myChart2.setOption(optionB);
+    </script>
+</html>

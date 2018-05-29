@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <file url="PROJECT" libraries="{@types/react-native-modalbox, @types/react-native-push-notification, @types/react-native-vector-icons, @types/react-navigation}" />
+  </component>
+</project>
