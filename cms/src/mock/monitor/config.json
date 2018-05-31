@@ -1,0 +1,56 @@
+{
+	"status": 1,
+	"msg": "OK",
+	"succeeded": true,
+	"ok": true,
+	"data": {
+	"size": {
+		"width": "20%",
+		"height": "50%"
+	},
+	"config": [
+		{
+			"id":1,
+			"regionName": "模块1",
+			"functionName": "table",
+			"paramValue": "{'electricitySubstationid':1}",
+			"isHidden": false
+		},
+		{
+			"id":2,
+			"regionName": "模块2",
+			"functionName": "map",
+			"paramValue": "{'electricitySubstationid':1}",
+			"isHidden": false
+		},
+		{
+			"id":3,
+			"regionName": "模块3",
+			"functionName": "transformer",
+			"paramValue": "{'electricitySubstationid':1, 'transformerid': 2}",
+			"isHidden": false
+		},
+		{
+			"id":4,
+			"regionName": "模块4",
+			"functionName": "chart",
+			"paramValue": "{'electricitySubstationid':1}",
+			"isHidden": false
+		},
+		{
+			"id":5,
+			"regionName": "模块5",
+			"functionName": "sysGraph",
+			"paramValue": "{'electricitySubstationid':1}",
+			"isHidden": false
+		},
+		{
+			"id":6,
+			"regionName": "模块6",
+			"functionName": "video",
+			"paramValue": "{'electricitySubstationid':1, 'videoid': 2}",
+			"isHidden": true
+		}
+	]
+}
+}
