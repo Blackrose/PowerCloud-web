@@ -51,7 +51,10 @@ API_MAP = {
   //权限
   function: "sysFunction",
   role: "sysRole",
-  role_function: "sysRoleFunction"
+  role_function: "sysRoleFunction",
+
+  //功能模块
+  functionModule:"screenFunction",
 }
 if(isLocal) {
   API_URL = {
@@ -91,7 +94,10 @@ if(isLocal) {
     //权限
     function: "/sys/function_list.json",
     role: "/sys/role_list.json",
-    role_function: "/sys/role_function_list.json"
+    role_function: "/sys/role_function_list.json",
+
+    //功能模块
+    functionModule:"/platformConfig/function.json",
 
   }
 }

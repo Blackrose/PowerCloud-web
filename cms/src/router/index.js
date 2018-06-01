@@ -19,7 +19,6 @@ import Layout from '../views/layout/Layout'
 const SysGraph = r => require.ensure([], () => r(require('../views/sysGraph/index')))
 const CircuitAlarmRule = r => require.ensure([], () => r(require('../views/circuitAlarmRule/index')))
 
-const Monitor = r => require.ensure([], () => r(require('../views/Monitor/index')))
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -375,17 +374,34 @@ export const constantRouterMap = [
     meta: { title: '回路告警条件', icon: 'network' },
     hidden: true,
   },
-  //系统图
-  {
-    path: '/Monitor',
-    component: Monitor,
-    name: 'Monitor',
-    meta: { title: '实时数据监控平台', icon: 'network' },
-    hidden: true,
+
+    {
+    path: '/MonitorPlatformConfig',
+    component: Layout,
+    redirect: '/MonitorPlatformConfig/functionModule',
+    name: 'platform_function',
+    meta: { title: '监控平台配置', icon: 'computer' },
+    children: [
+      {
+        path: 'functionModule',
+        name: 'functionModule',
+        component: () => import('@/views/platformConfig/monitorFunctionModule.vue'),
+        meta: { title: '功能模块', icon: 'computer' },
+      },
+      {
+        path: 'moduleConfig',
+        name: 'moduleConfig',
+        component: () => import('@/views/platformConfig/moduleConfig.vue'),
+        meta: { title: '配置管理', icon: 'lock' },
+      }
+    ]
   },
+
 
   { path: '*', redirect: '/404', hidden: true }
 ]
+
+
 
 export default new Router({
   // mode: 'history', //后端支持可开
