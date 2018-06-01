@@ -2,7 +2,7 @@
 	"status": 1,
 	"msg": "OK",
 	"data": {
-		"total": 21,
+		"total": 22,
 		"items": [{
 			"id": 1,
 			"roleid": 1,
@@ -178,6 +178,15 @@
 			"id": 22,
 			"roleid": 1,
 			"functionid": 20,
+			"status": "0",
+			"addfunction": 0,
+			"deletefunction": 0,
+			"updatefunction": 0,
+			"selectfunction": 0
+		}, {
+			"id": 23,
+			"roleid": 1,
+			"functionid": 22,
 			"status": "0",
 			"addfunction": 0,
 			"deletefunction": 0,

@@ -2,7 +2,7 @@
 	"status": 1,
 	"msg": "OK",
 	"data": {
-		"total": 21,
+		"total": 22,
 		"items": [{
 			"id": 1,
 			"functionname": "electrician",
@@ -128,6 +128,12 @@
 			"functionname": "sysElectricianRole",
 			"displayname": null,
 			"functionurl": "电工角色管理",
+			"status": "0"
+		}, {
+			"id": 22,
+			"functionname": "monitorFunctionModule",
+			"displayname": null,
+			"functionurl": "监控平台功能模块",
 			"status": "0"
 		}]
 	},

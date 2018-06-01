@@ -14,13 +14,14 @@ let API_MAP = {
   //获取页面配置
   getConfig: "getConfig",
   mapPoint: "/electricitysubstation/getMapPoint",
+  stationData: "/electricitysubstation/getSubstaionData"
 }
 if(isLocal) {
   API_URL = {
     //获取页面配置
     getConfig: "/monitor/config.json",
-    mapPoint: ["/monitor/mapPoint1.json", "/monitor/mapPoint2.json", "/monitor/mapPoint3.json"]
-
+    mapPoint: ["/monitor/mapPoint1.json", "/monitor/mapPoint2.json", "/monitor/mapPoint3.json"],
+    stationData: "/monitor/stationData.json",
 
   }
 }
@@ -42,6 +43,14 @@ export function getMapPoint(type) {
     url: isLocal ? API_URL["mapPoint"][+type-1] : API_URL["mapPoint"],
     method: 'post',
     params: {type:type}
+  })
+}
+
+export function getStationData(id) {
+  return request({
+    url: isLocal ? API_URL["stationData"] : API_URL["stationData"],
+    method: 'post',
+    params: {id:id}
   })
 }
 

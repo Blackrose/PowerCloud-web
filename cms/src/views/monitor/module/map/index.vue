@@ -2,6 +2,8 @@
 	<monitor-box ref="boxEle"
 		:title = "title"
 		:titleIcon = "titleIcon"
+    @boxClose = "handleClose"
+    @boxFullScreen = "handleFullScreen"
 	>
 		<div id="allmap" ref="mapEle"></div>
 	</monitor-box>
@@ -20,6 +22,14 @@
 		components: {
 	    'monitor-box': MonitorBox,
 	  },
+    props: {
+      moduleIndex: {
+        type: Number,
+        default: function () {
+          return 0
+        }
+      }
+    },
 	  data () {
     	return {
     		title: "位置显示",
@@ -83,7 +93,7 @@
           //企业
           Promise.all([apiMonitor.getMapPoint(1),apiMonitor.getMapPoint(2),apiMonitor.getMapPoint(3)])
           .then(function(res_arr){
-            console.log(res_arr)
+            // console.log(res_arr)
             if(res_arr[0].data){
               res_arr[0].data.forEach( (o,i) => {
                 try {
@@ -135,7 +145,7 @@
             }
 
             self.totalPoint = (pointsArr[0].concat(pointsArr[1])).concat(pointsArr[2])
-            console.log(self.totalPoint)
+            // console.log(self.totalPoint)
             self.map.setViewport(self.totalPoint);
 
             resolve();
@@ -191,31 +201,41 @@
                 statusB: 2
             }
           ];*/
-          var statusAText = ["正常", "处理中", "报警"];
-          var statusBText = ["载荷正常", "过载", "重载"];
-          var html = [];
+          let statusAText = ["正常", "处理中", "报警"];
+          let statusBText = ["载荷正常", "过载", "重载"];
+          let html = [];
           data.forEach(function(o,i) {
             o.statusA = o.statusA || 0;
             o.statusB = o.statusB || 0;
-            var stationJQ = $(".p-station[data-id="+o.id+"]");
-            if(stationJQ.length) {
-              stationJQ.removeClass('s-0-0').addClass(['s', o.statusA, o.statusB].join("-"));
-              var name = ((stationJQ.find(".p-tag").html()).split("："))[1]
-              html.push("<p><i class='fa fa-exclamation-circle'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
+            let stationEle = document.querySelectorAll(".p-station[data-id="+o.id+"]");
+            // var stationJQ = $(".p-station[data-id="+o.id+"]");
+            // console.log(stationEle.length)
+            if(stationEle.length) {
+              stationEle.classList.remove('s-0-0');
+              stationEle.classList.add(['s', o.statusA, o.statusB].join("-"));
+              // let name = ((stationEle.querySelector(".p-tag").innerHTML).split("："))[1]
+              // html.push("<p><i class='fa fa-exclamation-circle'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
             }
           });
           //更新左上角TIP的内容
-          var tipJQ = $("#status-tip .content");
+          //TODO!!告警提示 跑马灯
+          /*var tipJQ = $("#status-tip .content");
           if(html.length){
             tipJQ.html(html.join(""));
           }
           else {
             tipJQ.html('<p style="text-align: center;">目前没有告警信息</p>');
           }
-          $("#status-tip").show();
+          $("#status-tip").show();*/
 
         }catch(e) {console.error(e)}
-      }
+      },
+      handleClose () {
+        this.$emit("moduleClose",this.moduleIndex);
+      },
+      handleFullScreen () {
+        this.$emit("moduleFullScreen",this.moduleIndex);
+      },
   	}
 	}
 </script>

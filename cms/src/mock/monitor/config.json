@@ -5,8 +5,8 @@
 	"ok": true,
 	"data": {
 	"size": {
-		"width": "20%",
-		"height": "50%"
+		"width": 25,
+		"height": 60
 	},
 	"config": [
 		{
@@ -49,7 +49,7 @@
 			"regionName": "模块6",
 			"functionName": "video",
 			"paramValue": "{'electricitySubstationid':1, 'videoid': 2}",
-			"isHidden": true
+			"isHidden": false
 		}
 	]
 }

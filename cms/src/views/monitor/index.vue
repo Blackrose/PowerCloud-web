@@ -1,6 +1,6 @@
 <template>
 	<div id="wrapper">
-		<el-container>
+		<el-container ref="containerEle">
 		  <el-header height="auto">
 		      <p class="logo"><i class="el-icon-menu"></i>电云系统监控平台</p>
 		      <p class="status-bar">
@@ -13,28 +13,71 @@
 		      </p>
 		  </el-header>
 		  <el-main v-if="config">
-		  	<el-row :gutter="20" v-if="rowShow[0]">
-				  <el-col v-if="!config[0].hide" :span="col[0]">
-				  	<div :class="['grid-content','grid-content-1',!rowShow[1] ? 'grid-content-0' : '']">
-				  		<module-table>1</module-table>
-				  	</div>
-				  </el-col>
-				  <el-col v-if="!config[1].hide" :span="col[1]">
-				  	<div :class="['grid-content','grid-content-2',!rowShow[1] ? 'grid-content-0' : '']">
-				  	<module-map>2</module-map>
-				  	</div>
-				  </el-col>
-				  <el-col v-if="!config[2].hide" :span="col[2]">
-				  	<div :class="['grid-content','grid-content-3',!rowShow[1] ? 'grid-content-0' : '']">
-				  		<module-table>3</module-table>
-				  	</div>
-				  </el-col>
+		  	<!-- 第一行 -->
+		  	<el-row :gutter="20" v-show="row[0].show">
+		  		<!-- <transition-group name="el-zoom-in-top"> -->
+			  		<el-col :key="index" class="grid" v-for="(module,index) in config" v-if="index < 3" v-show="!config[index].isHidden" :span="col[index]" >
+			  			<div class="grid-content" :style="{ height: row[0].h}">
+			  				<module-table v-if="module.functionName == 'table'"
+				  				:moduleIndex = "index"
+				  				@moduleClose = "handleModuleClose"
+				  				@moduleFullScreen = "handleFullScreen"
+				  			>
+				  			</module-table>
+			  				<module-map v-else-if="module.functionName == 'map'"
+				  				:moduleIndex = "index"
+				  				@moduleClose = "handleModuleClose"
+				  				@moduleFullScreen = "handleFullScreen"
+					  		>
+					  		</module-map>
+			  				<module-video v-else-if="module.functionName == 'video'"
+			  					:moduleIndex = "index"
+				  				@moduleClose = "handleModuleClose"
+				  				@moduleFullScreen = "handleFullScreen"
+					  		>
+					  		</module-video>
+			  				<module-table v-else
+			  					:moduleIndex = "index"
+				  				@moduleClose = "handleModuleClose"
+				  				@moduleFullScreen = "handleFullScreen"
+				  			>
+				  			</module-table>
+					  	</div>
+			  		</el-col>
+			  	<!-- </transition-group> -->
 				</el-row>
-
-				<el-row :gutter="20" v-if="rowShow[1]">
-				  <el-col v-if="!config[3].hide" :span="col[3]"><div :class="['grid-content','grid-content-4','bg-purple',!rowShow[0] ? 'grid-content-0' : '']">4</div></el-col>
-				  <el-col v-if="!config[4].hide" :span="col[4]"><div :class="['grid-content','grid-content-5','bg-purple',!rowShow[0] ? 'grid-content-0' : '']">5</div></el-col>
-				  <el-col v-if="!config[5].hide" :span="col[5]"><div :class="['grid-content','grid-content-6','bg-purple',!rowShow[0] ? 'grid-content-0' : '']">6</div></el-col>
+				<!-- 第二行 -->
+				<el-row :gutter="20" v-show="row[1].show">
+					<!-- <transition-group name="el-zoom-in-top"> -->
+		  		<el-col :key="index" class="grid" v-for="(module,index) in config" v-if="index >= 3" v-show="!config[index].isHidden" :span="col[index]">
+		  			<div class="grid-content" :style="{ height: row[1].h}">
+				  		<module-table v-if="module.functionName == 'table'"
+			  				:moduleIndex = "index"
+			  				@moduleClose = "handleModuleClose"
+			  				@moduleFullScreen = "handleFullScreen"
+			  			>
+			  			</module-table>
+		  				<module-map v-else-if="module.functionName == 'map'"
+			  			:moduleIndex = "index"
+			  				@moduleClose = "handleModuleClose"
+			  				@moduleFullScreen = "handleFullScreen"
+				  		>
+				  		</module-map>
+		  				<module-video v-else-if="module.functionName == 'video'"
+		  					:moduleIndex = "index"
+			  				@moduleClose = "handleModuleClose"
+			  				@moduleFullScreen = "handleFullScreen"
+				  		>
+				  		</module-video>
+		  				<module-table v-else
+		  					:moduleIndex = "index"
+			  				@moduleClose = "handleModuleClose"
+			  				@moduleFullScreen = "handleFullScreen"
+			  			>
+			  			</module-table>
+				  	</div>
+		  		</el-col>
+		  		<!-- </transition-group> -->
 				</el-row>
 		  </el-main>
 		</el-container>
@@ -45,45 +88,157 @@
 	import * as apiMonitor from '@/api/api_monitor' ;
 
 	import ModuleTable from './module/table/index.vue';
-	import ModuleMap from './module/map/index.vue'
+	import ModuleMap from './module/map/index.vue';
+	import ModuleVideo from './module/video/index.vue'
 
 	export default {
 		components: {
 			'module-table': ModuleTable,
 			'module-map': ModuleMap,
+			'module-video': ModuleVideo,
 		},
-		created: function() {
+		mounted () {
+
+		},
+		created () {
 			//获取配置文件
 			apiMonitor.getConfig(1).then(response => {
-				console.log(response)
-        this.config = response.data.config
+				console.log(response.data)
+				this.size = response.data.size;
+        this.config = response.data.config;
+        this.originConfg = JSON.parse(JSON.stringify(this.config));
+
+        this.config.forEach( (o,i) => {
+        	this.hideStatusArr.push(o.isHidden)
+        })
+
+        console.log(this.hideStatusArr)
 	    })
 		},
 		data () {
 	    return {
-	    	config: null
+	    	//第一个格子的宽、高百分比
+	    	size: null,
+	    	config: null,
+	    	//界面刷新时，原始的配置
+	    	originConfg: null,
+	    	//模块全屏的index：默认情况下，6个都不是全屏
+	    	fullScreenIndex: -1,
+	    	hideStatusArr: []  //暂时隐藏的状态
 			}
 	  },
 	  computed: {
+	  	//所占的宽度 24等分
 	    col: function () {
 	      let col = [];
-	      col[0] = this.config[1].hide&&this.config[2].hide ? 24 : (this.config[1].hide ? 18 : 6)
-	      col[1] = this.config[0].hide&&this.config[2].hide ? 24 : (this.config[0].hide||this.config[2].hide ? 18 : 12)
-	      col[2] = this.config[0].hide&&this.config[1].hide ? 24 : 6;
 
-	      col[3] = this.config[4].hide&&this.config[5].hide ? 24 : (this.config[4].hide ? 18 : 6)
-	      col[4] = this.config[3].hide&&this.config[5].hide ? 24 : (this.config[3].hide||this.config[5].hide ? 18 : 12)
-	      col[5] = this.config[3].hide&&this.config[4].hide ? 24 : 6;
+	      const total_w = 24;
+	      //第一个格子的宽
+	      const w_1 = Math.round((this.size.width/100)*total_w);
+	      //第二个格子的宽
+	      const w_2 = total_w - w_1*2;
+
+	      //每一个格子的宽（根据相邻格子的隐藏与否，判断自己的宽度）
+	      col[0] = this.config[1].isHidden && this.config[2].isHidden ?
+	      				 total_w : (this.config[1].isHidden ? (w_1+w_2) : w_1)
+	      col[1] = this.config[0].isHidden && this.config[2].isHidden ?
+	      				 total_w : (this.config[0].isHidden || this.config[2].isHidden ? (w_1+w_2) : w_2)
+	      col[2] = this.config[0].isHidden && this.config[1].isHidden ?
+	               total_w : w_1;
+
+	      col[3] = this.config[4].isHidden && this.config[5].isHidden ?
+	      				 total_w : (this.config[4].isHidden ? (w_1+w_2) : w_1)
+	      col[4] = this.config[3].isHidden && this.config[5].isHidden ?
+	               total_w : (this.config[3].isHidden || this.config[5].isHidden ? (w_1+w_2) : w_2)
+	      col[5] = this.config[3].isHidden && this.config[4].isHidden ?
+	               total_w : w_1;
+
 	      console.log(col);
 	      return col
 	    },
-	    rowShow: function() {
-	    	let rowShow = [];
-	    	rowShow[0] = !(this.config[0].hide&&this.config[1].hide&&this.config[2].hide);
-	    	rowShow[1] = !(this.config[3].hide&&this.config[4].hide&&this.config[5].hide);
-	    	return rowShow;
+	    //行所占的高度
+	    row: function () {
+	    	const total_h = 80; //全屏 80vh
+	    	const h_1 = Math.round((this.size.height/100)*total_h);
+	      const h_2 = total_h - h_1;
+	    	let row = [
+		    	{
+		    		show: true,
+		    		h: h_1+"vh"
+		    	},
+		    	{
+		    		show: true,
+		    		h: h_2+"vh"
+		    	}
+		    ]
+	    	//第1行格子都没有
+	    	if(this.config[0].isHidden&&this.config[1].isHidden&&this.config[2].isHidden)
+	    	{
+	    		row[0].show = false;
+	    		row[1].h = total_h + "vh";
+	    	}
+	    	//第2行格子都没有
+	    	if(this.config[3].isHidden&&this.config[4].isHidden&&this.config[5].isHidden)
+	    	{
+	    		row[1].show = false;
+	    		row[0].h = total_h + "vh";
+	    	}
+	    	return row;
 	    }
-  }
+  	},
+  	methods: {
+  		//模块关闭
+  		handleModuleClose (e) {
+  			console.log(e)
+  			if(this.config[e]) {
+  				// this.$set(this.hideStatusArr, e, true);
+  				// this.hideStatusArr[e] = true;
+  				this.config[e].isHidden = true;
+  				this.originConfg[e].isHidden = true;
+  			}
+  		},
+  		//模块全屏,全屏和关闭不一样，关闭不可逆，全屏可逆
+  		handleFullScreen (e) {
+  			console.log(e)
+  			//该模块正处于全屏状态，则应该回到初始状态
+  			if(this.fullScreenIndex == e) {
+  				// let gridEles = document.querySelectorAll(".grid")
+  				// this.$refs.containerEle.$el.classList.add("fade-out");
+  				this.config.forEach( (o,i) => {
+	  				o.isHidden = this.originConfg[i].isHidden;
+	  				/*if(i != this.fullScreenIndex )
+  					{
+  						console.log(i)
+  						this.$nextTick(() => {
+  							gridEles[i].classList.add("out");
+  						})
+
+  					}*/
+	  			})
+	  			this.fullScreenIndex = -1;
+
+	  			/*setTimeout(()=> {
+	  				this.config.forEach( (o,i) => {
+	  					if(i != e )
+	  					{
+	  						gridEles[i].classList.remove("out");
+	  					}
+		  			})
+	  			},500)*/
+  			}
+  			//该模块现在全屏
+  			else {
+  				this.fullScreenIndex = e;
+  				this.config.forEach( (o,i) => {
+	  				if(i != e) {
+	  					o.isHidden = true;
+	  				}
+	  			})
+  			}
+
+
+  		}
+  	}
 	}
 </script>
 
@@ -126,6 +281,10 @@
 		}
 	}
 
+	/*  .out {
+		opacity: 0;
+		// transition: opacity .2s ease;
+	} */
 	.el-header {
 		padding: 0.06rem;
 		z-index: 100;
@@ -262,40 +421,18 @@
   }
   .el-col {
     border-radius: 4px;
+    // transition: width .4s ease;
   }
-  .bg-purple-dark {
-    background: #99a9bf;
-  }
-  .bg-purple {
-    background: #d3dce6;
-  }
-  .bg-purple-light {
-    background: #e5e9f2;
-  }
+
   .grid-content {
     border-radius: 4px;
     min-height: 36px;
+    // transition: height .4s ease;
   }
   .row-bg {
     padding: 10px 0;
     background-color: #f9fafc;
   }
 
-
-  .grid-content-1,
-  .grid-content-2,
-  .grid-content-3 {
-  	height: 48vh;
-  }
-
-  .grid-content-4,
-  .grid-content-5,
-  .grid-content-6 {
-  	height: 32vh;
-  }
-
-  .grid-content-0 {
-  	height: 80vh;
-  }
 
 </style>
