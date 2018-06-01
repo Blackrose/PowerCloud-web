@@ -1,0 +1,28 @@
+{
+  "status": 1,
+  "msg": "OK",
+  "data": {
+    "total": 3,
+    "items": [{
+      "id": 1,
+      "functionname": "模块一",
+      "functiondescription": "基础配置",
+      "functionurl": "/Basic",
+      "functionparam": "参数列表，json串"
+    }, {
+      "id": 2,
+      "functionname": "模块二",
+      "functiondescription": "网关信息",
+      "functionurl": "/Gateway",
+      "functionparam": "参数列表，json串"
+    }, {
+      "id": 3,
+      "functionname": "模块三",
+      "functiondescription": "企业信息",
+      "functionurl": "/Enterprise",
+      "functionparam": "参数列表，json串"
+    }]
+  },
+  "succeeded": true,
+  "ok": true
+}

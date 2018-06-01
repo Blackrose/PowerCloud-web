@@ -1638,5 +1638,45 @@ export default {
         ]
       }
     ]
+  },
+
+  //功能模块
+  functionName:{
+     column: [
+      {
+        key: "id",
+        label: "ID",
+        type: "number",
+        isEdit: false,
+        mainKey: true,   //主键！！！ 用于删除
+      },
+      {
+        key: "functionname",
+        label: "功能名称",
+        type: "string",
+        required: true,
+        errorMessage: "必填"
+      },
+      {
+        key: "functiondescription",
+        label: "功能描述",
+        type: "string",
+        mainKey: true,   
+      },
+      {
+        key: "functionurl",
+        label: "功能地址",
+        type: "string",
+        required: true,
+        errorMessage: "必填"
+      },
+      {
+        key: "functionparam",
+        label: "参数列表",
+        type: "string",
+        required: true,
+        errorMessage: "必填"
+      }
+      ]
   }
 }

@@ -263,7 +263,7 @@ export default {
   },
   created() {
 
-    if(Array.isArray(this.permissions)) {
+    /*if(Array.isArray(this.permissions)) {
       this.permissions.forEach( (permission,i) => {
         if(permission.functionname == API_MAP[this.moduleName]) {
           this.allowed.list = permission.selectfunction == 0
@@ -273,7 +273,14 @@ export default {
           return
         }
       })
-    }
+    }*/
+     
+      this.allowed.list=true
+      this.allowed.add=true
+      this.allowed.update=true
+      this.allowed.del=true
+
+
 
     //初始化时，要看看有没有关联的模块，如果有的话
     //需要将关联模块的数据和本模块的数据关联起来
