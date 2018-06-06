@@ -19,6 +19,7 @@ import Layout from '../views/layout/Layout'
 const SysGraph = r => require.ensure([], () => r(require('../views/sysGraph/index')))
 const CircuitAlarmRule = r => require.ensure([], () => r(require('../views/circuitAlarmRule/index')))
 
+const Monitor = r => require.ensure([], () => r(require('../views/Monitor/index')))
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -375,7 +376,7 @@ export const constantRouterMap = [
     hidden: true,
   },
 
-    {
+  {
     path: '/MonitorPlatformConfig',
     component: Layout,
     redirect: '/MonitorPlatformConfig/functionModule',
@@ -395,6 +396,14 @@ export const constantRouterMap = [
         meta: { title: '配置管理', icon: 'lock' },
       }
     ]
+  },
+
+  {
+    path: '/Monitor',
+    component: Monitor,
+    name: 'Monitor',
+    meta: { title: '实时数据监控平台', icon: 'network' },
+    hidden: true,
   },
 
 

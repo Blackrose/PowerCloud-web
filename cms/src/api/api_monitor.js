@@ -12,16 +12,22 @@ let API_URL = {};
 
 let API_MAP = {
   //获取页面配置
-  getConfig: "getConfig",
+  getConfig: "/monitor/getConfig",
+  // getConfig: "/electricitysubstation/getSubstaionData",
   mapPoint: "/electricitysubstation/getMapPoint",
-  stationData: "/electricitysubstation/getSubstaionData"
+  stationData: "/electricitysubstation/getSubstationData",
+  getStationList: "/electricitysubstation/getSubstationData",
+  getSelectOptions: "/monitor/getSelectOptions"
 }
 if(isLocal) {
+
   API_URL = {
     //获取页面配置
     getConfig: "/monitor/config.json",
     mapPoint: ["/monitor/mapPoint1.json", "/monitor/mapPoint2.json", "/monitor/mapPoint3.json"],
     stationData: "/monitor/stationData.json",
+    getStationList: "/monitor/stationData.json",
+    getSelectOptions: "/monitor/getSelectOptions.json"
 
   }
 }
@@ -32,7 +38,21 @@ else {
 
 export function getConfig(id) {
   return request({
-    url: isLocal ? API_URL["getConfig"] : "/monitor/"+API_URL["getConfig"],
+    url: isLocal ? API_URL["getConfig"] : API_URL["getConfig"],
+    method: 'post'
+  })
+}
+
+export function getSelectOptions(id) {
+  return request({
+    url: API_URL["getSelectOptions"],
+    method: 'get'
+  })
+}
+
+export function getStationList(id) {
+  return request({
+    url: isLocal ? API_URL["getStationList"] : API_URL["getStationList"],
     method: 'get',
     params: {electricianid:id}
   })
@@ -81,6 +101,13 @@ export function mqttSubscribe(client,topic) {
   if(client) {
     console.log(topic)
     client.subscribe(topic);//订阅主题
+  }
+}
+
+export function mqttUnsubscribe(client,topic) {
+  if(client) {
+    console.log("mqttUnsubscribe:",topic)
+    client.unsubscribe(topic);//订阅主题
   }
 }
 

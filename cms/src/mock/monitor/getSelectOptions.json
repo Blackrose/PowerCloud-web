@@ -1,0 +1,38 @@
+{
+	"err": 0,
+	"data": [{
+		"id": 1,
+		"company": "铁西区人民政府",
+		"children": [{
+				"id": 1,
+				"substation": "变电所1",
+				"children": {
+					"video": [{
+							"id": 1,
+							"url": "http://hls.open.ys7.com/openlive/f0aa5ad188aa49ab9e6d17eadbadfad5.m3u8"
+						},
+						{
+							"id": 2,
+							"url": "http://zxzxcz"
+						}
+					]
+				}
+			},
+			{
+				"id": 2,
+				"substation": "变电所2",
+				"children": {
+					"video": [{
+							"id": 3,
+							"url": "http://hls.open.ys7.com/openlive/f0aa5ad188aa49ab9e6d17eadbadfad5.m3u8"
+						},
+						{
+							"id": 4,
+							"url": "http://zxzxcz"
+						}
+					]
+				}
+			}
+		]
+	}]
+}

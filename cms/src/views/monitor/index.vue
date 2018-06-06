@@ -20,28 +20,53 @@
 			  			<div class="grid-content" :style="{ height: row[0].h}">
 			  				<module-table v-if="module.functionName == 'table'"
 				  				:moduleIndex = "index"
-				  				@moduleClose = "handleModuleClose"
-				  				@moduleFullScreen = "handleFullScreen"
+				  				:paramValue = "config[index].paramValue"
+				  				:boxHeight = "row[0].h"
+				  				:selectOption = "selectOption"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
 				  			>
 				  			</module-table>
 			  				<module-map v-else-if="module.functionName == 'map'"
 				  				:moduleIndex = "index"
-				  				@moduleClose = "handleModuleClose"
-				  				@moduleFullScreen = "handleFullScreen"
+				  				:boxHeight = "row[0].h"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
 					  		>
 					  		</module-map>
 			  				<module-video v-else-if="module.functionName == 'video'"
 			  					:moduleIndex = "index"
-				  				@moduleClose = "handleModuleClose"
-				  				@moduleFullScreen = "handleFullScreen"
+			  					:paramValue = "config[index].paramValue"
+			  					:boxHeight = "row[0].h"
+			  					:selectOption = "selectOption"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
 					  		>
 					  		</module-video>
-			  				<module-table v-else
+					  		<module-video v-else-if="module.functionName == 'chart'"
 			  					:moduleIndex = "index"
-				  				@moduleClose = "handleModuleClose"
-				  				@moduleFullScreen = "handleFullScreen"
+			  					:paramValue = "config[index].paramValue"
+			  					:boxHeight = "row[0].h"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
+					  		>
+					  		</module-video>
+					  		<module-sys-graph v-else-if="module.functionName == 'sysGraph'"
+			  					:moduleIndex = "index"
+			  					:paramValue = "config[index].paramValue"
+			  					:boxHeight = "row[0].h"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
+					  		>
+					  		</module-sys-graph>
+	<!-- 		  				<module-table v-else
+			  					:moduleIndex = "index"
+			  					:paramValue = "config[index].paramValue"
+			  					:boxHeight = "row[0].h"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
 				  			>
-				  			</module-table>
+				  			</module-table> -->
 					  	</div>
 			  		</el-col>
 			  	<!-- </transition-group> -->
@@ -53,28 +78,46 @@
 		  			<div class="grid-content" :style="{ height: row[1].h}">
 				  		<module-table v-if="module.functionName == 'table'"
 			  				:moduleIndex = "index"
-			  				@moduleClose = "handleModuleClose"
-			  				@moduleFullScreen = "handleFullScreen"
+			  				:boxHeight = "row[1].h"
+			  				:paramValue = "config[index].paramValue"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
 			  			>
 			  			</module-table>
 		  				<module-map v-else-if="module.functionName == 'map'"
-			  			:moduleIndex = "index"
-			  				@moduleClose = "handleModuleClose"
-			  				@moduleFullScreen = "handleFullScreen"
+			  				:moduleIndex = "index"
+			  				:boxHeight = "row[1].h"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
 				  		>
 				  		</module-map>
 		  				<module-video v-else-if="module.functionName == 'video'"
 		  					:moduleIndex = "index"
-			  				@moduleClose = "handleModuleClose"
-			  				@moduleFullScreen = "handleFullScreen"
+		  					:paramValue = "config[index].paramValue"
+		  					:boxHeight = "row[1].h"
+		  					:selectOption = "selectOption"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
 				  		>
 				  		</module-video>
-		  				<module-table v-else
-		  					:moduleIndex = "index"
-			  				@moduleClose = "handleModuleClose"
-			  				@moduleFullScreen = "handleFullScreen"
+				  		<module-sys-graph v-else-if="module.functionName == 'sysGraph'"
+			  					:moduleIndex = "index"
+			  					:paramValue = "config[index].paramValue"
+			  					:boxHeight = "row[1].h"
+			  					:selectOption = "selectOption"
+				  				@module-close = "handleModuleClose"
+				  				@module-full-screen = "handleFullScreen"
+					  		>
+					  		</module-sys-graph>
+		  				<!-- <module-table v-else
+			  				:moduleIndex = "index"
+			  				:paramValue = "config[index].paramValue"
+			  				:boxHeight = "row[1].h"
+			  				:selectOption = "selectOption"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
 			  			>
-			  			</module-table>
+			  			</module-table> -->
 				  	</div>
 		  		</el-col>
 		  		<!-- </transition-group> -->
@@ -86,34 +129,106 @@
 
 <script type="text/javascript">
 	import * as apiMonitor from '@/api/api_monitor' ;
+	// import {fetchTreeList} from '@/api/api' ;
 
 	import ModuleTable from './module/table/index.vue';
 	import ModuleMap from './module/map/index.vue';
 	import ModuleVideo from './module/video/index.vue'
+	import ModuleSysGraph from './module/sysGraph/index.vue'
 
 	export default {
 		components: {
 			'module-table': ModuleTable,
 			'module-map': ModuleMap,
 			'module-video': ModuleVideo,
+			'module-sys-graph': ModuleSysGraph,
 		},
 		mounted () {
 
 		},
 		created () {
 			//获取配置文件
-			apiMonitor.getConfig(1).then(response => {
-				console.log(response.data)
-				this.size = response.data.size;
-        this.config = response.data.config;
-        this.originConfg = JSON.parse(JSON.stringify(this.config));
+			/*Promise.all([apiMonitor.getConfig(1), apiMonitor.getSelectOptions()]).then( resArr => {
+				if(resArr[0]) {
+					this.size = resArr[0].data.size;
+	        this.config = resArr[0].data.config;
+	        this.originConfg = JSON.parse(JSON.stringify(this.config));
+				}
+				if(resArr[1]) {
+					this.selectOption = resArr[1].data;
+				}
+			})*/
 
-        this.config.forEach( (o,i) => {
-        	this.hideStatusArr.push(o.isHidden)
-        })
 
-        console.log(this.hideStatusArr)
-	    })
+			Promise.all([apiMonitor.getSelectOptions()]).then( resArr => {
+				if(resArr[0]) {
+					this.selectOption = resArr[0].data;
+				}
+
+				let res = {
+					"status": 1,
+					"msg": "OK",
+					"succeeded": true,
+					"ok": true,
+					"data": {
+					"size": {
+						"width": 25,
+						"height": 60
+					},
+					"config": [
+						{
+							"id":1,
+							"regionName": "模块1",
+							"functionName": "table",
+							"paramValue": "{\"electricitySubstationid\":2, \"companyid\":1}",
+							"isHidden": false
+						},
+						{
+							"id":2,
+							"regionName": "模块2",
+							"functionName": "map",
+							"paramValue": "{\"electricitySubstationid\":1}",
+							"isHidden": false
+						},
+						{
+							"id":3,
+							"regionName": "模块3",
+							"functionName": "transformer",
+							"paramValue": "{\"electricitySubstationid\":1, \"transformerid\": 2}",
+							"isHidden": false
+						},
+						{
+							"id":4,
+							"regionName": "模块4",
+							"functionName": "chart",
+							"paramValue": "{\"electricitySubstationid\":2}",
+							"isHidden": false
+						},
+						{
+							"id":5,
+							"regionName": "模块5",
+							"functionName": "sysGraph",
+							"paramValue": "{\"electricitySubstationid\":1, \"companyid\":1}",
+							"isHidden": false
+						},
+						{
+							"id":6,
+							"regionName": "模块6",
+							"functionName": "video",
+							"paramValue": "{\"companyid\":1, \"electricitySubstationid\":1, \"videoid\": 1}",
+							"isHidden": false
+						}
+					]
+					}
+				}
+				this.size = res.data.size;
+	      this.config = res.data.config;
+	      this.originConfg = JSON.parse(JSON.stringify(this.config));
+			})
+
+
+
+
 		},
 		data () {
 	    return {
@@ -124,7 +239,7 @@
 	    	originConfg: null,
 	    	//模块全屏的index：默认情况下，6个都不是全屏
 	    	fullScreenIndex: -1,
-	    	hideStatusArr: []  //暂时隐藏的状态
+	    	selectOption: null,
 			}
 	  },
 	  computed: {
@@ -153,12 +268,12 @@
 	      col[5] = this.config[3].isHidden && this.config[4].isHidden ?
 	               total_w : w_1;
 
-	      console.log(col);
+	      // console.log(col);
 	      return col
 	    },
 	    //行所占的高度
 	    row: function () {
-	    	const total_h = 80; //全屏 80vh
+	    	const total_h = 85; //全屏 80vh
 	    	const h_1 = Math.round((this.size.height/100)*total_h);
 	      const h_2 = total_h - h_1;
 	    	let row = [
@@ -191,40 +306,24 @@
   		handleModuleClose (e) {
   			console.log(e)
   			if(this.config[e]) {
-  				// this.$set(this.hideStatusArr, e, true);
-  				// this.hideStatusArr[e] = true;
-  				this.config[e].isHidden = true;
+  				let _o = this.config[e];
+  				_o.isHidden = true;
+  				this.$set(this.config, e, _o);
+  				// this.config[e].isHidden = true;
   				this.originConfg[e].isHidden = true;
   			}
+  			this.handleResize();
   		},
   		//模块全屏,全屏和关闭不一样，关闭不可逆，全屏可逆
   		handleFullScreen (e) {
   			console.log(e)
   			//该模块正处于全屏状态，则应该回到初始状态
   			if(this.fullScreenIndex == e) {
-  				// let gridEles = document.querySelectorAll(".grid")
-  				// this.$refs.containerEle.$el.classList.add("fade-out");
   				this.config.forEach( (o,i) => {
 	  				o.isHidden = this.originConfg[i].isHidden;
-	  				/*if(i != this.fullScreenIndex )
-  					{
-  						console.log(i)
-  						this.$nextTick(() => {
-  							gridEles[i].classList.add("out");
-  						})
-
-  					}*/
+	  				this.$set(this.config, i, o);
 	  			})
 	  			this.fullScreenIndex = -1;
-
-	  			/*setTimeout(()=> {
-	  				this.config.forEach( (o,i) => {
-	  					if(i != e )
-	  					{
-	  						gridEles[i].classList.remove("out");
-	  					}
-		  			})
-	  			},500)*/
   			}
   			//该模块现在全屏
   			else {
@@ -232,11 +331,15 @@
   				this.config.forEach( (o,i) => {
 	  				if(i != e) {
 	  					o.isHidden = true;
+	  					this.$set(this.config, i, o);
 	  				}
 	  			})
   			}
+  			this.handleResize();
+  		},
+  		handleResize() {
 
-
+  			// this.emit("module-resize")
   		}
   	}
 	}
@@ -402,7 +505,8 @@
     background-color: transparent;
     color: #fff;
     text-align: center;
-    padding: 3%;
+    padding: 0.25rem 0.1rem 0 0.1rem;
+    overflow: hidden;
   }
 
   body  .el-container {
@@ -414,7 +518,7 @@
 
 
   .el-row {
-    margin-bottom: 20px;
+    margin-bottom: 0.2rem;
     &:last-child {
       margin-bottom: 0;
     }
@@ -434,5 +538,12 @@
     background-color: #f9fafc;
   }
 
+  @media screen and (max-height: 1000px) {
+
+  	.el-main {
+  		padding: 0.2rem 0.1rem 0 0.1rem;
+  	}
+
+  }
 
 </style>

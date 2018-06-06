@@ -1,11 +1,14 @@
 <template>
-	<monitor-box ref="boxEle"
+	<monitor-box
 		:title = "title"
 		:titleIcon = "titleIcon"
-		@boxClose = "handleClose"
-		@boxFullScreen = "handleFullScreen"
+		:paramValue = "paramValue"
+		:selectOption="selectOption"
+		@box-close = "handleClose"
+		@box-full-screen = "handleFullScreen"
+		@box-select-bar-change = "handleSelectBarChange"
 	>
-		<ul v-if="data" class="data-list" ref="dataListEle">
+		<ul v-if="data" class="data-list" ref="dataListEle" :style="{height: listHeight}">
 			<li v-for="(o, index) in data">
         <span class="name" :style="{ minWidth: nameMinWidth}">{{o.name}}</span>
         <div class="value-box">
@@ -20,20 +23,14 @@
 	        	<span>{{o.Ic | filterNumber}}</span>
 	        </p>
         </div>
-        <!-- <span class="duty">${o.duty}</span> -->
-        <!-- <span class="status">在岗状态：<i class="fa ${o.status == 0 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i></span> -->
 			</li>
 		</ul>
-		<el-row>
-			<el-col :span="24">{{stationName}}</p></el-col>
-		</el-row>
-		<!-- <div class="station-name"><p></div> -->
 	</monitor-box>
 </template>
 
 <script type="text/javascript">
 	import MonitorBox from '@/views/monitor/component/box.vue'
-	import {getStationData, initMqttConnection, mqttSubscribe} from '@/api/api_monitor' ;
+	import {getStationData, initMqttConnection, mqttSubscribe, mqttUnsubscribe, mqttDisconnect} from '@/api/api_monitor' ;
 
 	export default {
 		components: {
@@ -45,58 +42,46 @@
 	      default: function () {
 	        return 0
 	      }
-	    }
+	    },
+	    paramValue: {
+	    	type: String,
+	      default: function () {
+	        return ''
+	      }
+	    },
+	    boxHeight: {
+	    	type: String,
+	      default: function () {
+	        return ""
+	      }
+	    },
+	    selectOption: {
+	    	type: Array,
+	      default: function () {
+	        return []
+	      }
+	    },
 	  },
 	  data () {
     	return {
+    		stationId: 0,
     		title: "变电所数据监控",
     		titleIcon: "el-icon-tickets",
-    		stationName: "S-变电所",
     		data: [],
     		stationStatusClient: null,
-    		MQTT_TOPIC: "/systemStatus/1",
+    		MQTT_TOPIC: "/systemStatus",
     	}
   	},
-  	mounted () {
-
-  		let height = this.$refs.boxEle.$el.clientHeight;
-  		console.log(height);
-  		this.$refs.dataListEle.style.height = `calc(${height}px - 0.4rem - 0.25rem)`;
-	    // this.$refs.dataListEle.style.height = height*0.8 + "px";
-
-	  /*  // 首先在Virtual DOM渲染数据时，设置下背景图的高度．
-	    this.clientHeight.height = `${document.documentElement.clientHeight}px`;
-	    // 然后监听window的resize事件．在浏览器窗口变化时再设置下背景图高度．
-	    let self = this;
-	    window.onresize = function temp() {
-	    	this.$refs.dataListEle.style.height = height*0.8 + "px";
-	        // that.clientHeight = `${document.documentElement.clientHeight}px`;
-	    };*/
-
-  	},
-  	created () {
-  		let self = this;
-  		getStationData(1).then(response => {
-  			if(response.data){
-
-  				try {
-  					let resData = JSON.parse(response.data);
-  					console.log(resData)
-  					self.generateData(resData);
-  				}
-  				catch(e) {
-  					console.error("Error: in getStationData", e)
-  				}
-
-  			}
-  		})
-
-  		initMqttConnection(function(client) {
-        self.stationStatusClient = client;
-        mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC);
-      }, self.handleMqttStatus);
-  	},
   	computed: {
+  		listHeight: function() {
+  			if(this.boxHeight){
+  				return `calc(${this.boxHeight} - 0.2rem - 40px)`;  //50px=select bar height
+  			}
+  			else {
+  				return "auto";
+  			}
+
+  		},
   		//每一个柜名称的span的最小宽度，用于自适应小屏幕时折行
   		nameMinWidth () {
   			let w_arr = [];
@@ -107,12 +92,58 @@
   			return max_length * 12 + "px";
   		}
   	},
+  	created () {
+  		//变电站的的ID,从config里的paramValue参数中解析获取
+			let param = JSON.parse(this.paramValue);
+			//这里给stationId赋值，就自动触发了watch函数中的init函数，所以不用单独init
+			this.stationId =  param.electricitySubstationid;
+  	},
+  	watch: {
+  		//监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
+  		stationId: function(newValue, oldValue) {
+  			if(this.stationStatusClient) {
+  				mqttUnsubscribe(this.stationStatusClient, this.MQTT_TOPIC+"/"+oldValue)
+  			}
+  			this.init();
+  		}
+  	},
   	filters: {
   		filterNumber(n) {
   			return (+n == n) ? n : "-"
   		}
   	},
   	methods: {
+  		handleSelectBarChange (value) {
+  			this.stationId = value[1];
+  		},
+  		init() {
+  			let self = this;
+  			getStationData(self.stationId).then(response => {
+	  			if(response.data){
+	  				try {
+	  					let resData = JSON.parse(response.data);
+	  					self.generateData(resData);
+	  				}
+	  				catch(e) {
+	  					console.error("Error: in getStationData", e)
+	  				}
+
+	  			}
+	  		})
+
+	  		//注册MQTT事件
+	  		if(!self.stationStatusClient) {
+	  			initMqttConnection(function(client) {
+		        self.stationStatusClient = client;
+		        mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
+		      }, self.handleMqttStatus);
+	  		}
+	  		else {
+	  			mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
+	  		}
+
+
+  		},
   		generateData (resData) {
   			this.data = [];
 	  		resData.forEach( (d, i) => {
@@ -144,22 +175,21 @@
         }
       },
       handleClose () {
-      	this.$emit("moduleClose",this.moduleIndex);
+      	this.$emit("module-close",this.moduleIndex);
       },
       handleFullScreen () {
-      	this.$emit("moduleFullScreen",this.moduleIndex);
-      },
+      	this.$emit("module-full-screen",this.moduleIndex);
+      }
   	}
 
 	}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-
 	.data-list {
 		overflow-y: scroll;
 		// max-height: calc(100vh - 320px);
-		margin: 0;
+		margin: 0.1rem 0 0 0;
 		padding: 0 0.1rem;
 			li {
 				display: flex;
