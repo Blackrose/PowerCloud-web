@@ -5,7 +5,7 @@
     @box-close = "handleClose"
     @box-full-screen = "handleFullScreen"
 	>
-		<div :id="getMapId()" class="allmap" :style="{height:boxHeight}"></div>
+		<div :id="getMapId()" class="allmap" :style="{height:mapHeight}"></div>
 	</monitor-box>
 </template>
 
@@ -39,7 +39,7 @@
 	  data () {
     	return {
     		title: "位置显示",
-    		titleIcon: "el-icon-location",
+    		titleIcon: "position",
     		map: null,
         mapMgrArr: [],
         totalPoint: [],
@@ -47,6 +47,11 @@
         MQTT_TOPIC: "/stationStatus",
     	}
   	},
+    computed: {
+      mapHeight () {
+        return this.boxHeight ? `calc(${this.boxHeight} - 2px)` : "auto";
+      }
+    },
   	mounted () {
   		// 百度地图API功能
 	    // 地图不可点
@@ -69,7 +74,7 @@
       let self = this;
 	    this.renderPoint().then(function() {
 	      self.bindEvent();
-
+        //订阅MQTT主题
 	      apiMonitor.initMqttConnection(function(client) {
 	        self.stationStatusClient = client;
 	        apiMonitor.mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC);
@@ -145,8 +150,9 @@
         });
   		},
       bindEvent () {
+        let mapRootEle = document.querySelector("#"+this.getMapId());
         // tagEvent;
-        let pointEles = document.querySelectorAll(".p-staff, .p-company, .p-station");
+        let pointEles = mapRootEle.querySelectorAll(".p-staff, .p-company, .p-station");
         pointEles.forEach( (ele, i) => {
           ele.addEventListener("mouseenter", handleMouseEnter);
           ele.addEventListener("mouseleave", handleMouseLeave);
@@ -173,12 +179,13 @@
       handleMqttStatus (msg) {
         console.log("==== handle Mqtt MAP station status ====");
         try {
-          console.log(msg.payloadString);
-          document.querySelectorAll(".p-station").forEach( (ele, i) => {
+          let mapRootEle = document.querySelector("#"+this.getMapId());
+          // console.log(msg.payloadString);
+          mapRootEle.querySelectorAll(".p-station").forEach( (ele, i) => {
             ele.setAttribute("class", "p p-station s-0-0");
           })
-          var data = JSON.parse(msg.payloadString)
-          /*msg = [
+          let data = JSON.parse(msg.payloadString)
+          /*let data = [
             {
                 companyId: 1, //企业Id
                 id: 1,        // 变电站id
@@ -187,42 +194,41 @@
             },
             {
                 companyId: 2, //企业Id
-                id: 3,
+                id: 5,
                 statusA: 1,
                 statusB: 2
             }
           ];*/
           let statusAText = ["正常", "处理中", "报警"];
           let statusBText = ["载荷正常", "过载", "重载"];
+          //告警提示的HTML
           let html = [];
+
           data.forEach(function(o,i) {
             o.statusA = o.statusA || 0;
             o.statusB = o.statusB || 0;
-            let stationEles = document.querySelectorAll(".p-station[data-id]");
-            // var stationJQ = $(".p-station[data-id="+o.id+"]");
-            // console.log(stationEle.length)
-            if(stationEles.length) {
-              stationEles.forEach( (ele, i) => {
-                if(ele.getAttribute("data-id") == o.id) {
-                  ele.classList.remove('s-0-0');
-                  ele.classList.add(['s', o.statusA, o.statusB].join("-"));
-                }
-              })
-
-              // let name = ((stationEle.querySelector(".p-tag").innerHTML).split("："))[1]
-              // html.push("<p><i class='fa fa-exclamation-circle'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
-            }
+            let stationEles = mapRootEle.querySelectorAll(".p-station[data-id]");
+            stationEles.forEach( (ele, i) => {
+              if(ele.getAttribute("data-id") == o.id) {
+                ele.classList.remove('s-0-0');
+                ele.classList.add(['s', o.statusA, o.statusB].join("-"));
+                //告警提示
+                let name = ((ele.querySelector(".p-tag").innerHTML).split("："))[1]
+                html.push("<p><i class='fa fa-exclamation-circle'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
+              }
+            })
           });
-          //更新左上角TIP的内容
-          //TODO!!告警提示 跑马灯
-          /*var tipJQ = $("#status-tip .content");
-          if(html.length){
-            tipJQ.html(html.join(""));
-          }
-          else {
-            tipJQ.html('<p style="text-align: center;">目前没有告警信息</p>');
-          }
-          $("#status-tip").show();*/
+          //更新右上角告警TIP的内容
+          this.$emit("station-alert",html);
+          /*this.$notify({
+            title: '告警',
+            dangerouslyUseHTMLString: true,
+            message: html.join(""),
+            type: 'warning',
+            position: 'top-left',
+            offset: 50,
+            duration: 0
+          });*/
 
         }catch(e) {console.error(e)}
       },
@@ -385,9 +391,11 @@
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   .box-card {
-    overflow-y:hidden;
+    // overflow-y:hidden;
   }
 	.allmap {
+    border-radius: 5px;
+    overflow: hidden;
 		width: 100%;
 		height: auto; //todo
 		background: #fff;

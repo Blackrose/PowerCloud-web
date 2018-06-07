@@ -8,7 +8,7 @@
 		@box-full-screen = "handleFullScreen"
 		@box-select-bar-change = "handleSelectBarChange"
 	>
-		<ul v-if="data" class="data-list" ref="dataListEle" :style="{height: listHeight}">
+		<ul v-if="data.length" class="data-list" ref="dataListEle" >
 			<li v-for="(o, index) in data">
         <span class="name" :style="{ minWidth: nameMinWidth}">{{o.name}}</span>
         <div class="value-box">
@@ -25,6 +25,11 @@
         </div>
 			</li>
 		</ul>
+		<!-- loading -->
+		<div v-else class="loading">
+			<svg-icon class="loading-icon" icon-class="loading"></svg-icon>
+			<p>loading...</p>
+		</div>
 	</monitor-box>
 </template>
 
@@ -66,22 +71,13 @@
     	return {
     		stationId: 0,
     		title: "变电所数据监控",
-    		titleIcon: "el-icon-tickets",
+    		titleIcon: "list",
     		data: [],
     		stationStatusClient: null,
     		MQTT_TOPIC: "/systemStatus",
     	}
   	},
   	computed: {
-  		listHeight: function() {
-  			if(this.boxHeight){
-  				return `calc(${this.boxHeight} - 0.2rem - 40px)`;  //50px=select bar height
-  			}
-  			else {
-  				return "auto";
-  			}
-
-  		},
   		//每一个柜名称的span的最小宽度，用于自适应小屏幕时折行
   		nameMinWidth () {
   			let w_arr = [];
@@ -96,7 +92,7 @@
   		//变电站的的ID,从config里的paramValue参数中解析获取
 			let param = JSON.parse(this.paramValue);
 			//这里给stationId赋值，就自动触发了watch函数中的init函数，所以不用单独init
-			this.stationId =  param.electricitySubstationid;
+			this.stationId =  param.electricitysubstationid;
   	},
   	watch: {
   		//监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
@@ -118,11 +114,24 @@
   		},
   		init() {
   			let self = this;
+  			self.data = [];
   			getStationData(self.stationId).then(response => {
 	  			if(response.data){
 	  				try {
 	  					let resData = JSON.parse(response.data);
-	  					self.generateData(resData);
+	  					self.data = self.generateData(resData);
+
+	  					//注册MQTT事件
+				  		if(!self.stationStatusClient) {
+				  			initMqttConnection(function(client) {
+					        self.stationStatusClient = client;
+					        mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
+					      }, self.handleMqttStatus);
+				  		}
+				  		else {
+				  			mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
+				  		}
+
 	  				}
 	  				catch(e) {
 	  					console.error("Error: in getStationData", e)
@@ -131,40 +140,29 @@
 	  			}
 	  		})
 
-	  		//注册MQTT事件
-	  		if(!self.stationStatusClient) {
-	  			initMqttConnection(function(client) {
-		        self.stationStatusClient = client;
-		        mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
-		      }, self.handleMqttStatus);
-	  		}
-	  		else {
-	  			mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
-	  		}
 
 
   		},
   		generateData (resData) {
-  			this.data = [];
+  			let data = [];
 	  		resData.forEach( (d, i) => {
 	  			if(d.cabinet) {
-	  				this.data.push(d.cabinet)
+	  				data.push(d.cabinet)
 	  			}
 	  			if(d.distributing && Array.isArray(d.distributing)) {
 	  				d.distributing.forEach( (_d, i) => {
-	  					this.data = this.data.concat(_d)
+	  					data = data.concat(_d);
 	  				})
-
 	  			}
 				})
-				// console.log(this.data)
+				return data;
 	  	},
 	  	handleMqttStatus (msg) {
-        console.log("==== handle Mqtt station data ====");
+        console.log("==== handle Mqtt TABLE station data ====");
         try {
           // console.log(msg.payloadString);
           let data = JSON.parse(msg.payloadString);
-          this.generateData(data);
+          this.data = this.generateData(data);
           //高亮动画
           this.$refs.dataListEle.classList.add("highlight");
 					setTimeout( () => {
@@ -186,10 +184,28 @@
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+	.loading {
+		height: 100%;
+		text-align: center;
+		padding-top: 40%;
+		color: #00bcd4;
+		.loading-icon {
+			animation: loadingAnimation 1s linear infinite;
+			font-size: 30px;
+		}
+		@keyframes loadingAnimation {
+			0% {
+				transform: rotate(0);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	}
 	.data-list {
-		overflow-y: scroll;
-		// max-height: calc(100vh - 320px);
-		margin: 0.1rem 0 0 0;
+		height: 100%;
+		overflow-y: overlay;
+		margin: 0;
 		padding: 0 0.1rem;
 			li {
 				display: flex;

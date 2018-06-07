@@ -13,6 +13,7 @@ let API_URL = {};
 let API_MAP = {
   //获取页面配置
   getConfig: "/monitor/getConfig",
+  setConfig: "/monitor/setConfig",
   // getConfig: "/electricitysubstation/getSubstaionData",
   mapPoint: "/electricitysubstation/getMapPoint",
   stationData: "/electricitysubstation/getSubstationData",
@@ -24,6 +25,7 @@ if(isLocal) {
   API_URL = {
     //获取页面配置
     getConfig: "/monitor/config.json",
+    setConfig: "/success.json",
     mapPoint: ["/monitor/mapPoint1.json", "/monitor/mapPoint2.json", "/monitor/mapPoint3.json"],
     stationData: "/monitor/stationData.json",
     getStationList: "/monitor/stationData.json",
@@ -40,6 +42,14 @@ export function getConfig(id) {
   return request({
     url: isLocal ? API_URL["getConfig"] : API_URL["getConfig"],
     method: 'post'
+  })
+}
+
+export function setConfig(data) {
+  return request({
+    url: API_URL["setConfig"],
+    method: 'post',
+    data: data
   })
 }
 
@@ -79,7 +89,6 @@ export function getStationData(id) {
 /*MQTT相关*/
 
 export function initMqttConnection(callback, onMessageArrived) {
-console.log(Paho)
   var client = new Paho.MQTT.Client(MQTT_HOST, Number(MQTT_PORT), "webClient_"+Date.now());//建立客户端实例
   client.connect({onSuccess:onConnect});//连接服务器并注册连接成功处理事件
   function onConnect() {
@@ -106,7 +115,7 @@ export function mqttSubscribe(client,topic) {
 
 export function mqttUnsubscribe(client,topic) {
   if(client) {
-    console.log("mqttUnsubscribe:",topic)
+    console.log("mqtt Unsubscribe:",topic)
     client.unsubscribe(topic);//订阅主题
   }
 }

@@ -7,15 +7,14 @@
 			<svg-icon icon-class="full_screen"></svg-icon>
 		</a>
 	  <div class="box-header">
-	  	<div class="title-wrapper"><p class="title"><i :class="titleIcon"></i>{{title}}</p></div>
+	  	<div class="title-wrapper"><p class="title"><svg-icon class="title-icon" :icon-class="titleIcon"></svg-icon>{{title}}</p></div>
 	  </div>
 	  <!-- 上面的级联选择框 -->
   	<el-row class="select-bar" v-if="paramValue">
   		<el-col>
-			<!-- <el-col :span="type == 'sysGraph' ? 18 : 6"> -->
 				<el-cascader class="my-select"
 			    size="mini"
-			    :show-all-levels="false"
+			    :show-all-levels="true"
 			    :options="options"
 			    v-model="selectedOptions"
 			    @change="selectBarChange">
@@ -75,109 +74,60 @@
       }
     },
 		created () {
-			// console.log(this.paramValue)
 			//这个参数，证明有级联选项
 			if(this.paramValue) {
 				this.options = this.generateOptions(this.type);
 	    	//变电站的的ID,从config里的paramValue参数中解析获取
 				let param = JSON.parse(this.paramValue);
-				this.selectedOptions =  [param.companyid, param.electricitySubstationid];
+				this.selectedOptions =  [param.companyid, param.electricitysubstationid];
 				if(this.type == "video") {
 					this.selectedOptions.push(+param.videoid)
-					// this.updateDynamicOptions(this.selectedOptions)
 				}
 			}
-
 		},
 		methods: {
 			//生成二级级联选项
 			generateOptions (type) {
     		let options = [];
+    		//一级目录
     		this.selectOption.forEach( (o, i) => {
     			let company = {};
     			company.value = o.id;
     			company.label = o.company;
     			company.children = [];
-    			if(o.children) {
+    			if(o.children && (o.children).length) {
+    				//二级目录
     				o.children.forEach( (_o, _i) => {
-      				let station = {};
+    					let station = {};
       				station.value = _o.id;
       				station.label = _o.substation;
       				company.children.push(station);
-      				//三级目录！
       				if(type == "video") {
       					station.children = [];
-      					if(_o.children.video) {
-      						console.log("***********")
+      					//如果该变电站下有视频
+      					if(_o.children.video && (_o.children.video).length) {
+      						//三级目录
       						_o.children.video.forEach( (__o, __i) => {
       							let video = {};
 			      				video.value = __o.id;
-			      				video.label = __o.id;
+			      				video.label = "编号"+__o.num;
 			      				station.children.push(video);
       						})
       					}
       				}
-      			})
+    				})
+    				options.push(company);
     			}
-    			options.push(company)
     		})
     		return options;
 			},
-			/*//只有需要动态加载的 级联选择器，才会响应
-			handleItemChange (val) {
-				if(val.length < 2) return
-				// console.log('active item:', val);
-				// console.log(this.options)
-				this.updateDynamicOptions(val);
-
-			},
-			updateDynamicOptions (val) {
-				let index1,index2;
-				this.options.forEach( (o, i) => {
-					if(o.value == val[0]) {
-						index1 = i;
-						o.children.forEach( (_o, _i) => {
-							if(_o.value == val[1]) {
-								index2 = _i
-								return;
-							}
-						})
-					}
-				})
-				// console.log(this.options)
-				// console.log(index1,index2)
-				if (!this.options[index1].children[index2].children.length) {
-
-					let param = {
-						page: 1,
-						limit: 100000,
-						search: {"electricitysubstationid":val[1]}
-					}
-					fetchList(this.type == "video" ? "electricitySubstation_video" : "electricitySubstation_video", param).then( res => {
-						let items = res.data.items;
-						if(items && items.length) {
-							this.options[index1].children[index2].children = [];
-							items.forEach( (item, i) => {
-								this.options[index1].children[index2].children.push({
-									value: item.id,
-									label: item.id
-								})
-							})
-						}
-
-					})
-
-        }
-			},*/
 			selectBarChange (v) {
 				this.$emit('box-select-bar-change', v)
 			},
 			close () {
-				console.log("close");
 				this.$emit('box-close', '我是子元素传过来的')
 			},
 			fullScreen () {
-				console.log("fullScreen");
 				this.$emit('box-full-screen', '我是子元素传过来的')
 			},
 		}
@@ -216,88 +166,83 @@
     border: 1px solid #26c6da;
     border-radius: 5px;
     height: 100%;
-    padding: 0.1rem;
+    padding: 0.15rem 0.1rem 0.1rem 0.1rem;
     position: relative;
     margin-bottom: 0.1rem;
 
     .box-header {
-	  	/* border: none;
-	  	padding: 0;
-	  	position: absolute;
-	  	z-index: 100; */
 	  	border: none;
 	    padding: 0;
 	    position: absolute;
 	    z-index: 100;
 	    top: 0;
-	    transform: translateY(-100%);
 	    left: 0.1rem;
 	  }
-  }
-  .title-wrapper {
-  	text-align: left;
 
-  }
-  .title {
-  	display: inline-block;
-    text-align: left;
-    /* height: 0.2rem; */
-    /* line-height: 0.2rem; */
-    font-size: 0.08rem;
-    margin: 0;
-    margin-left: -0.1rem;
-    padding: 0.04rem 0.1rem;
-    background: #00bcd4;
-    border-radius: 5px 5px 0 0;
-
-	  i {
-	  	margin-right: 5px;
+	  .title-wrapper {
+	  	text-align: left;
 	  }
-	}
+	  .title {
+	  	display: inline-block;
+	    text-align: left;
+	    height: 0.15rem;
+	    line-height: 0.15rem;
+	    font-size: 0.08rem;
+	    margin: 0;
+	    margin-left: -0.1rem;
+	    padding: 0 0.1rem;
+	    background: #00bcd4;
+	    border-radius: 0 0 5px 0;
 
-	.x {
-		display: none;
-		// background: url(../assets/x.png);
-		background-size: contain;
-		position: absolute;
-	  right: 0.08rem;
-	  top: 0.1rem;
-	  width: 18px;
-	  height: 18px;
-	  padding: 0;
-	  margin: 0;
-	  border-radius: 0;
-	  transition: transform .5s ease;
-	  z-index: 200;
-	}
-	.full-screen {
-		display: none;
-		background-size: contain;
-		position: absolute;
-	  right: 0.3rem;
-	  top: 0.1rem;
-	  width: 18px;
-	  height: 18px;
-	  padding: 0;
-	  margin: 0;
-	  border-radius: 0;
-	  transition: transform .5s ease;
-	  z-index: 200;
-	}
-	.box-card:hover {
+		  .title-icon {
+		  	margin-right: 5px;
+		  }
+		}
+
+		.x,
+		.full-screen {
+			color: #fff59d;
+			display: none;
+			background-size: contain;
+			position: absolute;
+		  width: 18px;
+		  height: 18px;
+		  top: 10px;
+		  padding: 0;
+		  margin: 0;
+		  border-radius: 0;
+		  transition: transform .5s ease;
+		  z-index: 200;
+		}
+		.x {
+		  right: 15px;
+		}
+		.full-screen {
+			width: 15px;
+		  height: 15px;
+		  top: 12px;
+		  right: 48px;
+		}
+		.x:hover,
+		.full-screen:hover {
+			transform: rotate(360deg);
+		}
+
+		.box-content {
+			height: calc(100% - 45px);
+			overflow: hidden;
+		}
+
+		.select-bar {
+			margin: 10px 0 10px 0;
+		}
+
+  }
+
+  .box-card:hover {
 		.x, .full-screen {
 			display: block;
 		}
-	}
-
-	.box-content {
-		height: 90%;
-		// overflow-y: scroll;
-		// margin-top: 0.066667rem;
-	}
-
-	.select-bar {
-		margin: 0px 0 10px 0;
 	}
 
 </style>
