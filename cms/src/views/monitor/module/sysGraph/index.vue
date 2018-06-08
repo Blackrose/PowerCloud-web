@@ -1,24 +1,24 @@
 <template>
 	<monitor-box
+    type = "sysGraph"
     :title = "title"
     :titleIcon = "titleIcon"
     :paramValue = "paramValue"
-    :selectOption = "selectOption"
-    type = "sysGraph"
     @box-close = "handleClose"
     @box-full-screen = "handleFullScreen"
     @box-select-bar-change = "handleSelectBarChange"
   >
-    <el-row class="svg-wrapper">
-      <el-col :xs="14" :sm="14" :md="14" :lg="16" :xl="16"
+    <el-row :class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'svg-wrapper']" >
+      <el-col :xs="13" :sm="13" :md="13" :lg="15" :xl="15"
         :style="{height:svgHeight}">
         <div :id="'svg-wrapper-'+moduleIndex" class="svg" v-html="svg"></div>
       </el-col>
       <!-- 当前回路信息 -->
-      <el-col :xs="10" :sm="10" :md="10" :lg="8" :xl="8"
+      <el-col :xs="11" :sm="11" :md="11" :lg="9" :xl="9"
         v-if="showCircuitData"
         class="info-box"
-        :style="{height:infoBoxHeight}">
+        :style="{height:infoBoxHeight}"
+        ref="infoBoxEle">
         <p class="name">
           <svg-icon icon-class="circuit"></svg-icon>&nbsp;
           {{showCircuitData.name}}
@@ -44,6 +44,7 @@
 </template>
 
 <script type="text/javascript">
+  import { mapGetters } from 'vuex'
 
 	import MonitorBox from '@/views/monitor/component/box.vue'
   import {fetchList} from '@/api/api' ;
@@ -71,13 +72,7 @@
         default: function () {
           return ""
         }
-      },
-      selectOption: {
-        type: Array,
-        default: function () {
-          return []
-        }
-      },
+      }
 	  },
 	  data () {
     	return {
@@ -85,22 +80,16 @@
     		title: "变电所系统图",
     		titleIcon: "struct",
         svg: "",
-        stationStatusClient: null,
+        client: null, //mqtt客户端
         MQTT_TOPIC: "/systemStatus",
         currentStatus: null, //MQTT实时收到的当前回路信息
         currentCircuitIndex: 0, //当前显示的回路的信息
-        /*showCircuitData: {
-          name: "回路信息",
-          Uab: "-",
-          Ubc: "-",
-          Uac: "-",
-          Ia: "-",
-          Ib: "-",
-          Ic: "-"
-        }*/
     	}
   	},
   	computed: {
+      ...mapGetters([
+      'monitor'
+      ]),
   	  svgHeight () {
         return this.boxHeight ? `calc(${this.boxHeight} - 0.15rem - 38px)` : "auto";
   		},
@@ -150,7 +139,6 @@
       }
     },
   	created () {
-      console.log("~~~~~~~~")
       //变电站的的ID,从config里的paramValue参数中解析获取
       let param = JSON.parse(this.paramValue);
       //这里给stationId赋值，就自动触发了watch函数中的init函数，所以不用单独init
@@ -159,8 +147,8 @@
     watch: {
       //监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
       stationId: function(newValue, oldValue) {
-        if(this.stationStatusClient) {
-          mqttUnsubscribe(this.stationStatusClient, this.MQTT_TOPIC+"/"+oldValue)
+        if(this.client) {
+          mqttUnsubscribe(this.client, this.MQTT_TOPIC+"/"+oldValue)
         }
         this.init();
       }
@@ -170,28 +158,27 @@
         this.stationId = value[1];
       },
       init() {
-
         let self = this;
-        console.log(self.stationId)
         let param = {
           page: 1,
           limit: 1,
           search: {"id":self.stationId}
         }
+        /*获取SVG系统图*/
         fetchList("electricitySubstation", param).then(response => {
           if(response.data){
             try {
               self.svg = response.data.items[0].diagram;
               this.currentStatus = null;
               //注册MQTT事件
-              if(!self.stationStatusClient) {
+              if(!self.client) {
                 initMqttConnection(function(client) {
-                  self.stationStatusClient = client;
-                  mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
+                  self.client = client;
+                  mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.stationId);
                 }, self.handleMqttStatus);
               }
               else {
-                mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
+                mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.stationId);
               }
 
               //绑定点击事件
@@ -215,11 +202,28 @@
           var topic = msg.destinationName;
           // console.log(msg.payloadString);
           var data = JSON.parse(msg.payloadString);
+
+          //高亮动画
+          if(this.$refs.infoBoxEle) {
+            this.$refs.infoBoxEle.$el.classList.add("highlight");
+          }
+          setTimeout( () => {
+            if(this.$refs.infoBoxEle) {
+              this.$refs.infoBoxEle.$el.classList.remove("highlight");
+            }
+          }, 1200)
+
           this.currentStatus = data;
           this.setSysData(data, "电力系统图");
+
+
         } catch(e){/*console.error("Error: error in onMessageArrived", e)*/}
       },
       handleClose () {
+        /*注销MQTT订阅*/
+        if(this.client) {
+          mqttUnsubscribe(this.client, this.MQTT_TOPIC+"/"+this.stationId)
+        }
       	this.$emit("module-close",this.moduleIndex);
       },
       handleFullScreen () {
@@ -408,8 +412,51 @@
       color: #fff;
       background: transparent;
     }
+  }
 
+  .info-box.highlight {
+    p.value-u  > span,
+    p.value-i  > span {
+      animation: dataUpdateAnimation 1s ease;
+    }
+  }
+  @keyframes dataUpdateAnimation {
+    0% {
+      filter: brightness(1)
+    }
+    30% {
+      filter: brightness(1.3)
+    }
+    100% {
+      filter: brightness(1)
+    }
+  }
 
+  .is-full-screen {
+    .info-box {
+      .name {
+        font-size: 20px;
+      }
+      .value-box {
+        font-size: 16px;
+        & > p {
+          & > span {
+            padding: 0.07rem 0;
+            width: 0.35rem;
+            min-width: 40px;
+          }
+        }
+      }
+    }
+
+  }
+
+  @media screen and (max-width: 1366px) {
+    .info-box {
+      .name {
+        font-size: 12px;
+      }
+    }
   }
 
 

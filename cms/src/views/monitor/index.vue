@@ -4,9 +4,10 @@
 		  <el-header height="auto">
 		      <p class="logo"><i class="el-icon-menu"></i>电云系统监控平台</p>
 		      <p class="status-bar">
+		      	<!-- 时间 -->
 		        <i class="el-icon-time"></i>
 		        <span id="time">{{timestamp | filterTime}}&nbsp;&nbsp;&nbsp;</span>
-
+		        <!-- 版面设置 -->
 		        <el-popover
 						  placement="bottom"
 						  width="160"
@@ -28,95 +29,34 @@
 						  </div>
 						  <el-button id="btn-setting" type="primary" plain  slot="reference" icon="el-icon-setting" size="mini">版面设置</el-button>
 						</el-popover>
-
-						<el-button id="btn-reload"  icon="el-icon-refresh" size="mini" type="primary">刷新</el-button>
-
+						<!-- 刷新 -->
+						<el-button id="btn-reload"  icon="el-icon-refresh" size="mini" type="primary" @click="reload()">刷新</el-button>
+						<!-- 告警 -->
 						<el-badge :value="alertHtmlArr.length" id="btn-alert">
 						  <el-button icon="el-icon-bell" size="mini" @click="showAlert()">告警</el-button>
 						</el-badge>
-
-
+						<!-- 登录 -->
 						<span id="login-name">您好，{{name}}</span>
 		        <a id="btn-logout" class="btn" href="javascript:void(0)" @click="logout()"><svg-icon icon-class="quit"></svg-icon></a>
 		      </p>
 		  </el-header>
 		  <el-main v-if="config">
-		  	<!-- 第一行 -->
-		  	<el-row :gutter="15" v-show="row[0].show">
-		  		<!-- <transition-group name="el-zoom-in-top"> -->
-			  		<el-col :key="index" class="grid" v-for="(module,index) in config" v-if="index < 3" v-show="!config[index].isHidden" :span="col[index]" >
-			  			<div class="grid-content" :style="{ height: row[0].h}">
-			  				<module-table v-if="module.functionname == 'table'"
-				  				:moduleIndex = "index"
-				  				:paramValue = "config[index].paramvalue"
-				  				:boxHeight = "row[0].h"
-				  				:selectOption = "selectOption"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-				  			>
-				  			</module-table>
-			  				<module-map v-else-if="module.functionname == 'map'"
-				  				:moduleIndex = "index"
-				  				:boxHeight = "row[0].h"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-				  				@station-alert = "handleStationAlert"
-					  		>
-					  		</module-map>
-			  				<module-video v-else-if="module.functionname == 'video'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[0].h"
-			  					:selectOption = "selectOption"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  		</module-video>
-					  		<module-chart v-else-if="module.functionname == 'chart'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[0].h"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  		</module-chart>
-					  		<module-transformer v-else-if="module.functionname == 'transformer'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[0].h"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  	</module-transformer>
-					  		<module-sys-graph v-else-if="module.functionname == 'sysGraph'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[0].h"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  		</module-sys-graph>
-					  	</div>
-			  		</el-col>
-			  	<!-- </transition-group> -->
-				</el-row>
-				<!-- 第二行 -->
-				<el-row :gutter="15" v-show="row[1].show">
-					<!-- <transition-group name="el-zoom-in-top"> -->
-		  		<el-col :key="index" class="grid" v-for="(module,index) in config" v-if="index >= 3" v-show="!config[index].isHidden" :span="col[index]">
-		  			<div class="grid-content" :style="{ height: row[1].h}">
-				  		<module-table v-if="module.functionname == 'table'"
+		  	<!-- 共两行 -->
+		  	<el-row v-for="rowIndex in [0,1]" :gutter="15">
+		  		<el-col :key="index" class="grid" :span="col[index]"
+		  			v-for="(module,index) in config" v-if="[0,1,2].indexOf(index - 3*rowIndex) >= 0" >
+		  			<!-- isHidden决定加载不加载该模块 -->
+		  			<div v-if="!config[index].ishidden" class="grid-content" :style="{ height: row[rowIndex]}">
+		  				<module-table v-if="module.functionname == 'table'"
 			  				:moduleIndex = "index"
 			  				:paramValue = "config[index].paramvalue"
-			  				:boxHeight = "row[1].h"
-			  				:selectOption = "selectOption"
 			  				@module-close = "handleModuleClose"
 			  				@module-full-screen = "handleFullScreen"
 			  			>
 			  			</module-table>
 		  				<module-map v-else-if="module.functionname == 'map'"
 			  				:moduleIndex = "index"
-			  				:boxHeight = "row[1].h"
+			  				:boxHeight = "row[rowIndex]"
 			  				@module-close = "handleModuleClose"
 			  				@module-full-screen = "handleFullScreen"
 			  				@station-alert = "handleStationAlert"
@@ -125,40 +65,37 @@
 		  				<module-video v-else-if="module.functionname == 'video'"
 		  					:moduleIndex = "index"
 		  					:paramValue = "config[index].paramvalue"
-		  					:boxHeight = "row[1].h"
-		  					:selectOption = "selectOption"
+		  					:boxHeight = "row[rowIndex]"
 			  				@module-close = "handleModuleClose"
 			  				@module-full-screen = "handleFullScreen"
 				  		>
 				  		</module-video>
 				  		<module-chart v-else-if="module.functionname == 'chart'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[0].h"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  	</module-chart>
-					  	<module-transformer v-else-if="module.functionname == 'transformer'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[0].h"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  	</module-transformer>
+		  					:moduleIndex = "index"
+		  					:paramValue = "config[index].paramvalue"
+		  					:boxHeight = "row[rowIndex]"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
+				  		>
+				  		</module-chart>
+				  		<module-transformer v-else-if="module.functionname == 'transformer'"
+		  					:moduleIndex = "index"
+		  					:paramValue = "config[index].paramvalue"
+		  					:boxHeight = "row[rowIndex]"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
+				  		>
+				  	</module-transformer>
 				  		<module-sys-graph v-else-if="module.functionname == 'sysGraph'"
-			  					:moduleIndex = "index"
-			  					:paramValue = "config[index].paramvalue"
-			  					:boxHeight = "row[1].h"
-			  					:selectOption = "selectOption"
-				  				@module-close = "handleModuleClose"
-				  				@module-full-screen = "handleFullScreen"
-					  		>
-					  		</module-sys-graph>
+		  					:moduleIndex = "index"
+		  					:paramValue = "config[index].paramvalue"
+		  					:boxHeight = "row[rowIndex]"
+			  				@module-close = "handleModuleClose"
+			  				@module-full-screen = "handleFullScreen"
+				  		>
+				  		</module-sys-graph>
 				  	</div>
 		  		</el-col>
-		  		<!-- </transition-group> -->
 				</el-row>
 		  </el-main>
 		</el-container>
@@ -166,11 +103,11 @@
 </template>
 
 <script type="text/javascript">
+
 	import { Notification } from 'element-ui';
 	import { mapGetters } from 'vuex'
 
-	import * as apiMonitor from '@/api/api_monitor' ;
-	// import {fetchTreeList} from '@/api/api' ;
+	import {getConfig, setConfig} from '@/api/api_monitor' ;
 
 	import ModuleTable from './module/table/index.vue';
 	import ModuleMap from './module/map/index.vue';
@@ -189,95 +126,12 @@
 			'module-transformer': ModuleTransformer
 		},
 		created () {
-			//获取配置文件
-			/*Promise.all([apiMonitor.getConfig(1), apiMonitor.getSelectOptions()]).then( resArr => {
-				if(resArr[0]) {
-					this.size = res.data.size;
-					this.sizeSetting = JSON.parse(JSON.stringify(this.size));
-		      this.config = res.data.config;
-		      this.originConfg = JSON.parse(JSON.stringify(this.config));
-				}
-				if(resArr[1]) {
-					this.selectOption = resArr[1].data;
-				}
-			})*/
-
-
-			Promise.all([apiMonitor.getSelectOptions()]).then( resArr => {
-				if(resArr[0]) {
-					this.selectOption = resArr[0].data;
-				}
-
-				let res = {
-					"status": 1,
-					"msg": "OK",
-					"succeeded": true,
-					"ok": true,
-					"data": {
-					"size": {
-						"width": 25,
-						"height": 60
-					},
-					"config": [
-						{
-							"id":1,
-							"regionname": "模块1",
-							"functionname": "table",
-							"paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
-							"ishidden": false
-						},
-						{
-							"id":2,
-							"regionname": "模块2",
-							"functionname": "map",
-							"paramvalue": "{\"electricitysubstationid\":1}",
-							"ishidden": false
-						},
-						{
-							"id":3,
-							"regionname": "模块3",
-							"functionname": "transformer",
-							"paramvalue": "{\"electricitysubstationid\":1, \"transformerid\": 2}",
-							"ishidden": false
-						},
-						{
-							"id":4,
-							"regionname": "模块4",
-							"functionname": "sysGraph",
-							"paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
-							// "functionname": "chart",
-							// "paramvalue": "{\"electricitysubstationid\":2}",
-							"ishidden": false
-						},
-						{
-							"id":5,
-							"regionname": "模块5",
-							"functionname": "sysGraph",
-							"paramvalue": "{\"electricitysubstationid\":2, \"companyid\":1}",
-							"ishidden": false
-						},
-						{
-							"id":6,
-							"regionname": "模块6",
-							"functionname": "video",
-							"paramvalue": "{\"companyid\":1, \"electricitysubstationid\":1, \"videoid\": 1}",
-							"ishidden": false
-						}
-					]
-					}
-				}
-				this.size = res.data.size;
-				this.sizeSetting = JSON.parse(JSON.stringify(this.size));
-	      this.config = res.data.config;
-	      this.originConfg = JSON.parse(JSON.stringify(this.config));
-			})
-
+			this.init();
+			/*显示时间*/
 			let self = this
 			setInterval( () => {
 				self.timestamp = Date.now()
 			}, 1000)
-
-
 
 		},
 		data () {
@@ -326,137 +180,159 @@
 	    		width: 30,
 	    		height: 60
 	    	},
+	    	//每个模块所占的宽度。共6个
+	    	col: [],
+	    	//每行所占的高度
+	    	row: [],
 	    	config: null,
-	    	//界面刷新时，原始的配置
-	    	originConfg: null,
-	    	//模块全屏的index：默认情况下，6个都不是全屏
-	    	fullScreenIndex: -1,
-	    	selectOption: null,
 	    	//表单验证
 				validRules: {
 					width: [{ validator: checkSizeW, trigger: 'blur' }],
 					height: [{ validator: checkSizeH, trigger: 'blur' }],
 				},
+				//通知的HTML内容
 				alertHtmlArr: []
 			}
 	  },
+	  watch: {
+	  	size : function(newValue, oldValue) {
+	  		this.setCol(newValue, this.config)
+	  		this.setRow(newValue, this.config)
+	  	}
+	  },
 	  computed: {
 	  	...mapGetters([
-      'name'
-    	]),
-	  	//所占的宽度 24等分
-	    col: function () {
-	      let col = [];
-
-	      const total_w = 24;
-	      //第一个格子的宽
-	      const w_1 = Math.round((this.size.width/100)*total_w);
-	      //第二个格子的宽
-	      const w_2 = total_w - w_1*2;
-
-	      //每一个格子的宽（根据相邻格子的隐藏与否，判断自己的宽度）
-	      col[0] = this.config[1].isHidden && this.config[2].isHidden ?
-	      				 total_w : (this.config[1].isHidden ? (w_1+w_2) : w_1)
-	      col[1] = this.config[0].isHidden && this.config[2].isHidden ?
-	      				 total_w : (this.config[0].isHidden || this.config[2].isHidden ? (w_1+w_2) : w_2)
-	      col[2] = this.config[0].isHidden && this.config[1].isHidden ?
-	               total_w : w_1;
-
-	      col[3] = this.config[4].isHidden && this.config[5].isHidden ?
-	      				 total_w : (this.config[4].isHidden ? (w_1+w_2) : w_1)
-	      col[4] = this.config[3].isHidden && this.config[5].isHidden ?
-	               total_w : (this.config[3].isHidden || this.config[5].isHidden ? (w_1+w_2) : w_2)
-	      col[5] = this.config[3].isHidden && this.config[4].isHidden ?
-	               total_w : w_1;
-
-	      // console.log(col);
-	      return col
-	    },
-	    //行所占的高度
-	    row: function () {
-	    	const total_h = 92; //全屏 80vh
-	    	const h_1 = Math.round((this.size.height/100)*total_h);
-	      const h_2 = total_h - h_1;
-	    	let row = [
-		    	{
-		    		show: true,
-		    		h: h_1+"vh"
-		    	},
-		    	{
-		    		show: true,
-		    		h: h_2+"vh"
-		    	}
-		    ]
-	    	//第1行格子都没有
-	    	if(this.config[0].isHidden&&this.config[1].isHidden&&this.config[2].isHidden)
-	    	{
-	    		row[0].show = false;
-	    		row[1].h = total_h + "vh";
-	    	}
-	    	//第2行格子都没有
-	    	if(this.config[3].isHidden&&this.config[4].isHidden&&this.config[5].isHidden)
-	    	{
-	    		row[1].show = false;
-	    		row[0].h = total_h + "vh";
-	    	}
-	    	return row;
-	    }
+      'name',
+      'monitor'
+    	])
   	},
   	filters: {
   		filterTime (timestamp) {
   			let now = new Date(timestamp);
-  			let y = [now.getFullYear(),formatTime(now.getMonth()+1),formatTime(now.getDate())].join("-");
-  			let t = [now.getHours(),formatTime(now.getMinutes()),formatTime(now.getSeconds())].join(":");
+  			let y = [now.getFullYear(),format(now.getMonth()+1),format(now.getDate())].join("-");
+  			let t = [now.getHours(),format(now.getMinutes()),format(now.getSeconds())].join(":");
 
-  			function formatTime(v){
+  			function format(v){
 					return v < 10 ? "0"+v : v;
 				}
   			return y + "  " + t
   		}
   	},
   	methods: {
-  		//模块关闭
-  		handleModuleClose (e) {
-  			console.log(e)
-  			if(this.config[e]) {
-  				let _o = this.config[e];
-  				_o.isHidden = true;
-  				this.$set(this.config, e, _o);
-  				// this.config[e].isHidden = true;
-  				this.originConfg[e].isHidden = true;
-  			}
-  			this.handleResize();
-  		},
-  		//模块全屏,全屏和关闭不一样，关闭不可逆，全屏可逆
-  		handleFullScreen (e) {
-  			//该模块正处于全屏状态，则应该回到初始状态
-  			if(this.fullScreenIndex == e) {
-  				this.config.forEach( (o,i) => {
-	  				o.isHidden = this.originConfg[i].isHidden;
-	  				this.$set(this.config, i, o);
-	  			})
-	  			this.fullScreenIndex = -1;
-  			}
-  			//该模块现在全屏
-  			else {
-  				this.fullScreenIndex = e;
-  				this.config.forEach( (o,i) => {
-	  				if(i != e) {
-	  					o.isHidden = true;
-	  					this.$set(this.config, i, o);
-	  				}
-	  			})
-  			}
-  			this.handleResize();
-  		},
-  		handleResize() {
+  		/*初始化*/
+  		init () {
+  			//获取配置文件
+				/*Promise.all([getConfig(1), getSelectOptions()]).then( resArr => {
+					if(resArr[0]) {
+						this.size = res.data.size;
+						this.sizeSetting = JSON.parse(JSON.stringify(this.size));
+			      this.config = res.data.config;
+					}
+					if(resArr[1]) {
+						this.selectOption = resArr[1].data;
+					}
+				})*/
 
-  			// this.emit("module-resize")
+				Promise.all([this.$store.dispatch('setMonitorSelectOptions')]).then( resArr => {
+
+					let res = {
+						"status": 1,
+						"msg": "OK",
+						"succeeded": true,
+						"ok": true,
+						"data": {
+						"size": {
+							"width": 25,
+							"height": 47
+						},
+						"config": [
+							{
+								"id":1,
+								"regionname": "模块1",
+								"functionname": "table",
+								"paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
+								"ishidden": 0
+							},
+							{
+								"id":2,
+								"regionname": "模块2",
+								"functionname": "map",
+								"paramvalue": "",
+								"ishidden": 0
+							},
+							{
+								"id":3,
+								"regionname": "模块3",
+								"functionname": "transformer",
+								"paramvalue": "{\"electricitysubstationid\":1, \"transformerid\": 2}",
+								"ishidden": 0
+							},
+							{
+								"id":4,
+								"regionname": "模块4",
+								// "functionname": "map",
+								// "paramvalue": "",
+								// "functionname": "sysGraph",
+								// "paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
+								"functionname": "chart",
+								"paramvalue": "{\"electricitysubstationid\":2}",
+								"ishidden": 0
+							},
+							{
+								"id":5,
+								"regionname": "模块5",
+								"functionname": "sysGraph",
+								"paramvalue": "{\"electricitysubstationid\":2, \"companyid\":1}",
+								"ishidden": 0
+							},
+							{
+								"id":6,
+								"regionname": "模块6",
+								"functionname": "video",
+								"paramvalue": "{\"companyid\":1, \"electricitysubstationid\":1, \"videoid\": 1}",
+								"ishidden": 0
+							}
+						]
+						}
+					}
+					this.size = res.data.size;
+					this.sizeSetting = JSON.parse(JSON.stringify(this.size));
+		      this.config = res.data.config;
+				})
   		},
+  		/*模块关闭*/
+  		handleModuleClose (e) {
+  			if(this.config[e]) {
+  				this.config[e].ishidden = 1;
+  				this.setCol(this.size, this.config);
+  				this.setRow(this.size, this.config);
+  			}
+  		},
+  		/*模块全屏,全屏和关闭不一样，关闭不可逆，全屏可逆*/
+  		/*全屏不改变ishidden，只改变el-col的宽度 和 el-row的高度*/
+  		handleFullScreen (e) {
+  			/*该模块正处于全屏状态，则应该回到初始状态*/
+  			if(this.monitor.fullScreenIndex == e) {
+  				this.setCol(this.size, this.config);
+  				this.setRow(this.size, this.config);
+  				this.$store.dispatch('setMonitorFullScreenIndex', -1)
+  			}
+  			/*否则，该模块现在开始全屏*/
+  			else {
+  				this.$store.dispatch('setMonitorFullScreenIndex', e)
+  				this.col.forEach( (c,i) => {
+  					this.$set(this.col, i, 0);
+  				})
+  				this.$set(this.col, e, 24);
+  				this.$set(this.row, parseInt(e/3), "92vh");
+  			}
+  		},
+  		/*取消版面设置*/
   		cancelSetting() {
   			this.visibleSettingPop = false;
   			this.sizeSetting = JSON.parse(JSON.stringify(this.size));
   		},
+  		/*保存版面设置*/
   		saveSetting() {
   			this.$refs["sizeForm"].validate((valid) => {
           if (valid) {
@@ -464,7 +340,7 @@
           		type: "size",
           		data: this.sizeSetting
           	}
-          	apiMonitor.setConfig(param).then( res => {
+          	setConfig(param).then( res => {
           		if(res.ok) {
           			this.visibleSettingPop = false;
   							this.size = JSON.parse(JSON.stringify(this.sizeSetting));
@@ -475,8 +351,14 @@
 		              duration: 2000
 		            })
           		}
+          		else {
+          			this.$notify.error({
+		              title: '失败',
+		              message: res.data,
+		              duration: 2000
+		            })
+          		}
           	})
-
           }
           else {
             console.log('error submit!!');
@@ -484,18 +366,19 @@
           }
         });
   		},
+  		/*登出*/
   		logout() {
 	      this.$store.dispatch('LogOut').then(() => {
 	        location.reload() // 为了重新实例化vue-router对象 避免bug
 	      })
 	    },
-	    //显示右上角告警
+	    /*显示右上角告警*/
 	    handleStationAlert(htmlArr) {
 	    	this.alertHtmlArr = htmlArr;
 	    	this.showAlert();
 	    },
 	    showAlert() {
-	    	//关闭所有通知
+	    	/*关闭所有通知*/
 	    	Notification.closeAll();
 	    	if(!this.alertHtmlArr.length) return
 	    	this.$notify({
@@ -505,8 +388,72 @@
           type: 'warning',
           offset: 50,
         });
-	    }
+	    },
+	    /*刷新*/
+	    reload() {
+	    	location.reload()
+	    },
+	    setCol (size, config) {
+	    	let col = [];
+	      const total_w = 24;
+	      //第一个格子的宽
+	      const w_1 = Math.round((size.width/100)*total_w);
+	      //第二个格子的宽
+	      const w_2 = total_w - w_1*2;
 
+	      for(let i = 0 ; i < 6 ; i++) {
+	      	//如果ishidden,则宽度等于0
+	      	if(config[i].ishidden) {
+	      		col[i] = 0
+	      	}
+	      	//否则，根据相邻格子的隐藏情况，判断自己的大小
+	      	else {
+	      		let relative_i = i % 3;  //一共两行
+	      		let row_n = parseInt(i / 3); //行数
+	      		let hidden_n = config[row_n*3].ishidden + config[row_n*3+1].ishidden + config[row_n*3+2].ishidden
+ 	      		//隐藏两个
+ 	      		if(hidden_n == 2) {
+	      			col[i] = total_w;
+	      		}
+	      		//隐藏一个
+	      		else if(hidden_n == 1){
+	      			//1、如果是第1个隐藏，则第2个等于w_1 + w_2，第3个等于w_1
+	      			//3、如果是第3个隐藏，则第2个等于w_1 + w_2，第1个等于w_1
+	      			if(config[row_n*3].ishidden || config[row_n*3+2].ishidden) {
+	      				col[i] = relative_i == 1 ? w_1 + w_2 : w_1;
+	      			}
+	      			//2、如果第2个隐藏，则第1个等于w_1 + w_2，第3个等于w_1
+	      			else if(config[row_n*3+1].ishidden) {
+	      				col[i] = relative_i == 0 ? w_1 + w_2 : w_1;
+	      			}
+	      		}
+	      		//都不隐藏
+	      		else if(hidden_n == 0) {
+	      			col[i] = relative_i == 1 ? w_2 : w_1;
+	      		}
+	      	}
+	      }
+	      this.col = col;
+	    },
+	    setRow (size, config) {
+	    	const total_h = 92; //全屏 92vh
+	    	const h_1 = Math.round((size.height/100)*total_h);
+	      const h_2 = total_h - h_1;
+	      let row = [h_1+"vh", h_2+"vh"]
+	    	//第1行格子都没有
+	    	if(config[0].ishidden&&config[1].ishidden&&config[2].ishidden)
+	    	{
+	    		row[0] = 0;
+	    		row[1] = total_h + "vh";
+	    	}
+	    	//第2行格子都没有
+	    	if(config[3].ishidden&&config[4].ishidden&&config[5].ishidden)
+	    	{
+	    		row[1] = 0;
+	    		row[0]= total_h + "vh";
+	    	}
+	    	this.row = row;
+	    }
   	}
 	}
 </script>
@@ -515,6 +462,14 @@
 	.el-badge__content.is-fixed{
 		border: none;
 		top: 5px;
+	}
+	.el-notification__content p {
+		margin: 5px 0;
+	}
+
+	.el-notification__content p > i{
+		margin-right: 5px;
+		color: #E6A23C;
 	}
 </style>
 
@@ -541,18 +496,13 @@
 		font-family: '微软雅黑';
 		vertical-align: baseline;
 	}
-	/* body {
-		min-width: 700px;
-	  overflow-x:scroll;
-	} */
+
 	body  .el-container {
     margin-bottom: 40px;
     position: fixed;
 	  width: 100%;
 	  height: 100vh;
   }
-
-
 
 	#wrapper {
 		position: fixed;
@@ -618,6 +568,7 @@
 		#btn-setting:hover,
 		#btn-reload:hover {
 			color: #fff;
+			border-color: #fff;
 		}
 
 		#login-name {

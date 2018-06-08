@@ -1,10 +1,9 @@
 <template>
 	<monitor-box
+    type="chart"
 		:title = "title"
 		:titleIcon = "titleIcon"
-	  type="video"
 		:paramValue = "paramValue"
-		:selectOption="selectOption"
 		@box-close = "handleClose"
 		@box-full-screen = "handleFullScreen"
 		@box-select-bar-change = "handleSelectBarChange"
@@ -46,13 +45,7 @@
         default: function () {
           return ""
         }
-      },
-      selectOption: {
-	    	type: Array,
-	      default: function () {
-	        return []
-	      }
-	    },
+      }
 	  },
 	  data () {
     	return {

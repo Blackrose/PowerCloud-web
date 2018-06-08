@@ -17,8 +17,8 @@ export default {
   },
 	data () {
 		return {
-      moduleName: "functionModule",
-			column: tableConfig["functionName"].column
+      moduleName: "MonitorFunction",
+			column: tableConfig["MonitorFunction"].column
 		}
 	}
 }

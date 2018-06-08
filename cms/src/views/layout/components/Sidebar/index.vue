@@ -2,6 +2,12 @@
   <scroll-bar>
     <el-menu mode="vertical"  :default-active="$route.path" :collapse="isCollapse" background-color="#304156" text-color="#fff" active-text-color="#409EFF">
       <sidebar-item :routes="routes"></sidebar-item>
+      <router-link to="/Monitor" key="Monitor"  target="_blank">
+        <el-menu-item index="/Monitor">
+          <svg-icon icon-class="computer"></svg-icon>
+          <span>大屏监控平台</span>
+        </el-menu-item>
+      </router-link>
     </el-menu>
   </scroll-bar>
 </template>

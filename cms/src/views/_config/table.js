@@ -1094,6 +1094,20 @@ export default {
         errorMessage: "必填"
       },
       {
+        key: "pt",
+        label: "电压互感器",
+        type: "number",
+        required: true,
+        errorMessage: "必填且为数字"
+      },
+      {
+        key: "ct",
+        label: "电流互感器",
+        type: "number",
+        required: true,
+        errorMessage: "必填且为数字"
+      },
+      {
         key: "manufacturer",
         label: "生产企业",
         type: "string"
@@ -1641,7 +1655,7 @@ export default {
   },
 
   //功能模块
-  functionName:{
+  MonitorFunction:{
      column: [
       {
         key: "id",
@@ -1661,7 +1675,7 @@ export default {
         key: "functiondescription",
         label: "功能描述",
         type: "string",
-        mainKey: true,   
+        mainKey: true,
       },
       {
         key: "functionurl",

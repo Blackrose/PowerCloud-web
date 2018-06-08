@@ -3,12 +3,12 @@
 		:title = "title"
 		:titleIcon = "titleIcon"
 		:paramValue = "paramValue"
-		:selectOption="selectOption"
 		@box-close = "handleClose"
 		@box-full-screen = "handleFullScreen"
 		@box-select-bar-change = "handleSelectBarChange"
 	>
-		<ul v-if="data.length" class="data-list" ref="dataListEle" >
+		<ul v-if="data.length" ref="dataListEle"
+				:class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'data-list']" >
 			<li v-for="(o, index) in data">
         <span class="name" :style="{ minWidth: nameMinWidth}">{{o.name}}</span>
         <div class="value-box">
@@ -34,6 +34,8 @@
 </template>
 
 <script type="text/javascript">
+	import { mapGetters } from 'vuex'
+
 	import MonitorBox from '@/views/monitor/component/box.vue'
 	import {getStationData, initMqttConnection, mqttSubscribe, mqttUnsubscribe, mqttDisconnect} from '@/api/api_monitor' ;
 
@@ -54,18 +56,6 @@
 	        return ''
 	      }
 	    },
-	    boxHeight: {
-	    	type: String,
-	      default: function () {
-	        return ""
-	      }
-	    },
-	    selectOption: {
-	    	type: Array,
-	      default: function () {
-	        return []
-	      }
-	    },
 	  },
 	  data () {
     	return {
@@ -73,11 +63,14 @@
     		title: "变电所数据监控",
     		titleIcon: "list",
     		data: [],
-    		stationStatusClient: null,
+    		client: null,
     		MQTT_TOPIC: "/systemStatus",
     	}
   	},
   	computed: {
+  		...mapGetters([
+      'monitor'
+    	]),
   		//每一个柜名称的span的最小宽度，用于自适应小屏幕时折行
   		nameMinWidth () {
   			let w_arr = [];
@@ -97,8 +90,8 @@
   	watch: {
   		//监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
   		stationId: function(newValue, oldValue) {
-  			if(this.stationStatusClient) {
-  				mqttUnsubscribe(this.stationStatusClient, this.MQTT_TOPIC+"/"+oldValue)
+  			if(this.client) {
+  				mqttUnsubscribe(this.client, this.MQTT_TOPIC+"/"+oldValue)
   			}
   			this.init();
   		}
@@ -121,17 +114,6 @@
 	  					let resData = JSON.parse(response.data);
 	  					self.data = self.generateData(resData);
 
-	  					//注册MQTT事件
-				  		if(!self.stationStatusClient) {
-				  			initMqttConnection(function(client) {
-					        self.stationStatusClient = client;
-					        mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
-					      }, self.handleMqttStatus);
-				  		}
-				  		else {
-				  			mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC+"/"+self.stationId);
-				  		}
-
 	  				}
 	  				catch(e) {
 	  					console.error("Error: in getStationData", e)
@@ -139,6 +121,17 @@
 
 	  			}
 	  		})
+
+	  		//注册MQTT事件
+	  		if(!self.client) {
+	  			initMqttConnection(function(client) {
+		        self.client = client;
+		        mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.stationId);
+		      }, self.handleMqttStatus);
+	  		}
+	  		else {
+	  			mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.stationId);
+	  		}
 
 
 
@@ -164,15 +157,23 @@
           let data = JSON.parse(msg.payloadString);
           this.data = this.generateData(data);
           //高亮动画
-          this.$refs.dataListEle.classList.add("highlight");
+          if(this.$refs.dataListEle) {
+          	this.$refs.dataListEle.classList.add("highlight");
+          }
 					setTimeout( () => {
-						this.$refs.dataListEle.classList.remove("highlight");
+						if(this.$refs.dataListEle) {
+							this.$refs.dataListEle.classList.remove("highlight");
+						}
 					}, 1200)
         } catch(e){
         	console.error("Error: error in table handleMqttStatus", e);
         }
       },
       handleClose () {
+      	/*注销MQTT订阅*/
+      	if(this.client) {
+      		mqttUnsubscribe(this.client, this.MQTT_TOPIC+"/"+this.stationId)
+      	}
       	this.$emit("module-close",this.moduleIndex);
       },
       handleFullScreen () {
@@ -207,6 +208,7 @@
 		overflow-y: overlay;
 		margin: 0;
 		padding: 0 0.1rem;
+		font-size: 12px;
 			li {
 				display: flex;
 				justify-content: space-between;
@@ -217,7 +219,7 @@
 				.name {
 					display: inline-block;
 					margin-left: 0.066667rem;
-					font-size: 12px;
+					font-size: inherit;
 					text-align: left;
 					position: relative;
 				}
@@ -302,6 +304,21 @@
 		right: 0;
 		p {
 			text-align: center;
+		}
+	}
+
+	.is-full-screen {
+		font-size: 16px;
+
+		li {
+			.value-box {
+				& > p {
+					& > span {
+						padding: 0.05rem 0;
+						width: 0.35rem;
+					}
+				}
+			}
 		}
 	}
 

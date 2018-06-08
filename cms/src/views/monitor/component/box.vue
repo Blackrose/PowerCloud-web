@@ -1,11 +1,16 @@
 <template>
 	<div class="box-card">
-		<a href="javascript:void(0)" class="btn x" @click="close()">
+		<!-- 关闭按钮 -->
+		<a href="javascript:void(0)" class="btn x"
+			@click="close()">
 			<svg-icon icon-class="x"></svg-icon>
 		</a>
-		<a href="javascript:void(0)" class="btn full-screen" @click="fullScreen()">
+		<!-- 全屏按钮 -->
+		<a href="javascript:void(0)" class="btn full-screen"
+			@click="fullScreen()">
 			<svg-icon icon-class="full_screen"></svg-icon>
 		</a>
+		<!-- 标题 -->
 	  <div class="box-header">
 	  	<div class="title-wrapper"><p class="title"><svg-icon class="title-icon" :icon-class="titleIcon"></svg-icon>{{title}}</p></div>
 	  </div>
@@ -16,22 +21,20 @@
 			    size="mini"
 			    :show-all-levels="true"
 			    :options="options"
-			    v-model="selectedOptions"
+			    v-model="selectedOption"
 			    @change="selectBarChange">
 			  </el-cascader>
 			</el-col>
 		</el-row>
-
+		<!-- 内容 -->
 	  <div class="box-content">
-
 	  	<slot></slot>
 	  </div>
 	</div>
 </template>
 
 <script type="text/javascript">
-
-	import {fetchList} from '@/api/api' ;
+	import { mapGetters } from 'vuex'
 
 	export default {
 		props: {
@@ -58,30 +61,33 @@
 	      default: function () {
 	        return ''
 	      }
-	    },
-	    selectOption: {
-	    	type: Array,
-	      default: function () {
-	        return []
-	      }
-	    },
+	    }
 		},
 		data() {
     	return {
-    		options: [],
-    		//选中的选项，为数组格式，[第一级,第二级,第三极]
-        selectedOptions: []
+        //后台获取的选项列表
+        selectOptions: [],
+        //选中的选项，为数组格式，[第一级,第二级,第三极]
+        selectedOption: [],
       }
+    },
+    computed: {
+    	...mapGetters([
+	      'monitor'
+	    ]),
+	    //处理过的选项列表
+	    options () {
+	    	return this.generateOptions(this.type)
+	    }
     },
 		created () {
 			//这个参数，证明有级联选项
 			if(this.paramValue) {
-				this.options = this.generateOptions(this.type);
 	    	//变电站的的ID,从config里的paramValue参数中解析获取
 				let param = JSON.parse(this.paramValue);
-				this.selectedOptions =  [param.companyid, param.electricitysubstationid];
+				this.selectedOption =  [param.companyid, param.electricitysubstationid];
 				if(this.type == "video") {
-					this.selectedOptions.push(+param.videoid)
+					this.selectedOption.push(+param.videoid)
 				}
 			}
 		},
@@ -90,7 +96,8 @@
 			generateOptions (type) {
     		let options = [];
     		//一级目录
-    		this.selectOption.forEach( (o, i) => {
+    		//vuex中维护的级联选项列表
+    		this.monitor.selectOptions.forEach( (o, i) => {
     			let company = {};
     			company.value = o.id;
     			company.label = o.company;
@@ -244,5 +251,11 @@
 			display: block;
 		}
 	}
+
+	@media screen and (max-height: 768px){
+    .box-card .select-bar {
+			margin: 5px 0 5px 0;
+		}
+  }
 
 </style>

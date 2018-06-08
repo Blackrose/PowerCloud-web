@@ -1,5 +1,5 @@
 <template>
-	<monitor-box ref="boxEle"
+	<monitor-box
 		:title = "title"
 		:titleIcon = "titleIcon"
     @box-close = "handleClose"
@@ -16,7 +16,7 @@
   import {BMapLib} from '@/views/monitor/lib/bMapLib_RichMarker_MarkerManager.js';
   import * as coorConvert from '@/views/monitor/lib/coor-convert.js'
 
-  import * as apiMonitor from '@/api/api_monitor' ;
+  import {getMapPoint, initMqttConnection, mqttSubscribe, mqttUnsubscribe} from '@/api/api_monitor' ;
 
 	export default {
 		components: {
@@ -43,7 +43,7 @@
     		map: null,
         mapMgrArr: [],
         totalPoint: [],
-        stationStatusClient: null,
+        client: null, //mqtt客户端
         MQTT_TOPIC: "/stationStatus",
     	}
   	},
@@ -75,9 +75,9 @@
 	    this.renderPoint().then(function() {
 	      self.bindEvent();
         //订阅MQTT主题
-	      apiMonitor.initMqttConnection(function(client) {
-	        self.stationStatusClient = client;
-	        apiMonitor.mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC);
+	      initMqttConnection(function(client) {
+	        self.client = client;
+	        mqttSubscribe(self.client, self.MQTT_TOPIC);
 	      }, self.handleMqttStatus);
 
 	    });
@@ -103,9 +103,9 @@
         let self = this;
         return new Promise(function(resolve,reject){
           Promise.all([
-            apiMonitor.getMapPoint(1),
-            apiMonitor.getMapPoint(2),
-            apiMonitor.getMapPoint(3)
+            getMapPoint(1),
+            getMapPoint(2),
+            getMapPoint(3)
           ]).then(function(res_arr){
             res_arr.forEach( (res, i) => {
               if(res.ok && res.data) {
@@ -214,7 +214,7 @@
                 ele.classList.add(['s', o.statusA, o.statusB].join("-"));
                 //告警提示
                 let name = ((ele.querySelector(".p-tag").innerHTML).split("："))[1]
-                html.push("<p><i class='fa fa-exclamation-circle'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
+                html.push("<p><i class='el-icon-caret-right'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
               }
             })
           });
@@ -233,6 +233,10 @@
         }catch(e) {console.error(e)}
       },
       handleClose () {
+        /*注销MQTT订阅*/
+        if(this.client) {
+          mqttUnsubscribe(this.client, this.MQTT_TOPIC)
+        }
         this.$emit("module-close",this.moduleIndex);
       },
       handleFullScreen () {

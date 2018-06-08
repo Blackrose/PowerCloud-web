@@ -1,38 +1,129 @@
 {
-	"err": 0,
+	"status": 1,
+	"msg": "OK",
 	"data": [{
 		"id": 1,
-		"company": "铁西区人民政府",
+		"company": "铁西区政府",
 		"children": [{
-				"id": 1,
-				"substation": "变电所1",
-				"children": {
-					"video": [{
-							"id": 1,
-							"url": "http://hls.open.ys7.com/openlive/f0aa5ad188aa49ab9e6d17eadbadfad5.m3u8"
-						},
-						{
-							"id": 2,
-							"url": "http://zxzxcz"
-						}
-					]
-				}
-			},
-			{
-				"id": 2,
-				"substation": "变电所2",
-				"children": {
-					"video": [{
-							"id": 3,
-							"url": "http://hls.open.ys7.com/openlive/f0aa5ad188aa49ab9e6d17eadbadfad5.m3u8"
-						},
-						{
-							"id": 4,
-							"url": "http://zxzxcz"
-						}
-					]
-				}
+			"id": 1,
+			"substation": "S-变电所",
+			"children": {
+				"video": [{
+					"id": 1,
+					"electricitysubstationid": 1,
+					"num": 1,
+					"manufacturer": "test",
+					"url": "http://hls.open.ys7.com/openlive/a511685fa2a44a1aae1373157322538a.m3u8"
+				}]
 			}
-		]
-	}]
+		}, {
+			"id": 2,
+			"substation": "X-箱变1",
+			"children": {
+				"video": []
+			}
+		}, {
+			"id": 3,
+			"substation": "X-箱变2",
+			"children": {
+				"video": []
+			}
+		}]
+	}, {
+		"id": 2,
+		"company": "物流园",
+		"children": [{
+			"id": 4,
+			"substation": "物流园变电所",
+			"children": {
+				"video": []
+			}
+		}]
+	}, {
+		"id": 3,
+		"company": "铸造厂",
+		"children": [{
+			"id": 5,
+			"substation": "铸造厂变电所",
+			"children": {
+				"video": []
+			}
+		}]
+	}, {
+		"id": 4,
+		"company": "东北大学",
+		"children": [{
+			"id": 6,
+			"substation": "东北大学变电所",
+			"children": {
+				"video": []
+			}
+		}]
+	}, {
+		"id": 5,
+		"company": "测试企业",
+		"children": [{
+			"id": 7,
+			"substation": "测试企业变电站",
+			"children": {
+				"video": [{
+					"id": 3,
+					"electricitysubstationid": 7,
+					"num": 1,
+					"manufacturer": "1",
+					"url": "http://live.hkstv.hk.lxdns.com/live/hks/playlist.m3u8"
+				}, {
+					"id": 4,
+					"electricitysubstationid": 7,
+					"num": 2,
+					"manufacturer": "2",
+					"url": "http://wzfree.10043.doftp.com/tvtest/182tv.php/live/id/suntv.m3u8"
+				}]
+			}
+		}]
+	}, {
+		"id": 6,
+		"company": "沈阳博地环保科技有限公司",
+		"children": [{
+			"id": 8,
+			"substation": "博地变配电所",
+			"children": {
+				"video": []
+			}
+		}]
+	}, {
+		"id": 7,
+		"company": "华翔汽车",
+		"children": [{
+			"id": 9,
+			"substation": "华翔汽车配件2000kva",
+			"children": {
+				"video": [{
+					"id": 2,
+					"electricitysubstationid": 9,
+					"num": 1,
+					"manufacturer": "q",
+					"url": "http://hls.open.ys7.com/openlive/f0aa5ad188aa49ab9e6d17eadbadfad5.m3u8"
+				}]
+			}
+		}, {
+			"id": 11,
+			"substation": "华翔汽车配件1000kva",
+			"children": {
+				"video": []
+			}
+		}]
+	}, {
+		"id": 8,
+		"company": "辽宁省通信管理局",
+		"children": [{
+			"id": 10,
+			"substation": "通信管理局变电所",
+			"children": {
+				"video": []
+			}
+		}]
+	}],
+	"succeeded": true,
+	"ok": true
 }

@@ -53,7 +53,7 @@ export function setConfig(data) {
   })
 }
 
-export function getSelectOptions(id) {
+export function getSelectOptions() {
   return request({
     url: API_URL["getSelectOptions"],
     method: 'get'
