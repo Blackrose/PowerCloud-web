@@ -1655,7 +1655,7 @@ export default {
   },
 
   //功能模块
-  MonitorFunction:{
+  monitorFunction:{
      column: [
       {
         key: "id",
@@ -1674,22 +1674,23 @@ export default {
       {
         key: "functiondescription",
         label: "功能描述",
+        isVisible: false,
         type: "string",
-        mainKey: true,
+        required: true,
       },
-      {
+      /*{
         key: "functionurl",
         label: "功能地址",
         type: "string",
-        required: true,
-        errorMessage: "必填"
-      },
+        // required: true,
+        // errorMessage: "必填"
+      },*/
       {
         key: "functionparam",
         label: "参数列表",
         type: "string",
-        required: true,
-        errorMessage: "必填"
+        // required: true,
+        // errorMessage: "必填"
       }
       ]
   }

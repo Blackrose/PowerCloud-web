@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.21, for Win64 (x86_64)
 --
--- Host: 202.118.26.39    Database: power_cloud
+-- Host: 202.118.26.87    Database: power_cloud
 -- ------------------------------------------------------
 -- Server version	5.7.14-log
 
@@ -103,7 +103,7 @@ CREATE TABLE `biz_data_deviceelecmeter` (
   `type` varchar(20) DEFAULT NULL COMMENT '类型（总回路|分回路）',
   `dataTime` datetime DEFAULT NULL COMMENT '时间戳',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5260259 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5260358 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,6 +143,8 @@ CREATE TABLE `biz_device_elecmeter` (
   `circuitName` varchar(45) DEFAULT NULL COMMENT '回路名称，电表的总电量',
   `circuitType` varchar(5) DEFAULT NULL COMMENT '回路类型（总表|其它）',
   `gatewayID` int(11) DEFAULT NULL COMMENT '网关ID号',
+  `pt` float DEFAULT NULL COMMENT '电压互感器',
+  `ct` float DEFAULT NULL COMMENT '电压互感器',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8 COMMENT='电表表';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -299,7 +301,7 @@ CREATE TABLE `biz_devicegateway_instructions` (
   `typeDeviceName` varchar(40) DEFAULT NULL COMMENT '设备类型（电表）ElecMeter01，ElecMeter01',
   `instruction` varchar(40) DEFAULT NULL COMMENT '指令',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -480,7 +482,7 @@ CREATE TABLE `biz_electricitysubstation_video` (
   `manufacturer` varchar(40) DEFAULT NULL COMMENT '生产企业',
   `URL` varchar(100) DEFAULT NULL COMMENT '视频URL',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -565,6 +567,59 @@ CREATE TABLE `biz_magdomain_electricitysubstation` (
   `status` varchar(10) DEFAULT NULL COMMENT '状态（系统用）0正常，1停用',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `biz_region_function`
+--
+
+DROP TABLE IF EXISTS `biz_region_function`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `biz_region_function` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '区域功能ID，主键',
+  `regionid` int(11) NOT NULL COMMENT '区域ID，区域表主键',
+  `functionid` int(11) NOT NULL COMMENT '功能ID，功能表主键',
+  `electricianid` int(11) DEFAULT NULL COMMENT '电工ID，电工表主键',
+  `ishidden` varchar(4) DEFAULT NULL COMMENT '是否隐藏,0:隐藏 1:显示',
+  `paramvalue` varchar(200) DEFAULT NULL COMMENT '参数值，json串',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `biz_screen_function`
+--
+
+DROP TABLE IF EXISTS `biz_screen_function`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `biz_screen_function` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '功能ID，主键',
+  `functionname` varchar(100) DEFAULT NULL COMMENT '功能名称',
+  `functiondescription` varchar(100) DEFAULT NULL COMMENT '功能描述',
+  `functionurl` varchar(100) DEFAULT NULL COMMENT '功能地址',
+  `functionparam` varchar(100) DEFAULT NULL COMMENT '参数列表，json串',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `biz_screen_region`
+--
+
+DROP TABLE IF EXISTS `biz_screen_region`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `biz_screen_region` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '区域ID，主键',
+  `regionname` varchar(100) DEFAULT NULL COMMENT '区域名称',
+  `regiondescription` varchar(100) DEFAULT NULL COMMENT '区域描述',
+  `ishidden` varchar(4) DEFAULT NULL COMMENT '隐藏标识,0:隐藏，1:显示',
+  `width` varchar(4) DEFAULT NULL COMMENT '宽度',
+  `height` varchar(4) DEFAULT NULL COMMENT '高度',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -682,6 +737,23 @@ CREATE TABLE `biz_worktaskback` (
   `backtime` datetime DEFAULT NULL COMMENT '退回时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sys_app`
+--
+
+DROP TABLE IF EXISTS `sys_app`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sys_app` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(100) DEFAULT NULL COMMENT '软件名称',
+  `appversion` varchar(20) DEFAULT NULL COMMENT '软件版本',
+  `apptime` date DEFAULT NULL COMMENT '软件时间',
+  `appsize` varchar(10) DEFAULT NULL COMMENT '软件大小(MB)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -810,4 +882,4 @@ CREATE TABLE `sys_user_role` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-23 14:47:29
+-- Dump completed on 2018-06-11 10:39:10

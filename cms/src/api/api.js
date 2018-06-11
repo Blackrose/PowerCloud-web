@@ -54,7 +54,7 @@ API_MAP = {
   role_function: "sysRoleFunction",
 
   //大屏监控平台：功能模块
-  MonitorFunction:"screenFunction",
+  monitorFunction:"screenFunction",
 }
 if(isLocal) {
   API_URL = {
@@ -97,7 +97,7 @@ if(isLocal) {
     role_function: "/sys/role_function_list.json",
 
     //大屏监控平台：功能模块
-    MonitorFunction:"/platformConfig/function.json",
+    monitorFunction:"/platformConfig/function.json",
 
   }
 }

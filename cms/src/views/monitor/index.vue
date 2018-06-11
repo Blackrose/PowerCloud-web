@@ -9,6 +9,7 @@
 		        <span id="time">{{timestamp | filterTime}}&nbsp;&nbsp;&nbsp;</span>
 		        <!-- 版面设置 -->
 		        <el-popover
+		        	v-if="this.permission_monitorScreen"
 						  placement="bottom"
 						  width="160"
 						  v-model="visibleSettingPop">
@@ -32,7 +33,10 @@
 						<!-- 刷新 -->
 						<el-button id="btn-reload"  icon="el-icon-refresh" size="mini" type="primary" @click="reload()">刷新</el-button>
 						<!-- 告警 -->
-						<el-badge :value="alertHtmlArr.length" id="btn-alert">
+						<el-badge
+							v-if="this.permission_monitorScreen"
+							:value="alertHtmlArr.length" id="btn-alert"
+						>
 						  <el-button icon="el-icon-bell" size="mini" @click="showAlert()">告警</el-button>
 						</el-badge>
 						<!-- 登录 -->
@@ -126,12 +130,23 @@
 			'module-transformer': ModuleTransformer
 		},
 		created () {
-			this.init();
+
+			if(this.permission_monitorScreen) {
+				this.init();
+			}
+			else {
+				this.$message({
+          duration: 0,
+          message: '抱歉，您没有查看的权限，请联系系统管理员',
+          type: 'error'
+        });
+			}
 			/*显示时间*/
 			let self = this
 			setInterval( () => {
 				self.timestamp = Date.now()
 			}, 1000)
+
 
 		},
 		data () {
@@ -203,8 +218,25 @@
 	  computed: {
 	  	...mapGetters([
       'name',
+      'permissions',
       'monitor'
-    	])
+    	]),
+    	//是否有监控大屏的查看权限
+	    permission_monitorScreen() {
+	      let allowed = false;
+	      if(Array.isArray(this.permissions)) {
+	        this.permissions.forEach( (permission,i) => {
+	          //每个功能模块 前后端的命名可能有差异
+	          //this.moduleName：前端命名
+	          //API_MAP[this.moduleName]：后端命名
+	          if(permission.functionname == "monitorScreen") {
+	            allowed =  permission.selectfunction == 0
+	            return
+	          }
+	        })
+	      }
+	      return allowed
+	    }
   	},
   	filters: {
   		filterTime (timestamp) {

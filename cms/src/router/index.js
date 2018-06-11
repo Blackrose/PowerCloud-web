@@ -390,33 +390,20 @@ export const constantRouterMap = [
         meta: { title: '功能模块', icon: 'computer' },
       },
       {
-        path: 'moduleConfig',
-        name: 'moduleConfig',
+        path: 'monitorConfig',
+        name: 'monitorConfig',
         component: () => import('@/views/platformConfig/moduleConfig.vue'),
         meta: { title: '配置管理', icon: 'lock' },
       }
     ]
   },
   {
-    path: '/Monitor',
+    path: '/monitorScreen',
     component: Monitor,
-    name: 'Monitor',
+    name: 'monitorScreen',
     meta: { title: '实时数据监控平台', icon: 'computer' },
     hidden: true,
   },
-  /*{
-    path: '/Monitor',
-    component: Monitor,
-    name: 'Monitor',
-    children: [
-      {
-        path: 'Platform',
-        name: 'platform',
-        component: Monitor,
-        meta: { title: '实时数据监控平台', icon: 'computer' },
-      },
-    ]
-  },*/
 
 
   { path: '*', redirect: '/404', hidden: true }
