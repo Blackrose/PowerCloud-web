@@ -129,7 +129,7 @@
 		  					</template>
 		  				</el-row>
 			  		</li>
-			  		<li>
+	<!-- 		  		<li>
 			  			<el-form :rules="validRules" ref="powerForm" :model="data.powerConfig">
 				  			<el-row>
 				  				<el-col class="list-title">
@@ -154,17 +154,10 @@
 											</el-form-item>
 										</el-col>
 		 								<el-col :span="1">&nbsp;%</el-col>
-									    <!-- <el-select v-model="powerConfig.condition">
-									      <el-option label="大于" value="gt"></el-option>
-									      <el-option label="大于等于" value="geq"></el-option>
-									      <el-option label="等于" value="eq"></el-option>
-									      <el-option label="小于等于" value="leq"></el-option>
-									      <el-option label="小于" value="lt"></el-option>
-									    </el-select> -->
 				  				</el-col>
 				  			</el-row>
 			  			</el-form>
-			  		</li>
+			  		</li> -->
 			  	</ul>
 			  	</el-form>
 				</el-col>
@@ -220,17 +213,17 @@ export default {
 					}
 				],
 				//功率条件的配置
-				powerConfig: {
+				/*powerConfig: {
 					tip: "功率过低",
 					type: "P",
 					power: 85,
 					ruleStr: ""
-				},
+				},*/
 			},
 			//表单验证
 			validRules: {
 				tip: [{ required: true, message: '告警提示不能为空', trigger: 'blur' }],
-				power: [{ validator: checkPower, trigger: 'blur' }],
+				// power: [{ validator: checkPower, trigger: 'blur' }],
 			},
 
 		}
@@ -257,24 +250,25 @@ export default {
 								{"tip":"功率过低","type":"P","ruleStr":"50"}
 							]*/
 						//解析功率的配置,config的最后一个是功率配置
-						let currentPowserConfig = currentConfig.pop();
+						/*let currentPowserConfig = currentConfig.pop();
 						_self.data.powerConfig = {
 							tip: currentPowserConfig.tip,
 							type: currentPowserConfig.type,
 							ruleStr: currentPowserConfig.ruleStr,
 							power: +currentPowserConfig.ruleStr,
-						}
+						}*/
 
 						//解析其他规则配置
 						currentConfig.forEach( (o, i) => {
-							let obj = {
-								tip: o.tip,
-								type: o.type,
-								ruleStr: o.ruleStr,
-								ruleArr: o.ruleStr.split("")
+							if(o.type != "P") {
+								let obj = {
+									tip: o.tip,
+									type: o.type,
+									ruleStr: o.ruleStr,
+									ruleArr: o.ruleStr.split("")
+								}
+								_self.$set(_self.data.config, i, obj)
 							}
-							_self.$set(_self.data.config, i, obj)
-
 						})
 					} catch(e) {
 						alert("数据解析错误："+e)
@@ -309,16 +303,16 @@ export default {
 		onSubmit() {
 			this.$refs["myForm"].validate((valid1) => {
 				if(!valid1) { return }
-				this.$refs["powerForm"].validate((valid) => {
-	        if (valid) {
+				/*this.$refs["powerForm"].validate((valid) => {
+	        if (valid) {*/
 	          this.data.config.forEach( (o, index) => {
 							o.ruleStr = o.ruleArr.join("")
 						})
 
-						let power = {};
-						power.tip = this.data.powerConfig.tip;
-						power.type = this.data.powerConfig.type;
-						power.ruleStr = ""+this.data.powerConfig.power;
+						// let power = {};
+						// power.tip = this.data.powerConfig.tip;
+						// power.type = this.data.powerConfig.type;
+						// power.ruleStr = ""+this.data.powerConfig.power;
 
 						let submitConfig = []
 						this.data.config.forEach( (o, i) => {
@@ -328,7 +322,7 @@ export default {
 								ruleStr: o.ruleStr
 							})
 						})
-						submitConfig.push(power)
+						// submitConfig.push(power)
 						// console.log(submitConfig)
 
 						if (winParent) {
@@ -337,11 +331,11 @@ export default {
 					  }
 
 
-	        } else {
+	       /* } else {
 	          console.log('error submit!!');
 	          return false;
 	        }
-	      });
+	      });*/
 			});
 		},
 		onClear() {
@@ -351,12 +345,12 @@ export default {
 				ruleStr: "",
 				ruleArr: ["0","0","0"] //每个规则中的条件组成的数组，条件间为“且”关系
 			}]
-			this.data.powerConfig = {
+			/*this.data.powerConfig = {
 				tip: "功率过低",
 				type: "P",
 				value: 85,
 				ruleStr: ""
-			}
+			}*/
 		}
 	}
 }

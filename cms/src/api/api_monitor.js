@@ -38,10 +38,11 @@ else {
   API_URL = Object.assign({}, API_MAP)
 }
 
+/*获取页面配置*/
 export function getConfig(id) {
   return request({
-    url: isLocal ? API_URL["getConfig"] : API_URL["getConfig"],
-    method: 'post'
+    url: API_URL["getConfig"],
+    method: 'get'
   })
 }
 

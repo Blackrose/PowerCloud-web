@@ -254,16 +254,16 @@
   		/*初始化*/
   		init () {
   			//获取配置文件
-				/*Promise.all([getConfig(1), getSelectOptions()]).then( resArr => {
-					if(resArr[0]) {
+				Promise.all([getConfig()]).then( resArr => {
+					/*if(resArr[0]) {
 						this.size = res.data.size;
 						this.sizeSetting = JSON.parse(JSON.stringify(this.size));
 			      this.config = res.data.config;
 					}
 					if(resArr[1]) {
 						this.selectOption = resArr[1].data;
-					}
-				})*/
+					}*/
+				})
 
 				Promise.all([this.$store.dispatch('setMonitorSelectOptions')]).then( resArr => {
 

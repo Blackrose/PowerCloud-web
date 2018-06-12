@@ -39,8 +39,8 @@ export default {
         key: "alarmcondition",
         label: "告警规则",
         type: "alarmRule",
-        required: true,
-        errorMessage: "必填"
+        // required: true,
+        // errorMessage: "必填"
       },
   		{
   			key: "description",

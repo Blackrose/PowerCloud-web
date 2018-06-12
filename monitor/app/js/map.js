@@ -269,9 +269,10 @@
     console.log("==== handle Mqtt station status ====");
     try {
       console.log(msg.payloadString);
+
       var stationJQs = $(".p-station");
       stationJQs.attr({"class":"p p-station s-0-0"});
-      var data = JSON.parse(msg.payloadString)
+      let data = JSON.parse(msg.payloadString)
       /*msg = [
         {
             companyId: 1, //企业Id

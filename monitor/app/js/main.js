@@ -217,20 +217,23 @@ function start(name="admin") {
 window.onload = function() {
 	document.onselectstart = new Function('event.returnValue=false;');
 	bindLogin();
-	isLogin().then( r => {
-		if(r.ok) {
-			loginFlag = true;
-			$("body").addClass('login');
-			start(r.data.name);
-		}
-		else {
-			loginFlag = false;
-			$("body").removeClass('login');
-		}
-	}, err => {
-		loginFlag = false;
-		$("body").removeClass('login');
-	})
+	// isLogin().then( r => {
+	// 	if(r.ok) {
+	// 		loginFlag = true;
+	// 		$("body").addClass('login');
+	// 		start(r.data.name);
+	// 	}
+	// 	else {
+	// 		loginFlag = false;
+	// 		$("body").removeClass('login');
+	// 	}
+	// }, err => {
+	// 	loginFlag = false;
+	// 	$("body").removeClass('login');
+	// })
+
+	$("body").addClass('login');
+	start("asd");
 
 
 	initTimer();
