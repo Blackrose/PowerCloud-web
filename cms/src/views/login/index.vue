@@ -56,8 +56,6 @@ export default {
         password: ''
       },
       loginRules: {
-/*        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]*/
         username: [{ required: true, trigger: 'blur', message: "必填"}],
         password: [{ required: true, trigger: 'blur', message: "必填"}]
       },

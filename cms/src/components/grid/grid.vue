@@ -262,10 +262,13 @@ export default {
     'cms-upload': Upload,
   },
   created() {
-
-    /*if(Array.isArray(this.permissions)) {
+    if(Array.isArray(this.permissions)) {
       this.permissions.forEach( (permission,i) => {
-        if(permission.functionname == API_MAP[this.moduleName]) {
+        //每个功能模块 前后端的命名可能有差异
+        //this.moduleName：前端命名
+        //API_MAP[this.moduleName]：后端命名
+        if(permission.functionname == API_MAP[this.moduleName]
+          || permission.functionname == this.moduleName) {
           this.allowed.list = permission.selectfunction == 0
           this.allowed.add = permission.addfunction == 0
           this.allowed.update = permission.updatefunction == 0
@@ -273,14 +276,7 @@ export default {
           return
         }
       })
-    }*/
-     
-      this.allowed.list=true
-      this.allowed.add=true
-      this.allowed.update=true
-      this.allowed.del=true
-
-
+    }
 
     //初始化时，要看看有没有关联的模块，如果有的话
     //需要将关联模块的数据和本模块的数据关联起来

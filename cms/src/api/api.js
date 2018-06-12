@@ -53,14 +53,16 @@ API_MAP = {
   role: "sysRole",
   role_function: "sysRoleFunction",
 
-  //功能模块
-  functionModule:"screenFunction",
+
+  //大屏监控平台：功能模块
+  monitorFunction:"screenFunction",
 
   //监控平台配置
   getMonitorfunctions: "/cms/screenFunction/list",
   getMonitorConfig: "/monitor/getConfig",
   setMonitorConfig: "/monitor/setConfig",
   getMontinorSelectOptions: "/monitor/getSelectOptions"
+
 }
 if(isLocal) {
   API_URL = {
@@ -102,8 +104,8 @@ if(isLocal) {
     role: "/sys/role_list.json",
     role_function: "/sys/role_function_list.json",
 
-    //功能模块
-    functionModule:"/platformConfig/function.json",
+    //大屏监控平台：功能模块
+    monitorFunction:"/platformConfig/function.json",
 
     //监控平台模块配置
     getMonitorConfig:"/platformConfig/config.json",

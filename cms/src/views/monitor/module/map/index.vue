@@ -1,11 +1,11 @@
 <template>
-	<monitor-box ref="boxEle"
+	<monitor-box
 		:title = "title"
 		:titleIcon = "titleIcon"
-    @boxClose = "handleClose"
-    @boxFullScreen = "handleFullScreen"
+    @box-close = "handleClose"
+    @box-full-screen = "handleFullScreen"
 	>
-		<div id="allmap" ref="mapEle"></div>
+		<div :id="getMapId()" class="allmap" :style="{height:mapHeight}"></div>
 	</monitor-box>
 </template>
 
@@ -16,7 +16,7 @@
   import {BMapLib} from '@/views/monitor/lib/bMapLib_RichMarker_MarkerManager.js';
   import * as coorConvert from '@/views/monitor/lib/coor-convert.js'
 
-  import * as apiMonitor from '@/api/api_monitor' ;
+  import {getMapPoint, initMqttConnection, mqttSubscribe, mqttUnsubscribe} from '@/api/api_monitor' ;
 
 	export default {
 		components: {
@@ -28,24 +28,35 @@
         default: function () {
           return 0
         }
+      },
+      boxHeight: {
+        type: String,
+        default: function () {
+          return ""
+        }
       }
     },
 	  data () {
     	return {
     		title: "位置显示",
-    		titleIcon: "el-icon-location",
+    		titleIcon: "position",
     		map: null,
         mapMgrArr: [],
         totalPoint: [],
-        stationStatusClient: null,
+        client: null, //mqtt客户端
         MQTT_TOPIC: "/stationStatus",
     	}
   	},
+    computed: {
+      mapHeight () {
+        return this.boxHeight ? `calc(${this.boxHeight} - 2px)` : "auto";
+      }
+    },
   	mounted () {
   		// 百度地图API功能
 	    // 地图不可点
   		let mapOpts = {enableMapClick:false}
-	    this.map = new BMap.Map("allmap", mapOpts);    // 创建Map实例
+	    this.map = new BMap.Map("allmap-"+this.moduleIndex, mapOpts);    // 创建Map实例
 
 	    this.map.setMapStyle({
 	      styleJson:mapStyle
@@ -57,18 +68,16 @@
 	    this.map.disableDoubleClickZoom();        //禁用双击放大
 
 
-	    let height = this.$refs.boxEle.$el.clientHeight;
-	    this.$refs.mapEle.style.height = height + "px"
 	    var ctrlOpts = {offset: new BMap.Size(20, 70)}
 	    this.map.addControl(new BMap.NavigationControl(ctrlOpts));   //缩放按钮
 
       let self = this;
 	    this.renderPoint().then(function() {
 	      self.bindEvent();
-
-	      apiMonitor.initMqttConnection(function(client) {
-	        self.stationStatusClient = client;
-	        apiMonitor.mqttSubscribe(self.stationStatusClient, self.MQTT_TOPIC);
+        //订阅MQTT主题
+	      initMqttConnection(function(client) {
+	        self.client = client;
+	        mqttSubscribe(self.client, self.MQTT_TOPIC);
 	      }, self.handleMqttStatus);
 
 	    });
@@ -79,6 +88,9 @@
 
   	},
   	methods: {
+      getMapId () {
+        return "allmap-"+this.moduleIndex;
+      },
   		renderPoint () {
         let markersArr = [];
         let pointsArr = [];
@@ -90,62 +102,46 @@
 
         let self = this;
         return new Promise(function(resolve,reject){
-          //企业
-          Promise.all([apiMonitor.getMapPoint(1),apiMonitor.getMapPoint(2),apiMonitor.getMapPoint(3)])
-          .then(function(res_arr){
-            // console.log(res_arr)
-            if(res_arr[0].data){
-              res_arr[0].data.forEach( (o,i) => {
-                try {
-                  var pos = JSON.parse(o.pos);
-                  var convertor = coorConvert.coorConvert.wgs2bd(pos.longitude, pos.latitude);
-
-                  pointsArr[0].push(new BMap.Point(convertor[0], convertor[1]));
-                  var html = "<div class='p p-company' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>企业："+o.tag+"</span></div>";
-                  var marker = new BMapLib.RichMarker(html, pointsArr[0][i]);
-                  markersArr[0].push(marker);
-                }
-                catch(e) {console.error(e)}
-              })
-              self.mapMgrArr[0].addMarkers(markersArr[0],1,20)
-              self.mapMgrArr[0].showMarkers();
-            }
-
-            if(res_arr[1].data){
-              res_arr[1].data.forEach( (o,i) => {
-                try {
-                  var pos = JSON.parse(o.pos);
-                  var convertor = coorConvert.coorConvert.wgs2bd(pos.longitude, pos.latitude);
-                  pointsArr[1].push(new BMap.Point(convertor[0], convertor[1]));
-                  var html = "<div class='p p-station s-0-0' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>变电站："+o.tag+"</span></div>";
-                  markersArr[1].push(new BMapLib.RichMarker(html, pointsArr[1][i]));
-                }
-                catch(e) {console.error(e)}
-              })
-              self.mapMgrArr[1].addMarkers(markersArr[1],1,20)
-              self.mapMgrArr[1].showMarkers();
-            }
-
-
-            if(res_arr[2].data){
-              res_arr[2].data.forEach( (o,i) => {
-                //有些员工可能没有坐标
-                try {
-                  var pos = JSON.parse(o.pos);
-                  var convertor = coorConvert.coorConvert.wgs2bd(pos.longitude, pos.latitude);
-                  pointsArr[2].push(new BMap.Point(convertor[0], convertor[1]));
-                  var html = "<div class='p p-staff' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>员工："+o.tag+"</span></div>";
-                  var marker = new BMapLib.RichMarker(html, pointsArr[2][i]);
-                  markersArr[2].push(marker);
-                }
-                catch(e) {}
-              })
-              self.mapMgrArr[2].addMarkers(markersArr[2],1,20)
-              self.mapMgrArr[2].showMarkers();
-            }
+          Promise.all([
+            getMapPoint(1),
+            getMapPoint(2),
+            getMapPoint(3)
+          ]).then(function(res_arr){
+            res_arr.forEach( (res, i) => {
+              if(res.ok && res.data) {
+                let _data = typeof(res_arr[0].data) == "string" ?
+                            JSON.parse(res.data) : res.data;
+                _data.forEach( (o,_i) => {
+                  try {
+                    if(o.pos) {
+                      let pos = JSON.parse(o.pos);
+                      let convertor = coorConvert.coorConvert.wgs2bd(pos.longitude, pos.latitude);
+                      pointsArr[i].push(new BMap.Point(convertor[0], convertor[1]));
+                      let html;
+                      //企业
+                      if(i == 0) {
+                        html = "<div class='p p-company' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>企业："+o.tag+"</span></div>";
+                      }
+                      //变电站
+                      else if(i == 1) {
+                        html = "<div class='p p-station s-0-0' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>变电站："+o.tag+"</span></div>";
+                      }
+                      //员工
+                      else if(i == 2) {
+                        html = "<div class='p p-staff' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>员工："+o.tag+"</span></div>";
+                      }
+                      var marker = new BMapLib.RichMarker(html, pointsArr[i][_i]);
+                      markersArr[i].push(marker);
+                    }
+                  }
+                  catch(e) {console.error(e)}
+                })
+                self.mapMgrArr[i].addMarkers(markersArr[i],1,20)
+                self.mapMgrArr[i].showMarkers();
+              }
+            })
 
             self.totalPoint = (pointsArr[0].concat(pointsArr[1])).concat(pointsArr[2])
-            // console.log(self.totalPoint)
             self.map.setViewport(self.totalPoint);
 
             resolve();
@@ -154,8 +150,9 @@
         });
   		},
       bindEvent () {
+        let mapRootEle = document.querySelector("#"+this.getMapId());
         // tagEvent;
-        let pointEles = document.querySelectorAll(".p-staff, .p-company, .p-station");
+        let pointEles = mapRootEle.querySelectorAll(".p-staff, .p-company, .p-station");
         pointEles.forEach( (ele, i) => {
           ele.addEventListener("mouseenter", handleMouseEnter);
           ele.addEventListener("mouseleave", handleMouseLeave);
@@ -180,14 +177,15 @@
         }
       },
       handleMqttStatus (msg) {
-        console.log("==== handle Mqtt station status ====");
+        console.log("==== handle Mqtt MAP station status ====");
         try {
-          console.log(msg.payloadString);
-          document.querySelectorAll(".p-station").forEach( (ele, i) => {
+          let mapRootEle = document.querySelector("#"+this.getMapId());
+          // console.log(msg.payloadString);
+          mapRootEle.querySelectorAll(".p-station").forEach( (ele, i) => {
             ele.setAttribute("class", "p p-station s-0-0");
           })
-          var data = JSON.parse(msg.payloadString)
-          /*msg = [
+          let data = JSON.parse(msg.payloadString)
+          /*let data = [
             {
                 companyId: 1, //企业Id
                 id: 1,        // 变电站id
@@ -196,45 +194,53 @@
             },
             {
                 companyId: 2, //企业Id
-                id: 3,
+                id: 5,
                 statusA: 1,
                 statusB: 2
             }
           ];*/
           let statusAText = ["正常", "处理中", "报警"];
           let statusBText = ["载荷正常", "过载", "重载"];
+          //告警提示的HTML
           let html = [];
+
           data.forEach(function(o,i) {
             o.statusA = o.statusA || 0;
             o.statusB = o.statusB || 0;
-            let stationEle = document.querySelectorAll(".p-station[data-id="+o.id+"]");
-            // var stationJQ = $(".p-station[data-id="+o.id+"]");
-            // console.log(stationEle.length)
-            if(stationEle.length) {
-              stationEle.classList.remove('s-0-0');
-              stationEle.classList.add(['s', o.statusA, o.statusB].join("-"));
-              // let name = ((stationEle.querySelector(".p-tag").innerHTML).split("："))[1]
-              // html.push("<p><i class='fa fa-exclamation-circle'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
-            }
+            let stationEles = mapRootEle.querySelectorAll(".p-station[data-id]");
+            stationEles.forEach( (ele, i) => {
+              if(ele.getAttribute("data-id") == o.id) {
+                ele.classList.remove('s-0-0');
+                ele.classList.add(['s', o.statusA, o.statusB].join("-"));
+                //告警提示
+                let name = ((ele.querySelector(".p-tag").innerHTML).split("："))[1]
+                html.push("<p><i class='el-icon-caret-right'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
+              }
+            })
           });
-          //更新左上角TIP的内容
-          //TODO!!告警提示 跑马灯
-          /*var tipJQ = $("#status-tip .content");
-          if(html.length){
-            tipJQ.html(html.join(""));
-          }
-          else {
-            tipJQ.html('<p style="text-align: center;">目前没有告警信息</p>');
-          }
-          $("#status-tip").show();*/
+          //更新右上角告警TIP的内容
+          this.$emit("station-alert",html);
+          /*this.$notify({
+            title: '告警',
+            dangerouslyUseHTMLString: true,
+            message: html.join(""),
+            type: 'warning',
+            position: 'top-left',
+            offset: 50,
+            duration: 0
+          });*/
 
         }catch(e) {console.error(e)}
       },
       handleClose () {
-        this.$emit("moduleClose",this.moduleIndex);
+        /*注销MQTT订阅*/
+        if(this.client) {
+          mqttUnsubscribe(this.client, this.MQTT_TOPIC)
+        }
+        this.$emit("module-close",this.moduleIndex);
       },
       handleFullScreen () {
-        this.$emit("moduleFullScreen",this.moduleIndex);
+        this.$emit("module-full-screen",this.moduleIndex);
       },
   	}
 	}
@@ -388,7 +394,12 @@
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-	#allmap {
+  .box-card {
+    // overflow-y:hidden;
+  }
+	.allmap {
+    border-radius: 5px;
+    overflow: hidden;
 		width: 100%;
 		height: auto; //todo
 		background: #fff;

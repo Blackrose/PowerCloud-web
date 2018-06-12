@@ -19,6 +19,7 @@ import Layout from '../views/layout/Layout'
 const SysGraph = r => require.ensure([], () => r(require('../views/sysGraph/index')))
 const CircuitAlarmRule = r => require.ensure([], () => r(require('../views/circuitAlarmRule/index')))
 
+const Monitor = r => require.ensure([], () => r(require('../views/Monitor/index')))
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -375,26 +376,33 @@ export const constantRouterMap = [
     hidden: true,
   },
 
-    {
-    path: '/MonitorPlatformConfig',
+  {
+    path: '/MonitorConfig',
     component: Layout,
-    redirect: '/MonitorPlatformConfig/functionModule',
+    redirect: '/MonitorConfig/monitorFunction',
     name: 'platform_function',
     meta: { title: '监控平台配置', icon: 'computer' },
     children: [
       {
-        path: 'functionModule',
-        name: 'functionModule',
+        path: 'monitorFunction',
+        name: 'monitorFunction',
         component: () => import('@/views/platformConfig/monitorFunctionModule.vue'),
         meta: { title: '功能模块', icon: 'computer' },
       },
       {
-        path: 'moduleConfig',
-        name: 'moduleConfig',
+        path: 'monitorConfig',
+        name: 'monitorConfig',
         component: () => import('@/views/platformConfig/moduleConfig.vue'),
         meta: { title: '配置管理', icon: 'lock' },
       }
     ]
+  },
+  {
+    path: '/monitorScreen',
+    component: Monitor,
+    name: 'monitorScreen',
+    meta: { title: '实时数据监控平台', icon: 'computer' },
+    hidden: true,
   },
 
 
