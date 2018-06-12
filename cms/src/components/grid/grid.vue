@@ -560,6 +560,7 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
+        debugger;
         this.$refs['dataForm'].clearValidate()
       })
   	},
