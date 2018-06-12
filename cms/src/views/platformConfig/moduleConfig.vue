@@ -217,9 +217,9 @@ export default {
 					if(item.functionname == "video") {
 						p.videoid = this.selectedOptions[i][2];
 					}
-					else if(item.functionname == "transformer") {
+					/*else if(item.functionname == "transformer") {
 						p.transformerid = this.selectedOptions[i][2];
-					}
+					}*/
 					item.paramvalue = JSON.stringify(p);
 				}
 			})
