@@ -67,11 +67,11 @@
 			<el-col :span="18" :offset="3">
 				<el-form  ref="myForm" label-width="0px" :model="data">
 			  	<ul class="rule-list">
-				  	<li v-for="(item, index) in data.config" :key="item.id"> 
+				  	<li v-for="(item, index) in data.config" :key="item.id">
 				  		<el-card>
 				  			<div slot="header" class="list-title">
-				  				<span>模块{{index+1}}</span>
-					  			<el-switch 
+				  				<span>区域 {{index+1}}</span>
+					  			<el-switch
 					  			  v-model="item.ishidden"
 								  :active-value="0"
 								  :inactive-value="1"
@@ -80,34 +80,37 @@
 								  inactive-text="是否隐藏">
 								</el-switch>
 							</div>
-
-							<el-row class="list-rule-item" >
-								<template v-if="!parseInt(item.ishidden)">
-									<el-col :span="3" >请选择：</el-col>
-									<el-select v-model="item.functionname" placeholder="请选择">
+							<template v-if="!parseInt(item.ishidden)">
+								<el-row class="list-rule-item" >
+									<el-col :span="3" >功能模块：</el-col>
+									<el-select :style="{minWidth:'300px'}" v-model="item.functionname" placeholder="请选择">
 										<el-option
 											v-for="obj in functions"
 											:key="obj.functionname"
 											:label="obj.functionname"
 											:value="obj.functionname">
-										</el-option> 
+										</el-option>
 									</el-select>
-									<el-cascader 
-											expand-trigger="hover" 
-											:options="item.functionName!=='video'?options1:options2" 
-											v-model="selectedOptions[index]" 
+								</el-row>
+								<el-row class="list-rule-item" v-if="item.functionname != 'map'">
+									<el-col  :span="3" >参数:</el-col>
+										<el-cascader
+											:style="{minWidth:'300px'}"
+											v-if="item.functionname != 'map'"
+											:options="item.functionname!=='video'?options1:options2"
+											v-model="selectedOptions[index]"
 											@change="handleChange">
-									</el-cascader>
+										</el-cascader>
+									</el-row>
 								</template>
-							</el-row>	
-				  		</el-card>			
+				  		</el-card>
 				  	</li>
 			  	</ul>
 			  	</el-form>
 			</el-col>
 		</el-row>
-		<p align="center" style="position:relative;z-index:100" v-if="!isView">
-			<el-button type="primary" @click="onSubmit" plain>确定</el-button>
+		<p align="center" style="position:relative;z-index:100">
+			<el-button type="primary" @click="onSubmit" plain>保存</el-button>
 		</p>
 	  </el-main>
 	</el-container>
@@ -123,46 +126,48 @@ import {setMonitorConfig,getMonitorConfig,getMontinorSelectOptions,getMonitorfun
 export default {
 	data() {
     return {
-			isView: true,
-			
 			data: {config:[]},
-			options: [], 
+			options: [],
+			//选择企业 变电站的级联列表
 			selectedOptions:[[],[],[],[],[],[]],
-	        options1:[],
-	        options2:[],
-
-	        functions:[],
+			//二级级联
+      options1:[],
+      //三级级联
+      options2:[],
+      //目前所拥有的模块
+      functions:[],
 			}
 	},
 	created() {
-		let _self = this;
-
-		this.isView = (this.$route.query.type === "view");
-
-
-		Promise.all([getMonitorConfig(),getMontinorSelectOptions(),getMonitorfunctions()]).then((res)=>{
-			//返回一个数组列表，每个函数为数组中的一项
-			this.data.config=res[0].data.config;
-		    //遍历config 
-	        this.data.config.forEach( (item, i) => {
-		        if(item.paramvalue){
-		    	let p = JSON.parse(item.paramvalue);
-		    	let changeid = p.compayid
-		    	let eleid = p.electricitysubstationid
-		    	this.selectedOptions[i] = [changeid,eleid];
+		Promise.all([getMonitorConfig(), getMontinorSelectOptions(), getMonitorfunctions()]).then(resArr => {
+				//返回一个数组列表，每个函数为数组中的一项
+				this.data.config=resArr[0].data.config;
+		    //遍历config
+        this.data.config.forEach( (item, i) => {
+	        if(item.paramvalue){
+			    	let p = JSON.parse(item.paramvalue);
+			    	let changeid = p.compayid
+			    	let eleid = p.electricitysubstationid
+			    	this.selectedOptions[i] = [changeid,eleid];
+			    	if(p.videoid) {
+			    		this.selectedOptions[i].push(p.videoid);
+			    	}
+			    	else if(p.transformerid) {
+			    		this.selectedOptions[i].push(p.transformerid);
+			    	}
 		    	}
-	        })
+        })
 
-	    	//1
-	    	this.options=res[1].data;
-			this.options1 = this.generateOptions();//调用函数通过this
-	        this.options2 = this.generateOptions("video");
+	    	//生成级联列表
+	    	this.options=resArr[1].data;
+				this.options1 = this.generateOptions();//调用函数通过this
+	      this.options2 = this.generateOptions("video");
 
-	        //2
-	        this.functions=res[2].data.items;
+        //生成功能选项的options
+        this.functions=resArr[2].data.items;
 		})
 		.catch((reason)=>{
-	        console.log("reject "+reason);
+	    console.log("reject "+reason);
 		});
 
 	},
@@ -204,16 +209,20 @@ export default {
 			},
 		handleChange(value){
 			//将获取到的数据存入config中的paramvalue中
-			
-			let options3=this.selectedOptions;
-			
-           this.data.config.forEach( (item, i) => {
-        	let p = JSON.parse(item.paramvalue);
-        	p.compayid=this.selectedOptions[i][0];
-        	p.electricitysubstationid=this.selectedOptions[i][1];
-
-        	item.paramvalue = JSON.stringify(p) ;
-           })
+			this.data.config.forEach( (item, i) => {
+				if(item.paramvalue) {
+					let p = JSON.parse(item.paramvalue);
+					p.compayid = this.selectedOptions[i][0];
+					p.electricitysubstationid = this.selectedOptions[i][1];
+					if(item.functionname == "video") {
+						p.videoid = this.selectedOptions[i][2];
+					}
+					else if(item.functionname == "transformer") {
+						p.transformerid = this.selectedOptions[i][2];
+					}
+					item.paramvalue = JSON.stringify(p);
+				}
+			})
 
 		},
 		onSubmit(){
@@ -224,22 +233,22 @@ export default {
 			setMonitorConfig(param).then( res => {
 				if(res.ok) {
 					this.$notify({
-	                title: '成功',
-	                message: '配置成功',
-	                type: 'success',
-	                duration: 2000
-	              })
+            title: '成功',
+            message: '配置成功',
+            type: 'success',
+            duration: 2000
+          })
 				}
 				else {
 					this.$notify({
-	                title: '失败',
-	                message: res.data,
-	                type: 'error',
-	                duration: 2000
-	              })
+            title: '失败',
+            message: res.data,
+            type: 'error',
+            duration: 2000
+          })
 				}
 			})
 		},
-	}	
+	}
 }
-</script> 
+</script>
