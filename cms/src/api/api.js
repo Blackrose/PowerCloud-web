@@ -55,6 +55,12 @@ API_MAP = {
 
   //功能模块
   functionModule:"screenFunction",
+
+  //监控平台配置
+  getMonitorfunctions: "/cms/screenFunction/list",
+  getMonitorConfig: "/monitor/getConfig",
+  setMonitorConfig: "/monitor/setConfig",
+  getMontinorSelectOptions: "/monitor/getSelectOptions"
 }
 if(isLocal) {
   API_URL = {
@@ -98,6 +104,12 @@ if(isLocal) {
 
     //功能模块
     functionModule:"/platformConfig/function.json",
+
+    //监控平台模块配置
+    getMonitorConfig:"/platformConfig/config.json",
+    getMonitorfunctions:"/platformConfig/function.json",
+    getMontinorSelectOptions:"/platformConfig/getSelectOptions.json"
+
 
   }
 }
@@ -149,3 +161,47 @@ export function fetchTreeList(data) {
     params: data
   })
 }
+
+
+export function getMonitorConfig() {
+  return request({
+    url: API_URL["getMonitorConfig"],
+    method: 'get',
+  })
+}
+
+
+export function setMonitorConfig(data) {
+  return request({
+    url: isLocal ? '/success.json' : API_URL["setMonitorConfig"],
+    method: 'post',
+    data
+  })
+}
+
+
+export function getMonitorfunctions() {
+  let params = {
+    page: 1,
+    limit: 100000
+  };
+
+  return request({
+    url: API_URL["getMonitorfunctions"],
+    method: 'get',
+    params: params
+  })
+}
+
+
+export function getMontinorSelectOptions() {
+  return request({
+    url: API_URL["getMontinorSelectOptions"],
+    method: 'get'
+  })
+}
+
+
+
+
+
