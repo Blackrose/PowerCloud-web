@@ -1,48 +1,52 @@
 {
-  "status": 1,
-  "msg": "OK",
-  "succeeded": true,
-  "ok": true,
-  "data":[{
-			"id":1,
-			"regionname": "模块1",
+	"status": 1,
+	"msg": "OK",
+	"data": {
+		"size": "{\"width\":25,\"height\":50}",
+		"config": [{
+			"functionid": 1,
+			"ishidden": "0",
+			"regionid": 1,
 			"functionname": "table",
-			"paramvalue": "{\"compayid\":1, \"electricitysubstationid\":1}",
-			"ishidden": 0
-		},
-		{
-			"id":2,
-			"regionname": "模块2",
+			"paramvalue": "{\"companyid\":1,\"electricitysubstationid\":3}",
+			"id": 21
+		}, {
+			"functionid": 2,
+			"ishidden": "0",
+			"regionid": 2,
 			"functionname": "map",
-			"ishidden": 0,
-			"paramvalue": "{\"compayid\":1, \"electricitysubstationid\":1}"
-		},
-		{
-			"id":3,
-			"regionname": "模块3",
+			"paramvalue": "{\"companyid\":1,\"electricitysubstationid\":1}",
+			"id": 22
+		}, {
+			"functionid": 3,
+			"ishidden": "0",
+			"regionid": 3,
 			"functionname": "transformer",
-			"ishidden": 0,
-			"paramvalue": "{\"compayid\":1, \"electricitysubstationid\":1}"
-		},
-		{
-			"id":4,
-			"regionname": "模块4",
+			"paramvalue": "{\"companyid\":1,\"electricitysubstationid\":1}",
+			"id": 23
+		}, {
+			"functionid": 4,
+			"ishidden": "0",
+			"regionid": 4,
 			"functionname": "chart",
-			"ishidden": 0,
-			"paramvalue": "{\"compayid\":1, \"electricitysubstationid\":1}"
-		},
-		{
-			"id":5,
-			"regionname": "模块5",
+			"paramvalue": "{\"companyid\":1,\"electricitysubstationid\":1}",
+			"id": 24
+		}, {
+			"functionid": 5,
+			"ishidden": "0",
+			"regionid": 5,
 			"functionname": "sysGraph",
-			"ishidden": 0,
-			"paramvalue": "{\"compayid\":1, \"electricitysubstationid\":1}"
-		},
-		{
-			"id":6,
-			"regionname": "模块6",
+			"paramvalue": "{\"companyid\":1,\"electricitysubstationid\":2}",
+			"id": 25
+		}, {
+			"functionid": 6,
+			"ishidden": "0",
+			"regionid": 6,
 			"functionname": "video",
-			"ishidden": 0,
-			"paramvalue": "{\"compayid\":1, \"electricitysubstationid\":1}"
+			"paramvalue": "{\"companyid\":1,\"electricitysubstationid\":1,\"videoid\":1}",
+			"id": 26
 		}]
+	},
+	"succeeded": true,
+	"ok": true
 }

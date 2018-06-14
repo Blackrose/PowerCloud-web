@@ -5,44 +5,41 @@
     "total": 6,
     "items": [{
       "id": 1,
-      "functionname": "map",
-      "functiondescription": "基础配置",
-      "functionurl": "/Basic",
-      "functionparam": "参数列表，json串"
+      "functionname": "table",
+      "functiondescription": "数据表格",
+      "functionurl": "/basic",
+      "functionparam": "companyid,electricitysubstationid"
     }, {
       "id": 2,
-      "functionname": "table",
-      "functiondescription": "网关信息",
-      "functionurl": "/Gateway",
-      "functionparam": "参数列表，json串"
+      "functionname": "map",
+      "functiondescription": "地图",
+      "functionurl": "/map",
+      "functionparam": "无"
     }, {
       "id": 3,
-      "functionname": "chart",
-      "functiondescription": "企业信息",
-      "functionurl": "/Enterprise",
-      "functionparam": "参数列表，json串"
-    },
-    {
-      "id": 3,
       "functionname": "transformer",
-      "functiondescription": "企业信息",
-      "functionurl": "/Enterprise",
-      "functionparam": "参数列表，json串"
-    },
-    {
-      "id": 3,
-      "functionname": "video",
-      "functiondescription": "企业信息",
-      "functionurl": "/Enterprise",
-      "functionparam": "参数列表，json串"
-    },{
-      "id": 3,
+      "functiondescription": "变压器",
+      "functionurl": null,
+      "functionparam": "companyid,electricitysubstationid,transformerid"
+    }, {
+      "id": 4,
+      "functionname": "chart",
+      "functiondescription": "图表分析",
+      "functionurl": null,
+      "functionparam": "companyid,electricitysubstationid"
+    }, {
+      "id": 5,
       "functionname": "sysGraph",
-      "functiondescription": "企业信息",
-      "functionurl": "/Enterprise",
-      "functionparam": "参数列表，json串"
-    }
-  ]
+      "functiondescription": "系统图",
+      "functionurl": null,
+      "functionparam": "companyid,electricitysubstationid"
+    }, {
+      "id": 6,
+      "functionname": "video",
+      "functiondescription": "视频监控",
+      "functionurl": null,
+      "functionparam": "companyid,electricitysubstationid,videoid"
+    }]
   },
   "succeeded": true,
   "ok": true
