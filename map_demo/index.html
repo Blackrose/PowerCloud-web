@@ -6,13 +6,9 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title></title>
   <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=786b58359b1b87405c8d94ef045bb13a"></script>
-  <script type="text/javascript" src="lib/bMapLib_RichMarker_MarkerManager.js"></script>
-  <script type="text/javascript" src="lib/coor-convert.js"></script>
 
   <script>!function(e,t){function n(){t.body?t.body.style.fontSize=12*o+"px":t.addEventListener("DOMContentLoaded",n)}function d(){var e=i.clientWidth/10;i.style.fontSize=e+"px"}var i=t.documentElement,o=e.devicePixelRatio||1;if(n(),d(),e.addEventListener("resize",d),e.addEventListener("pageshow",function(e){e.persisted&&d()}),o>=2){var a=t.createElement("body"),s=t.createElement("div");s.style.border=".5px solid transparent",a.appendChild(s),i.appendChild(a),1===s.offsetHeight&&i.classList.add("hairlines"),i.removeChild(a)}}(window,document);
   </script>
-  <link rel="stylesheet" type="text/css" href="reset.css">
-  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
   <div id="allmap">
@@ -26,132 +22,11 @@
       <input type="radio" name="toggleOptions" id="toggleOption2" value="option2">
     </div>
   </div>
-
-  <script type="text/javascript">
-  (function(){
-    var map;
-    var mapMgr;
-    // var url = "http://202.118.26.9:8088/PowerCloud/api/customer/getPositionInfo?id=10&token=E3387A63AC5E38EDA3BFF1AB697EAD1C&account=sunzhenkai";
-
-    function initMap() {
-      //地图不可点
-      var mapOpts = {enableMapClick:false}
-      map = new BMap.Map("allmap", mapOpts);    // 创建Map实例
-
-      map.centerAndZoom(new BMap.Point(123.4, 41.8), 14);  // 初始化地图,设置中心点坐标和地图级别
-      map.setCurrentCity("沈阳");          // 设置地图显示的城市 此项是必须设置的
-      map.enableScrollWheelZoom(false);     //开启鼠标滚轮缩放
-      map.disableDoubleClickZoom();        //禁用双击放大
-      var h = 70;
-      var ctrlOpts = {offset: new BMap.Size(20, h)}
-      map.addControl(new BMap.NavigationControl(ctrlOpts));   //缩放按钮
-    }
-
-
-    function request(url) {
-      var xmlhttp;
-      xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange=function()
-      {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-          renderMapPoint(xmlhttp.responseText)
-        }
-      }
-      xmlhttp.open("POST",url,true);
-      xmlhttp.send();
-    }
-
-    function renderMapPoint(data) {
-      try{
-        var obj = JSON.parse(data)
-        if(obj.ok == true) {
-          var res = JSON.parse(obj.data)
-          var electrician_arr = res.filter(function(o) {
-            return o.type == "electrician"
-          });
-          console.log(electrician_arr)
-          mapMgr = new BMapLib.MarkerManager(map,{borderPadding: 10,maxZoom: 21, trackMarkers: true});
-          var markers = [];
-          var points = [];
-
-          electrician_arr.forEach( (o,i) => {
-            //有些员工可能没有坐标
-            try {
-              var pos = JSON.parse(o.location);
-              var convertor = coorConvert.wgs2bd(pos.longitude, pos.latitude);
-              points.push(new BMap.Point(convertor[0], convertor[1]));
-              var html = "<div class='p p-staff' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>员工："+o.name+"</span></div>";
-              var marker = new BMapLib.RichMarker(html, points[i]);
-              markers.push(marker);
-            }
-            catch(e) {}
-          })
-          mapMgr.addMarkers(markers,1,20)
-          mapMgr.showMarkers();
-
-          map.setViewport(points);
-        }
-
-      }
-      catch(e) {
-        alert("数据解析错误！")
-      }
-    }
-
-    //type=0 on , type=1 off
-    function toggleTag(type) {
-      if(type == 0) {
-        document.querySelectorAll(".p-tag").forEach(function(o,i) {
-          o.classList.add('on');
-        })
-      }
-      else if(type == 1){
-        document.querySelectorAll(".p-tag").forEach(function(o,i) {
-          o.classList.remove('on');
-        })
-      }
-    }
-
-
-    window.onload = function() {
-    	initMap();
-    	
-    	document.addEventListener("message", function(msg) {
-    		var data = msg.data
-    		try {
-    		   var d = JSON.parse(msg.data);
-
-    		   if(d.key = "app" && d.url){
-    			   request(d.url)
-    		   }
-    		}catch(e){
-    			alert(e)
-    		}
-    	})
-    	
-    	//标签显示 隐藏
-	    document.querySelector("#tag-toggle").addEventListener("touchstart", function(event) {
-	        let ele = event.target.parentNode
-	        if(ele.classList.contains('toggle-off')) {
-	          ele.classList.remove('toggle-off');
-	          ele.classList.remove('toggle-on');
-	          ele.classList.add('toggle-on')
-	          toggleTag(0)
-	        }
-	        else {
-	          ele.classList.remove('toggle-off');
-	          ele.classList.add('toggle-off');
-	          ele.classList.remove('toggle-on');
-	          toggleTag(1)
-	        }
-	        console.log(event.target.parentNode)
-	      })
-    }
-    
-
-  })()
-
-  </script>
+  <div id="user-box">
+    <a href="javascript:void(0)" id="x-btn"></a>
+    <div id="user-info">
+    </div>
+  </div>
+  <!-- <script type="text/javascript" src="index20180614.js"></script> -->
 </body>
 </html>

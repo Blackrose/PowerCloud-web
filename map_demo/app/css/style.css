@@ -18,9 +18,10 @@
 	display: inline-block;
 	width: 0.65rem;
 	height: 0.65rem;
-	background: url(./assets/p-staff.png);
+	background: url(../assets/p-staff.png);
 	background-size: cover;
 	border-radius: 50%;
+  opacity: 0.75;
   /*border:2px #F56C6C solid;*/
 }
 
@@ -28,7 +29,7 @@
   position: absolute;
   left: calc(100% + 0.066667rem);
   /*top: -0.05rem;*/
-  background: rgba(255,255,255,.8);
+  background: rgba(255,255,255);
   padding: 0.133333rem;
   z-index: 100;
   box-shadow: 0 0 0.4rem rgba(0,0,0,0.3);
@@ -109,7 +110,7 @@
 .toggle .toggle-radio {
   font-size: 0.4rem;
   cursor: pointer;
-  background: url(./assets/icon-on.png) right top no-repeat;
+  background: url(../assets/icon-on.png) right top no-repeat;
   background-size: 0.72rem 0.72rem;
   color: #fff;
   display: block;
@@ -128,7 +129,7 @@
   -webkit-backface-visibility: hidden;
 }
 .toggle.toggle-off .toggle-radio {
-    background-image: url(./assets/icon-off.png);
+    background-image: url(../assets/icon-off.png);
     background-position: 0 0.02rem;
     color: white;
     left: 0;
@@ -152,4 +153,38 @@ input[type="radio"], input[type="checkbox"] {
     margin: 0.093333rem 0 0;
     margin-top: 0.026667rem \9;
     line-height: normal;
+}
+
+#user-box {
+  padding: 0.133333rem;
+  border: 1px rgb(90,161,249) solid;
+  border-radius: 0.04rem;
+  background: rgba(90,161,249,0.2);
+  position: fixed;
+  left: 0.133333rem;
+  top: 0.133333rem;
+  display: none;
+}
+
+#user-box.show {
+  display: block;
+}
+#user-box #x-btn {
+  width: 0.7rem;
+  height: 0.7rem;
+  position: absolute;
+  top: 0.133333rem;
+  right: 0.133333rem;
+  background-image: url(../assets/close.png);
+  background-size: contain;
+}
+
+#user-info {
+  margin-top: 0.3rem;
+}
+
+#user-info > p {
+  font-weight: bold;
+  font-size: 0.186667rem;
+  line-height: 0.666667rem;
 }
