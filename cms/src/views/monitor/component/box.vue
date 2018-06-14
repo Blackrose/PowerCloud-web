@@ -168,8 +168,13 @@
 		height: 100%;
 	}
   .box-card {
-  	background: hsla(0,0%,100%,.2);
+  	background: hsla(0,0%,100%,.15);
+  	// background-image: linear-gradient(45deg, rgba(51, 57, 93, 0.5), #212a53);
+
+  	// background-image: linear-gradient(45deg, rgba(51, 57, 93, 0.5), #0f2a3d);
+  	//
     color: #fff;
+    box-shadow: 0 0 15px #33395d;
     border: 1px solid #26c6da;
     border-radius: 5px;
     height: 100%;
@@ -208,7 +213,6 @@
 
 		.x,
 		.full-screen {
-			color: #fff59d;
 			display: none;
 			background-size: contain;
 			position: absolute;
@@ -220,6 +224,7 @@
 		  border-radius: 0;
 		  transition: transform .5s ease;
 		  z-index: 200;
+		  color: #00bcd4;
 		}
 		.x {
 		  right: 15px;

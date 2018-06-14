@@ -14,9 +14,10 @@
 	import {mapStyle} from '@/views/monitor/lib/mapStyle.js';
   //把百度地图的两个开源库合成一个了
   import {BMapLib} from '@/views/monitor/lib/bMapLib_RichMarker_MarkerManager.js';
-  import * as coorConvert from '@/views/monitor/lib/coor-convert.js'
-
+  //坐标转换
+  const coorConvert = require('@/views/monitor/lib/coor-convert.js');
   import {getMapPoint, initMqttConnection, mqttSubscribe, mqttUnsubscribe} from '@/api/api_monitor' ;
+
 
 	export default {
 		components: {
@@ -398,7 +399,7 @@
     // overflow-y:hidden;
   }
 	.allmap {
-    border-radius: 5px;
+    // border-radius: 5px;
     overflow: hidden;
 		width: 100%;
 		height: auto; //todo

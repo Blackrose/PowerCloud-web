@@ -5,7 +5,7 @@
 		      <p class="logo"><i class="el-icon-menu"></i>电云系统监控平台</p>
 		      <p class="status-bar">
 		      	<!-- 时间 -->
-		        <i class="el-icon-time"></i>
+		        <i class="el-icon-time"></i>&nbsp;
 		        <span id="time">{{timestamp | filterTime}}&nbsp;&nbsp;&nbsp;</span>
 		        <!-- 版面设置 -->
 		        <el-popover
@@ -49,8 +49,8 @@
 		  	<el-row v-for="rowIndex in [0,1]" :gutter="15">
 		  		<el-col :key="index" class="grid" :span="col[index]"
 		  			v-for="(module,index) in config" v-if="[0,1,2].indexOf(index - 3*rowIndex) >= 0" >
-		  			<!-- isHidden决定加载不加载该模块 -->
-		  			<div v-if="!config[index].ishidden" class="grid-content" :style="{ height: row[rowIndex]}">
+		  			<!-- ishidden -->
+		  			<div v-if="config[index].ishidden == '0'" class="grid-content" :style="{ height: row[rowIndex]}">
 		  				<module-table v-if="module.functionname == 'table'"
 			  				:moduleIndex = "index"
 			  				:paramValue = "config[index].paramvalue"
@@ -137,7 +137,7 @@
 			else {
 				this.$message({
           duration: 0,
-          message: '抱歉，您没有查看的权限，请联系系统管理员',
+          message: '抱歉，您没有权限访问该模块，请联系系统管理员',
           type: 'error'
         });
 			}
@@ -254,88 +254,20 @@
   		/*初始化*/
   		init () {
   			//获取配置文件
-				Promise.all([getConfig()]).then( resArr => {
-					/*if(resArr[0]) {
-						this.size = res.data.size;
-						this.sizeSetting = JSON.parse(JSON.stringify(this.size));
+				Promise.all([this.$store.dispatch('setMonitorSelectOptions'), getConfig()]).then( resArr => {
+					let res = resArr[1];
+					if(res.ok) {
+						this.size = JSON.parse(res.data.size);
+						this.sizeSetting = JSON.parse(res.data.size);
 			      this.config = res.data.config;
 					}
-					if(resArr[1]) {
-						this.selectOption = resArr[1].data;
-					}*/
-				})
-
-				Promise.all([this.$store.dispatch('setMonitorSelectOptions')]).then( resArr => {
-
-					let res = {
-						"status": 1,
-						"msg": "OK",
-						"succeeded": true,
-						"ok": true,
-						"data": {
-						"size": {
-							"width": 25,
-							"height": 47
-						},
-						"config": [
-							{
-								"id":1,
-								"regionname": "模块1",
-								"functionname": "table",
-								"paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
-								"ishidden": 0
-							},
-							{
-								"id":2,
-								"regionname": "模块2",
-								"functionname": "map",
-								"paramvalue": "",
-								"ishidden": 0
-							},
-							{
-								"id":3,
-								"regionname": "模块3",
-								"functionname": "transformer",
-								"paramvalue": "{\"electricitysubstationid\":1, \"transformerid\": 2}",
-								"ishidden": 0
-							},
-							{
-								"id":4,
-								"regionname": "模块4",
-								// "functionname": "map",
-								// "paramvalue": "",
-								// "functionname": "sysGraph",
-								// "paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
-								"functionname": "chart",
-								"paramvalue": "{\"electricitysubstationid\":2}",
-								"ishidden": 0
-							},
-							{
-								"id":5,
-								"regionname": "模块5",
-								"functionname": "sysGraph",
-								"paramvalue": "{\"electricitysubstationid\":2, \"companyid\":1}",
-								"ishidden": 0
-							},
-							{
-								"id":6,
-								"regionname": "模块6",
-								"functionname": "video",
-								"paramvalue": "{\"companyid\":1, \"electricitysubstationid\":1, \"videoid\": 1}",
-								"ishidden": 0
-							}
-						]
-						}
-					}
-					this.size = res.data.size;
-					this.sizeSetting = JSON.parse(JSON.stringify(this.size));
-		      this.config = res.data.config;
+					console.log(this.config)
 				})
   		},
   		/*模块关闭*/
   		handleModuleClose (e) {
   			if(this.config[e]) {
-  				this.config[e].ishidden = 1;
+  				this.config[e].ishidden = "1";
   				this.setCol(this.size, this.config);
   				this.setRow(this.size, this.config);
   			}
@@ -435,14 +367,14 @@
 
 	      for(let i = 0 ; i < 6 ; i++) {
 	      	//如果ishidden,则宽度等于0
-	      	if(config[i].ishidden) {
+	      	if(config[i].ishidden == "1") {
 	      		col[i] = 0
 	      	}
 	      	//否则，根据相邻格子的隐藏情况，判断自己的大小
 	      	else {
 	      		let relative_i = i % 3;  //一共两行
 	      		let row_n = parseInt(i / 3); //行数
-	      		let hidden_n = config[row_n*3].ishidden + config[row_n*3+1].ishidden + config[row_n*3+2].ishidden
+	      		let hidden_n = (+config[row_n*3].ishidden) + (+config[row_n*3+1].ishidden) + (+config[row_n*3+2].ishidden)
  	      		//隐藏两个
  	      		if(hidden_n == 2) {
 	      			col[i] = total_w;
@@ -451,11 +383,11 @@
 	      		else if(hidden_n == 1){
 	      			//1、如果是第1个隐藏，则第2个等于w_1 + w_2，第3个等于w_1
 	      			//3、如果是第3个隐藏，则第2个等于w_1 + w_2，第1个等于w_1
-	      			if(config[row_n*3].ishidden || config[row_n*3+2].ishidden) {
+	      			if(config[row_n*3].ishidden == "1" || config[row_n*3+2].ishidden == "1") {
 	      				col[i] = relative_i == 1 ? w_1 + w_2 : w_1;
 	      			}
 	      			//2、如果第2个隐藏，则第1个等于w_1 + w_2，第3个等于w_1
-	      			else if(config[row_n*3+1].ishidden) {
+	      			else if(config[row_n*3+1].ishidden == "1") {
 	      				col[i] = relative_i == 0 ? w_1 + w_2 : w_1;
 	      			}
 	      		}
@@ -473,13 +405,13 @@
 	      const h_2 = total_h - h_1;
 	      let row = [h_1+"vh", h_2+"vh"]
 	    	//第1行格子都没有
-	    	if(config[0].ishidden&&config[1].ishidden&&config[2].ishidden)
+	    	if(config[0].ishidden=="1" && config[1].ishidden=="1" && config[2].ishidden=="1")
 	    	{
 	    		row[0] = 0;
 	    		row[1] = total_h + "vh";
 	    	}
 	    	//第2行格子都没有
-	    	if(config[3].ishidden&&config[4].ishidden&&config[5].ishidden)
+	    	if(config[3].ishidden=="1" && config[4].ishidden=="1" && config[5].ishidden=="1")
 	    	{
 	    		row[1] = 0;
 	    		row[0]= total_h + "vh";
@@ -541,6 +473,9 @@
 	  width: 100%;
 	  height: 100vh;
 	  background-color: #0f2a3d;
+	  // background-image: linear-gradient(45deg, #6a78b7, #444f87);
+	  // background-image: linear-gradient(45deg, #6a9eb7, #044a5f);
+
 	}
 
 	.btn {

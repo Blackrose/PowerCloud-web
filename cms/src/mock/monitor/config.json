@@ -6,51 +6,55 @@
 	"data": {
 	"size": {
 		"width": 25,
-		"height": 60
+		"height": 47
 	},
 	"config": [
 		{
 			"id":1,
-			"regionName": "模块1",
-			"functionName": "table",
-			"paramValue": "{\"electricitySubstationid\":2, \"companyid\":1}",
-			"isHidden": false
+			"regionname": "模块1",
+			"functionname": "table",
+			"paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
+			"ishidden": "0"
 		},
 		{
 			"id":2,
-			"regionName": "模块2",
-			"functionName": "map",
-			"paramValue": "{\"electricitySubstationid\":1}",
-			"isHidden": false
+			"regionname": "模块2",
+			"functionname": "map",
+			"paramvalue": "",
+			"ishidden": "0"
 		},
 		{
 			"id":3,
-			"regionName": "模块3",
-			"functionName": "transformer",
-			"paramValue": "{\"electricitySubstationid\":1, \"transformerid\": 2}",
-			"isHidden": false
+			"regionname": "模块3",
+			"functionname": "transformer",
+			"paramvalue": "{\"electricitysubstationid\":1, \"transformerid\": 2}",
+			"ishidden": "0"
 		},
 		{
 			"id":4,
-			"regionName": "模块4",
-			"functionName": "chart",
-			"paramValue": "{\"electricitySubstationid\":2}",
-			"isHidden": false
+			"regionname": "模块4",
+			// "functionname": "map",
+			// "paramvalue": "",
+			// "functionname": "sysGraph",
+			// "paramvalue": "{\"electricitysubstationid\":1, \"companyid\":1}",
+			"functionname": "chart",
+			"paramvalue": "{\"electricitysubstationid\":2}",
+			"ishidden": "0"
 		},
 		{
 			"id":5,
-			"regionName": "模块5",
-			"functionName": "sysGraph",
-			"paramValue": "{\"electricitySubstationid\":4, \"companyid\":1}",
-			"isHidden": false
+			"regionname": "模块5",
+			"functionname": "sysGraph",
+			"paramvalue": "{\"electricitysubstationid\":2, \"companyid\":1}",
+			"ishidden": "0"
 		},
 		{
 			"id":6,
-			"regionName": "模块6",
-			"functionName": "video",
-			"paramValue": "{\"companyid\":1, \"electricitySubstationid\":1, \"videoid\": 2}",
-			"isHidden": false
+			"regionname": "模块6",
+			"functionname": "video",
+			"paramvalue": "{\"companyid\":1, \"electricitysubstationid\":1, \"videoid\": 1}",
+			"ishidden": "0"
 		}
 	]
-}
+	}
 }
