@@ -26,9 +26,9 @@
         <div class="value-box">
           <p class="value-u">
             <span>电压</span>
-            <span>{{showCircuitData.Uab | filterNumber}}</span>
-            <span>{{showCircuitData.Uac | filterNumber}}</span>
-            <span>{{showCircuitData.Ubc | filterNumber}}</span>
+            <span>{{showCircuitData.Ua | filterNumber}}</span>
+            <span>{{showCircuitData.Ub | filterNumber}}</span>
+            <span>{{showCircuitData.Uc | filterNumber}}</span>
           </p>
           <p class="value-i">
             <span>电流</span>
@@ -291,7 +291,9 @@
         })
 
         function setColor(ele,status) {
-          ele.setAttribute("fill",status == 0 ? "#e53935" : "#4caf50");
+          let green = "#4caf50";
+          let red = "#F56C6C"
+          ele.setAttribute("fill",status == 0 ?  green : red);
         }
 
         function toFixed(v,num) {
@@ -400,7 +402,7 @@
     }
     p.value-u > span {
       color: #333;
-      background: rgba(178, 235, 242, 0.8);
+      background: rgba(179, 237, 255, 0.8);
     }
     p.value-i > span {
       color: #000;

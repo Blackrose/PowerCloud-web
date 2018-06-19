@@ -1,5 +1,10 @@
 <template>
 	<div class="box-card">
+		<!-- 标题 -->
+	  <div class="box-header">
+	  	<div class="title-wrapper"><p class="title"><svg-icon class="title-icon" :icon-class="titleIcon"></svg-icon>{{title}}</p></div>
+	  </div>
+
 		<!-- 关闭按钮 -->
 		<a href="javascript:void(0)" class="btn x"
 			@click="close()">
@@ -10,14 +15,78 @@
 			@click="fullScreen()">
 			<svg-icon icon-class="full_screen"></svg-icon>
 		</a>
-		<!-- 标题 -->
-	  <div class="box-header">
-	  	<div class="title-wrapper"><p class="title"><svg-icon class="title-icon" :icon-class="titleIcon"></svg-icon>{{title}}</p></div>
-	  </div>
+		<!-- 曲线模块的配置弹出框 -->
+		<el-popover
+			popper-class="box-popover"
+			v-if="paramValue && type == 'chart'"
+		  placement="bottom"
+		  width="325"
+		  trigger="click"
+		  v-model="visibleChartSettingForm"
+		>
+			<el-form ref="chartSettingForm" :model="chartSetting" label-width="40px"  size="mini">
+			  <el-form-item label="时间">
+			    <el-select v-model="chartSetting.time.type" placeholder="请选择显示时间">
+			      <el-option
+				      v-for="item in TIME_TYPE_OPTIONS"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+			    </el-select>
+			    <el-row  v-if="chartSetting.time.type == 0">
+				    <el-col :span="11">
+				      <el-time-picker type="date" placeholder="起始时间" v-model="chartSetting.time.start" style="width: 100%;"></el-time-picker>
+				    </el-col>
+				    <el-col style="text-align: center;" :span="2">-</el-col>
+				    <el-col :span="11">
+				      <el-time-picker type="fixed-time" placeholder="结束时间" v-model="chartSetting.time.end" style="width: 100%;"></el-time-picker>
+				    </el-col>
+				  </el-row>
+				  <el-row v-if="chartSetting.time.type == 1">
+				  	<el-select v-model="chartSetting.time.duration" placeholder="请选择显示时长">
+			      <el-option
+				      v-for="hour in DURATION_OPTIONS"
+				      :key="hour.value"
+				      :label="'最近'+hour.value+'小时'"
+				      :value="hour.value">
+				    </el-option>
+			    </el-select>
+				  </el-row>
+			  </el-form-item>
+			  <el-form-item label="参数">
+			  	<el-row>
+			  		<el-col>
+							<el-cascader class="my-select"
+								style="width:260px;"
+						    size="mini"
+						    :show-all-levels="true"
+						    :options="options"
+						    v-model="selectedOption"
+						    @change="chartSelectBarChange">
+						  </el-cascader>
+						</el-col>
+				    <el-col>
+				      <el-select v-model="chartSetting.value.parameter" placeholder="显示参数">
+					      <el-option
+						      v-for="item in PARAMETER_TYPE_OPTIONS"
+						      :key="item.value"
+						      :label="item.value"
+						      :value="item.value">
+						    </el-option>
+					    </el-select>
+				    </el-col>
+				  </el-row>
+			  </el-form-item>
+			  <p style="text-align: center;margin: 0"><el-button type="primary" @click="onChartSettingFormSubmit">确定</el-button></p>
+			</el-form>
+			<svg-icon class="btn setting" slot="reference" icon-class="setting"></svg-icon>
+		</el-popover>
+
 	  <!-- 上面的级联选择框 -->
-  	<el-row class="select-bar" v-if="paramValue">
+  	<el-row class="select-bar" v-else-if="paramValue && type != 'chart'">
   		<el-col>
-				<el-cascader class="my-select"
+				<el-cascader class="my-box-select"
 			    size="mini"
 			    :show-all-levels="true"
 			    :options="options"
@@ -26,8 +95,9 @@
 			  </el-cascader>
 			</el-col>
 		</el-row>
+
 		<!-- 内容 -->
-	  <div class="box-content">
+	  <div :class="['box-content',type=='chart' ? 'full-height':'']">
 	  	<slot></slot>
 	  </div>
 	</div>
@@ -69,6 +139,69 @@
         selectOptions: [],
         //选中的选项，为数组格式，[第一级,第二级,第三极]
         selectedOption: [],
+        visibleChartSettingForm: false,
+        TIME_TYPE_OPTIONS: [
+        	{
+        		value: 0,
+        		label: "按时段显示"
+        	},
+        	{
+        		value: 1,
+        		label: "实时显示"
+        	},
+        ],
+        DURATION_OPTIONS: [],
+        CABINET_TYPE_OPTIONS: [
+        	{
+        		value: 0,
+        		label: "进线柜"
+        	},
+        	{
+        		value: 1,
+        		label: "电容柜"
+        	},
+        	{
+        		value: 2,
+        		label: "馈电柜"
+        	}
+        ],
+        PARAMETER_TYPE_OPTIONS: [
+        	{
+        		value: "P"
+        	},
+        	{
+        		value: "Ua"
+        	},
+        	{
+        		value: "Ub"
+        	},
+        	{
+        		value: "Uc"
+        	},
+        	{
+        		value: "Ia"
+        	},
+        	{
+        		value: "Ib"
+        	},
+        	{
+        		value: "Ic"
+        	}
+        ],
+        //曲线的设置
+        chartSetting: {
+        	time: {
+        		type: 1,  // 0 : interval, 1: real-time
+        		start: Date.now(),  //timestamp
+        		end: Date.now(),    //timestamp
+        		duration: 1,        //hours
+        	},
+        	value: {
+        		//曲线模块里，popover菜单里的级联选项
+        		circuitid: 1,
+        		parameter: "Ua"
+        	}
+        }
       }
     },
     computed: {
@@ -81,6 +214,10 @@
 	    }
     },
 		created () {
+			let currentHour = (new Date()).getHours();
+			for(let i = 1; i <= currentHour; i++) {
+				this.DURATION_OPTIONS.push({value:i});
+			}
 			//这个参数，证明有级联选项
 			if(this.paramValue) {
 	    	//变电站的的ID,从config里的paramValue参数中解析获取
@@ -88,6 +225,14 @@
 				this.selectedOption =  [param.companyid, param.electricitysubstationid];
 				if(this.type == "video") {
 					this.selectedOption.push(+param.videoid)
+				}
+				else if(this.type == "transformer") {
+					this.selectedOption.push(+param.transformerid)
+				}
+				else if(this.type == "chart") {
+					this.selectedOption.push(+param.circuitid)
+					//曲线模块里，popover菜单里的级联选项！
+					this.chartSetting.value.circuitid = +param.circuitid;
 				}
 			}
 		},
@@ -122,6 +267,32 @@
       						})
       					}
       				}
+      				else if(type == "transformer") {
+      					station.children = [];
+      					//如果该变电站下有变压器
+      					if(_o.children.transformer && (_o.children.transformer).length) {
+      						//三级目录
+      						_o.children.transformer.forEach( (__o, __i) => {
+      							let transformer = {};
+			      				transformer.value = __o.id;
+			      				transformer.label = __o.name || "编号"+__o.num;
+			      				station.children.push(transformer);
+      						})
+      					}
+      				}
+      				else if(type == "chart") {
+      					station.children = [];
+      					//如果该变电站下有回路
+      					if(_o.children.circuit && (_o.children.circuit).length) {
+      						//三级目录
+      						_o.children.circuit.forEach( (__o, __i) => {
+      							let obj = {};
+			      				obj.value = __o.id;
+			      				obj.label = __o.circuitname;
+			      				station.children.push(obj);
+      						})
+      					}
+      				}
     				})
     				options.push(company);
     			}
@@ -131,18 +302,26 @@
 			selectBarChange (v) {
 				this.$emit('box-select-bar-change', v)
 			},
+			chartSelectBarChange (v) {
+				this.chartSetting.value.circuitid = v[2];
+			},
+			onChartSettingFormSubmit () {
+				this.visibleChartSettingForm = false;
+				this.$emit('box-chart-setting', this.chartSetting)
+			},
 			close () {
-				this.$emit('box-close', '我是子元素传过来的')
+				this.$emit('box-close')
 			},
 			fullScreen () {
-				this.$emit('box-full-screen', '我是子元素传过来的')
+				this.$emit('box-full-screen')
 			},
 		}
 	}
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-	.my-select {
+	.my-box-select {
+		width: 80%;
 		.el-input .el-input__inner{
 			background: transparent;
 		}
@@ -160,12 +339,19 @@
 	    border-color: #00bcd4;
 		}
 	}
+	.box-popover {
+		background: rgba(255,255,255,0.9);
+	}
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 	.btn svg {
 		width: 100%;
 		height: 100%;
+	}
+
+	.el-form-item {
+		margin-bottom: 15px;
 	}
   .box-card {
   	background: hsla(0,0%,100%,.15);
@@ -212,7 +398,8 @@
 		}
 
 		.x,
-		.full-screen {
+		.full-screen,
+		.setting {
 			display: none;
 			background-size: contain;
 			position: absolute;
@@ -235,8 +422,17 @@
 		  top: 12px;
 		  right: 48px;
 		}
+		.setting {
+			width: 30px;
+			height: 30px;
+			display: block;
+			top: auto;
+		  bottom: 0.1rem;
+		  right: 0.1rem;
+		}
 		.x:hover,
-		.full-screen:hover {
+		.full-screen:hover,
+		.setting:hover  {
 			transform: rotate(360deg);
 		}
 
@@ -244,15 +440,19 @@
 			height: calc(100% - 45px);
 			overflow: hidden;
 		}
-
-		.select-bar {
-			margin: 10px 0 10px 0;
+		.box-content.full-height {
+			height: 100%;
 		}
+
 
   }
 
+  .box-card .select-bar {
+			margin: 10px 0;
+		}
+
   .box-card:hover {
-		.x, .full-screen {
+		.x, .full-screen, .setting {
 			display: block;
 		}
 	}

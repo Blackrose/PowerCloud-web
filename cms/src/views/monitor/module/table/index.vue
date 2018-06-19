@@ -9,13 +9,13 @@
 	>
 		<ul v-if="data.length" ref="dataListEle"
 				:class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'data-list']" >
-			<li v-for="(o, index) in data">
-        <span class="name" :style="{ minWidth: nameMinWidth}">{{o.name}}</span>
+			<li v-for="(o, index) in data" >
+        <span :class="['name',o.status == 0 ? 'status-0' : 'status-1']" :style="{ minWidth: nameMinWidth}">{{o.name}}</span>
         <div class="value-box">
         	<p class="value-u">
-        		<span>{{o.Uab | filterNumber}}</span>
-	        	<span>{{o.Uac | filterNumber}}</span>
-	        	<span>{{o.Ubc | filterNumber}}</span>
+        		<span>{{o.Ua | filterNumber}}</span>
+	        	<span>{{o.Ub | filterNumber}}</span>
+	        	<span>{{o.Uc | filterNumber}}</span>
 	        </p>
 	        <p class="value-i">
         		<span>{{o.Ia | filterNumber}}</span>
@@ -113,7 +113,8 @@
 	  				try {
 	  					let resData = JSON.parse(response.data);
 	  					self.data = self.generateData(resData);
-
+console.log("~~~~~~~~~~~~~")
+	  					console.log(self.data)
 	  				}
 	  				catch(e) {
 	  					console.error("Error: in getStationData", e)
@@ -132,9 +133,6 @@
 	  		else {
 	  			mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.stationId);
 	  		}
-
-
-
   		},
   		generateData (resData) {
   			let data = [];
@@ -216,6 +214,19 @@
 				line-height: 40px;
 				align-items: center;
 				margin-bottom: 0.04rem;
+/*
+				.status {
+					display: inline-block;
+					width: 10px;
+					height: 10px;
+					border-radius: 50%;
+					background: #fff;
+					margin-left: -0.133333rem;
+					margin-right: 0.066667rem;
+				} */
+
+
+
 				.name {
 					display: inline-block;
 					margin-left: 0.066667rem;
@@ -224,16 +235,23 @@
 					position: relative;
 				}
 
-				.name:before {
+				 .name:before {
 					display: inline-block;
 					content: '';
 					width: 10px;
 					height: 10px;
 					border-radius: 50%;
-					background: #F56C6C;
+					background: #fff;
 					margin-left: -0.133333rem;
 					margin-right: 0.066667rem;
 				}
+				.name.status-0:before {
+					background: #4caf50;  //绿色  ： 告警
+				}
+				.name.status-1:before {
+					background: #F56C6C;  //红色 ： 正常
+				}
+
 
 				.value-box {
 					& > p {
@@ -255,7 +273,7 @@
 					}
 					p.value-u > span {
 						color: #333;
-						background: rgba(178, 235, 242, 0.8);
+						background: rgba(179, 237, 255, 0.8);
 					}
 					p.value-i > span {
 						color: #000;

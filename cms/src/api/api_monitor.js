@@ -14,11 +14,16 @@ let API_MAP = {
   //获取页面配置
   getConfig: "/monitor/getConfig",
   setConfig: "/monitor/setConfig",
-  // getConfig: "/electricitysubstation/getSubstaionData",
+
   mapPoint: "/electricitysubstation/getMapPoint",
+  //员工信息
+  staffDetail: "/electrician/profile",
+  //地图上的变电站状态
   stationData: "/electricitysubstation/getSubstationData",
-  getStationList: "/electricitysubstation/getSubstationData",
-  getSelectOptions: "/monitor/getSelectOptions"
+  //获取级联选择框的内容
+  getSelectOptions: "/monitor/getSelectOptions",
+  //回路参数曲线接口
+  getChartData: "/monitor/getChartData"
 }
 if(isLocal) {
 
@@ -27,9 +32,11 @@ if(isLocal) {
     getConfig: "/monitor/config.json",
     setConfig: "/success.json",
     mapPoint: ["/monitor/mapPoint1.json", "/monitor/mapPoint2.json", "/monitor/mapPoint3.json"],
+    staffDetail: "monitor/staffDetail.json",
     stationData: "/monitor/stationData.json",
-    getStationList: "/monitor/stationData.json",
-    getSelectOptions: "/monitor/getSelectOptions.json"
+    getSelectOptions: "/monitor/getSelectOptions.json",
+    //回路参数曲线接口
+    getChartData: "/monitor/getChartData.json"
 
   }
 }
@@ -39,7 +46,7 @@ else {
 }
 
 /*获取页面配置*/
-export function getConfig(id) {
+export function getConfig() {
   return request({
     url: API_URL["getConfig"],
     method: 'get'
@@ -61,14 +68,6 @@ export function getSelectOptions() {
   })
 }
 
-export function getStationList(id) {
-  return request({
-    url: isLocal ? API_URL["getStationList"] : API_URL["getStationList"],
-    method: 'get',
-    params: {electricianid:id}
-  })
-}
-
 export function getMapPoint(type) {
   return request({
     url: isLocal ? API_URL["mapPoint"][+type-1] : API_URL["mapPoint"],
@@ -77,14 +76,30 @@ export function getMapPoint(type) {
   })
 }
 
+export function getStaffDetail(id) {
+  return request({
+    url: API_URL["staffDetail"] + "?id="+id,
+    method: 'post'
+  })
+}
+
+
 export function getStationData(id) {
   return request({
-    url: isLocal ? API_URL["stationData"] : API_URL["stationData"],
+    url: API_URL["stationData"],
     method: 'post',
     params: {id:id}
   })
 }
 
+
+export function getChartData(data) {
+  return request({
+    url: API_URL["getChartData"],
+    method: 'post',
+    data
+  })
+}
 
 
 /*MQTT相关*/

@@ -8,20 +8,54 @@
 		@box-full-screen = "handleFullScreen"
 		@box-select-bar-change = "handleSelectBarChange"
 	>
-		<el-row ref="videoWrapperEle">
-			<el-col :span="22" :offset="1">
-
-			</el-col>
-		</el-row>
-
+    <div :class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'wrapper']" v-if="data">
+  		<el-row>
+        <el-col class="line temperature-wrapper">
+          <svg-icon class="icon"  icon-class="temperature"></svg-icon>
+          <span>温度&nbsp;&nbsp;&nbsp;{{data.temperature}} ℃</span>
+        </el-col>
+  		</el-row>
+      <el-row>
+        <el-col class="line">
+          <svg-icon class="icon"  icon-class="flash"></svg-icon>
+          <span>功率信息</span>
+        </el-col>
+        <el-col class="sub-line">功率因素：{{data.powerfactor}}</el-col>
+        <el-col class="sub-line">
+          <span>有功功率：{{data.activepower}}</span>
+          <span>无功功率：{{data.reactivepower}}</span>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col class="line">
+          <svg-icon class="icon"  icon-class="current"></svg-icon>
+          <span>电压电流信息</span>
+        </el-col>
+        <el-col class="sub-line current">
+          <span><i>Ia</i>:&nbsp;<b>{{data.Ia}}</b></span>
+          <span><i>Ib</i>:&nbsp;<b>{{data.Ib}}</b></span>
+          <span><i>Ic</i>:&nbsp;<b>{{data.Ic}}</b></span>
+        </el-col>
+        <el-col class="sub-line current">
+          <span><i>Ua</i>:&nbsp;<b>{{data.Ua}}</b></span>
+          <span><i>Ub</i>:&nbsp;<b>{{data.Ub}}</b></span>
+          <span><i>Uc</i>:&nbsp;<b>{{data.Uc}}</b></span>
+        </el-col>
+        <el-col class="sub-line current">
+          <span><i>Uab</i>:&nbsp;<b>{{data.Uab}}</b></span>
+          <span><i>Ubc</i>:&nbsp;<b>{{data.Ubc}}</b></span>
+          <span><i>Uac</i>:&nbsp;<b>{{data.Uac}}</b></span>
+        </el-col>
+      </el-row>
+    </div>
 	</monitor-box>
 </template>
 
 <script type="text/javascript">
 
-
+  import { mapGetters } from 'vuex'
 	import MonitorBox from '@/views/monitor/component/box.vue'
-	import {fetchList} from '@/api/api' ;
+	import {getStationData, initMqttConnection, mqttSubscribe, mqttUnsubscribe, mqttDisconnect} from '@/api/api_monitor' ;
 
 	export default {
 		components: {
@@ -39,91 +73,233 @@
 	      default: function () {
 	        return ''
 	      }
-	    },
-	    boxHeight: {
-        type: String,
-        default: function () {
-          return ""
-        }
-      }
+	    }
 	  },
 	  data () {
     	return {
-    		videoId: 0,
+        stationId: 0,
+    		transformerId: 0,
     		title: "变压器信息",
     		titleIcon: "transformer",
-
+        data: null, // 变压器信息
+        client: null,
+        MQTT_TOPIC: "/systemStatus_test",
+        // transformerImg,
     	}
   	},
-  	computed: {
-  		videoHeight: function() {
-  			if(this.boxHeight){
-  				return `calc(${this.boxHeight} - 0.4rem - 70px)`;
-  			}
-  			else {
-  				return "auto";
-  			}
-  		},
-  		videoWidth: function() {
-  			if(this.boxHeight){
-  				let h = +(this.boxHeight).match(/[0-9]+/)[0];
-  				return `calc(${h*4/3}vh - ${0.4*4/3}rem - ${70*4/3}px)`;
-  			}
-  			else {
-  				return "auto";
-  			}
-  		},
-  	},
+    computed: {
+      ...mapGetters([
+      'monitor'
+      ])
+    },
   	created () {
   		//变电站视频的ID,从config里的paramValue参数中解析获取
 			let param = JSON.parse(this.paramValue);
 			//触发watch事件，init
-			this.videoId =  param.videoid;
+      this.stationId = 1 || param.stationid;
+			this.transformerId =  1 || param.transformerid;
+
   	},
   	watch: {
   		//监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
-  		videoId: function(newValue, oldValue) {
+  		transformerId: function(newValue, oldValue) {
+        if(this.client) {
+          mqttUnsubscribe(this.client, this.MQTT_TOPIC+"/"+oldValue)
+        }
   			this.init();
   		}
   	},
   	methods: {
   		init () {
-  			let param = {
-  				page: 1,
-					limit: 1,
-					search: {"id":this.videoId}
-  			}
-  			fetchList("electricitySubstation_video",param).then( res => {
-  				if(res.data && res.data.items) {
+        let self = this;
+        self.data = null;
 
-  				}
-  			})
+        getStationData(this.stationId).then( res => {
+          if(res.ok) {
+            this.data = this.generateTransformerData(JSON.parse(res.data));
+          }
+        })
+
+        //注册MQTT事件
+        if(!self.client) {
+          initMqttConnection(function(client) {
+            self.client = client;
+            mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.transformerId);
+          }, self.handleMqttStatus);
+        }
+        else {
+          mqttSubscribe(self.client, self.MQTT_TOPIC+"/"+self.transformerId);
+        }
+
   		},
+      handleMqttStatus (msg) {
+        console.log("==== handle Mqtt TRANSFORMER station data ====");
+        try {
+
+          let sysData = JSON.parse(msg.payloadString);
+
+
+          this.data = this.generateTransformerData(sysData);
+
+          console.log(this.data);
+        } catch(e){
+          console.error("Error: error in transformer handleMqttStatus", e);
+        }
+      },
   		handleSelectBarChange (value) {
-  			this.videoId = value[2];
+  			this.transformerId = value[2];
   		},
       handleClose () {
+        /*注销MQTT订阅*/
+        if(this.client) {
+          mqttUnsubscribe(this.client, this.MQTT_TOPIC+"/"+this.transformerId)
+        }
       	this.$emit("module-close",this.moduleIndex);
       },
       handleFullScreen () {
       	this.$emit("module-full-screen",this.moduleIndex);
       },
+      generateTransformerData (sysDataArr) {
+        console.log(sysDataArr)
+        let data = null;
+        if(Array.isArray(sysDataArr)) {
+          sysDataArr.forEach( (d, i) => {
+            // console.log(d,this.transformerId)
+            if(d.cabinet && d.cabinet.transformid == this.transformerId) {
+              data = {
+                "id": d.cabinet.transformid,
+                "temperature": d.cabinet.temperature,
+                "powerfactor": d.cabinet.powerfactor,
+                "activepower": d.cabinet.activepower,
+                "reactivepower": d.cabinet.reactivepower,
+                "Ia": d.cabinet.Ia,
+                "Ib": d.cabinet.Ib,
+                "Ic": d.cabinet.Ic,
+                "Ua": d.vm.Ua,
+                "Ub": d.vm.Ub,
+                "Uc": d.vm.Uc,
+                "Uab": d.cabinet.Uab,
+                "Ubc": d.cabinet.Ubc,
+                "Uac": d.cabinet.Uac
+              }
+              return
+            }
+          })
+          return data || this.data;
+        }
+      }
   	}
   }
 
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-	.video-title {
-		line-height: 0.22rem;
-	}
-	.video-player {
-		background: #000;
-		max-width: 100%;
-		margin: 0 auto;
-		position: relative;
-		margin-top: 0.1rem;
-	}
 
+  $color_danger:#F56C6C;
+  $color_warning:#E6A23C;
+  $color_success:#00c853;
+
+  .wrapper {
+    height: 100%;
+    overflow-y: scroll;
+  }
+  .wrapper::-webkit-scrollbar {/*滚动条整体样式*/
+      width: 10px;     /*高宽分别对应横竖滚动条的尺寸*/
+      height: 4px;
+  }
+  .wrapper::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+      border-radius: 5px;
+      background: rgba(255,255,255,0.7);
+  }
+  .wrapper::-webkit-scrollbar-track {/*滚动条里面轨道*/
+      border-radius: 5px;
+      background: rgba(255,255,255,0.1);
+  }
+  .el-row {
+    margin: 10px;
+    margin-bottom: 20px;
+    .el-col {
+      padding-left: 10%;
+    }
+    .icon {
+      margin-right: 1%;
+      font-size: 28px;
+      margin-left: -10%;
+    }
+
+    .transformer {
+      font-size: 200px;
+    }
+
+    .line {
+      font-weight: bold;
+      color: #b3edff;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      padding-bottom: 0.08rem;
+    }
+
+    .line.temperature-wrapper {
+      font-size: 26px;
+      padding-top: 0.133333rem;
+      color: $color_warning;
+
+      // font-weight: 100;
+    }
+
+    .sub-line {
+      padding-left: 11%;
+      font-size: 14px;
+      margin: 0.05rem 0;
+      text-align: left;
+      display: flex;
+
+      span {
+        margin-right: 0.133333rem;
+      }
+      // justify-content: space-between;
+    }
+
+    .sub-line.current {
+      span {
+        width: 30%;
+        display: inline-block;
+        i {
+          display: inline-block;
+          width: 30px;
+          font-style: normal;
+          // margin-right: 5px;
+        }
+        b {
+
+          display: inline-block;
+          min-width: 35px;
+          font-weight: 100;
+        }
+      }
+    }
+
+  }
+
+  .is-full-screen {
+
+    .el-row {
+      margin-bottom: 40px;
+
+      .line {
+        font-size: 20px;
+      }
+      .line.temperature-wrapper {
+        margin-top: 20px;
+        font-size: 30px;
+      }
+
+      .sub-line {
+        font-size: 18px;
+      }
+    }
+
+  }
 
 </style>

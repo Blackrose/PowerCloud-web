@@ -85,7 +85,6 @@
 				  		<module-transformer v-else-if="module.functionname == 'transformer'"
 		  					:moduleIndex = "index"
 		  					:paramValue = "config[index].paramvalue"
-		  					:boxHeight = "row[rowIndex]"
 			  				@module-close = "handleModuleClose"
 			  				@module-full-screen = "handleFullScreen"
 				  		>

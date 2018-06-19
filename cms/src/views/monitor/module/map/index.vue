@@ -6,6 +6,30 @@
     @box-full-screen = "handleFullScreen"
 	>
 		<div :id="getMapId()" class="allmap" :style="{height:mapHeight}"></div>
+    <!-- 员工信息 -->
+    <transition name="el-fade-in-linear">
+      <div id="user-box" v-show="visibleUserInfo">
+        <a href="javascript:void(0)" id="x-btn" @click="visibleUserInfo=false"><svg-icon icon-class="x"></svg-icon></a>
+        <div id="user-info" v-if="staffDetail">
+          <p class="name">员工编号：{{staffDetail.id||"-"}}</p>
+          <p class="name">员工姓名：{{staffDetail.name||""}}</p>
+          <p class="name">所属公司：{{staffDetail.sccompanyname||"-"}}</p>
+          <p class="name">当前职称：{{staffDetail.positionaltitle||"-"}}</p>
+          <p class="name">办公电话：{{staffDetail.tel||"-"}}</p>
+          <p class="name">移动电话：{{staffDetail.phone||"-"}}</p>
+          <p class="status">在岗状态：</p>
+        </div>
+      </div>
+    </transition>
+
+
+    <div class="btn-bar">
+      <el-switch class="tag-switch"
+        v-model="isTagsOn"
+        inactive-color="#999"
+        active-text="标签">
+      </el-switch>
+    </div>
 	</monitor-box>
 </template>
 
@@ -16,7 +40,7 @@
   import {BMapLib} from '@/views/monitor/lib/bMapLib_RichMarker_MarkerManager.js';
   //坐标转换
   const coorConvert = require('@/views/monitor/lib/coor-convert.js');
-  import {getMapPoint, initMqttConnection, mqttSubscribe, mqttUnsubscribe} from '@/api/api_monitor' ;
+  import {getMapPoint, getStaffDetail, initMqttConnection, mqttSubscribe, mqttUnsubscribe} from '@/api/api_monitor' ;
 
 
 	export default {
@@ -42,12 +66,31 @@
     		title: "位置显示",
     		titleIcon: "position",
     		map: null,
+        isTagsOn: false,
         mapMgrArr: [],
         totalPoint: [],
         client: null, //mqtt客户端
         MQTT_TOPIC: "/stationStatus",
+        visibleUserInfo: false,
+        staffDetail: null, //员工信息
     	}
   	},
+    watch: {
+      isTagsOn (newValue, oldValue) {
+        let mapRootEle = document.querySelector("#"+this.getMapId());
+        //全开
+        if(newValue) {
+          mapRootEle.querySelectorAll(".p-tag").forEach( (ele, i) => {
+            ele.classList.add("on");
+          })
+        }
+        else {
+          mapRootEle.querySelectorAll(".p-tag").forEach( (ele, i) => {
+            ele.classList.remove("on");
+          })
+        }
+      }
+    },
     computed: {
       mapHeight () {
         return this.boxHeight ? `calc(${this.boxHeight} - 2px)` : "auto";
@@ -121,15 +164,15 @@
                       let html;
                       //企业
                       if(i == 0) {
-                        html = "<div class='p p-company' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>企业："+o.tag+"</span></div>";
+                        html = "<div class='p p-company' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>"+o.tag+"</span></div>";
                       }
                       //变电站
                       else if(i == 1) {
-                        html = "<div class='p p-station s-0-0' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>变电站："+o.tag+"</span></div>";
+                        html = "<div class='p p-station s-0-0' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>"+o.tag+"</span></div>";
                       }
                       //员工
                       else if(i == 2) {
-                        html = "<div class='p p-staff' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>员工："+o.tag+"</span></div>";
+                        html = "<div class='p p-staff' data-id='"+o.id+"' data-pos='"+convertor.join("|")+"'><span class='p-tag'>"+o.tag+"</span></div>";
                       }
                       var marker = new BMapLib.RichMarker(html, pointsArr[i][_i]);
                       markersArr[i].push(marker);
@@ -158,23 +201,34 @@
           ele.addEventListener("mouseenter", handleMouseEnter);
           ele.addEventListener("mouseleave", handleMouseLeave);
         })
+        //点击员工头像
+        let staffEles = mapRootEle.querySelectorAll(".p-staff");
+        staffEles.forEach( (ele, i) => {
+          ele.addEventListener("click", handleStaffClick);
+        })
+
+        let self = this;
 
         function handleMouseEnter(e) {
-          /*if(!$("#tag-toggle").hasClass('toggle-off')){
-            return
-          }*/
           e.target.querySelectorAll(".p-tag").forEach( (ele, i) => {
             ele.classList.add("on");
           })
         }
 
         function handleMouseLeave(e) {
-          /*if(!$("#tag-toggle").hasClass('toggle-off')){
-            return
-          }*/
           e.target.querySelectorAll(".p-tag").forEach( (ele, i) => {
             ele.classList.remove("on");
           })
+        }
+
+        function handleStaffClick(e) {
+          if(e.target) {
+            let staffid = e.target.getAttribute("data-id");
+            getStaffDetail(staffid).then( res => {
+              self.staffDetail = JSON.parse(res.data);
+              self.visibleUserInfo = true;
+            })
+          }
         }
       },
       handleMqttStatus (msg) {
@@ -214,8 +268,8 @@
                 ele.classList.remove('s-0-0');
                 ele.classList.add(['s', o.statusA, o.statusB].join("-"));
                 //告警提示
-                let name = ((ele.querySelector(".p-tag").innerHTML).split("："))[1]
-                html.push("<p><i class='el-icon-caret-right'></i>"+name+"："+statusAText[+o.statusA]+" - "+statusBText[+o.statusB]+"</p>");
+                let name = ele.querySelector(".p-tag").innerHTML;
+                html.push(`<p><i class='el-icon-caret-right'></i>${name}：${statusAText[+o.statusA]} - ${statusBText[+o.statusB]}</p>`);
               }
             })
           });
@@ -392,11 +446,41 @@
     top: 10px;
   }
 
+
+
+  #user-box {
+    padding: 0.1rem;
+    /*border: 1px rgb(90,161,249) solid;*/
+    border-radius: 0.04rem;
+    background: rgba(255,255,255,0.9);
+    position: absolute;
+    left: 0.1rem;
+    bottom: 40px;
+    color: #333;
+  }
+
+
+  #user-info > p {
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  #x-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  .tag-switch  .el-switch__label span {
+    color: #eee;
+    font-weight: bold;
+  }
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   .box-card {
-    // overflow-y:hidden;
+    overflow:hidden;
   }
 	.allmap {
     // border-radius: 5px;
@@ -408,5 +492,20 @@
 		top: 0;
 		left: 0;
 	}
+
+  .btn-bar {
+    height: 35px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+  }
+
+
 
 </style>

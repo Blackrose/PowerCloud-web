@@ -42,7 +42,7 @@
 											<el-col  :span="3" >参数:</el-col>
 												<el-cascader
 													:style="{minWidth:'300px'}"
-													:options="getFunctionName(item.functionid) != 'video'?options1 : options2"
+													:options="generateOptions(getFunctionName(item.functionid))"
 													v-model="selectedOptions[index]"
 													@change="handleChange">
 												</el-cascader>
@@ -76,10 +76,12 @@ export default {
 			options: [],
 			//选择企业 变电站的级联列表
 			selectedOptions:[[],[],[],[],[],[]],
-			//二级级联
-      options1:[],
-      //三级级联
-      options2:[],
+			// //二级级联
+   //    options1:[],
+   //    //三级级联  视频
+   //    options2:[],
+   //    //三级级联  变压器
+   //    options3:[],
       //目前所拥有的模块
       functions:[],
       //当前模块的权限
@@ -108,7 +110,7 @@ export default {
         }
       })
     }
-console.log("~~~~~~")
+
     console.log(this.allowed.update)
 
 		Promise.all([getMonitorfunctions(), getMontinorSelectOptions(), getMonitorConfig(), ]).then(resArr => {
@@ -117,8 +119,6 @@ console.log("~~~~~~")
 
 				//生成级联列表
 	    	this.options=resArr[1].data;
-				this.options1 = this.generateOptions();//调用函数通过this
-	      this.options2 = this.generateOptions("video");
 
 				//返回一个数组列表，每个函数为数组中的一项
 				if(Array.isArray(resArr[2].data.config)) {
@@ -133,7 +133,7 @@ console.log("~~~~~~")
 				    	if(this.getFunctionName(item.functionid) == "video") {
 				    		this.selectedOptions[i].push(p.videoid);
 				    	}
-				    	else if(p.transformerid) {
+				    	else if(this.getFunctionName(item.functionid) == "transformer") {
 				    		this.selectedOptions[i].push(p.transformerid);
 				    	}
 			    	}
@@ -186,6 +186,32 @@ console.log("~~~~~~")
 		      				video.value = __o.id;
 		      				video.label = "编号"+__o.num;
 		      				station.children.push(video);
+    						})
+    					}
+    				}
+    				else if(type == "transformer") {
+    					station.children = [];
+    					//如果该变电站下有视频
+    					if(_o.children.transformer && (_o.children.transformer).length) {
+    						//三级目录
+    						_o.children.transformer.forEach( (__o, __i) => {
+    							let transformer = {};
+		      				transformer.value = __o.id;
+		      				transformer.label = __o.name || "编号"+__o.num;
+		      				station.children.push(transformer);
+    						})
+    					}
+    				}
+    				else if(type == "chart") {
+    					station.children = [];
+    					//如果该变电站下有回路
+    					if(_o.children.circuit && (_o.children.circuit).length) {
+    						//三级目录
+    						_o.children.circuit.forEach( (__o, __i) => {
+    							let obj = {};
+		      				obj.value = __o.id;
+		      				obj.label = __o.circuitname;
+		      				station.children.push(obj);
     						})
     					}
     				}
