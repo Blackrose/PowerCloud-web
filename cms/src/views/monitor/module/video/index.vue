@@ -78,7 +78,7 @@
 	        notSupportedMessage: '此视频暂无法播放，请稍后再试', //允许覆盖Video.js无法播放媒体源时显示的默认信息。
 	       controlBar: {
 	         timeDivider: false,
-	         durationDisplay: true,
+	         durationDisplay: false,
 	         remainingTimeDisplay: false,
 	         fullscreenToggle: true  //全屏按钮
 	       }
@@ -125,7 +125,7 @@
   			}
   			fetchList("electricitySubstation_video",param).then( res => {
   				if(res.data && res.data.items) {
-  					console.log(res.data.items[0].url)
+  					// console.log(res.data.items[0].url)
   					this.playerOptions.sources[0].src = res.data.items[0].url
 
   				}

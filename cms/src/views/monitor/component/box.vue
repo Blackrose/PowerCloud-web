@@ -18,7 +18,7 @@
 		<!-- 曲线模块的配置弹出框 -->
 		<el-popover
 			popper-class="box-popover"
-			v-if="paramValue && type == 'chart'"
+			v-if="paramValue && type == 'chart' && chartSetting"
 		  placement="bottom"
 		  width="325"
 		  trigger="click"
@@ -36,11 +36,11 @@
 			    </el-select>
 			    <el-row  v-if="chartSetting.time.type == 0">
 				    <el-col :span="11">
-				      <el-time-picker type="date" placeholder="起始时间" v-model="chartSetting.time.start" style="width: 100%;"></el-time-picker>
+				      <el-time-picker type="date" placeholder="起始时间"  value-format="timestamp" v-model="chartSetting.time.start" style="width: 100%;"></el-time-picker>
 				    </el-col>
 				    <el-col style="text-align: center;" :span="2">-</el-col>
 				    <el-col :span="11">
-				      <el-time-picker type="fixed-time" placeholder="结束时间" v-model="chartSetting.time.end" style="width: 100%;"></el-time-picker>
+				      <el-time-picker type="fixed-time" placeholder="结束时间"  value-format="timestamp" v-model="chartSetting.time.end" style="width: 100%;"></el-time-picker>
 				    </el-col>
 				  </el-row>
 				  <el-row v-if="chartSetting.time.type == 1">
@@ -71,16 +71,21 @@
 					      <el-option
 						      v-for="item in PARAMETER_TYPE_OPTIONS"
 						      :key="item.value"
-						      :label="item.value"
+						      :label="item.label"
 						      :value="item.value">
 						    </el-option>
 					    </el-select>
 				    </el-col>
 				  </el-row>
 			  </el-form-item>
-			  <p style="text-align: center;margin: 0"><el-button type="primary" @click="onChartSettingFormSubmit">确定</el-button></p>
+			  <p style="text-align: center;margin: 0"><el-button type="primary" @click="onChartSettingFormSubmit" size="mini">确定</el-button></p>
 			</el-form>
-			<svg-icon class="btn setting" slot="reference" icon-class="setting"></svg-icon>
+			<!-- <el-button type="primary" icon="el-icon-setting" circle></el-button> -->
+			<el-button slot="reference" size="mini" class="btn-setting" type="primary" icon="el-icon-setting">设置</el-button>
+			<!-- <a  href="javascript:void(0)"  >
+				设置<svg-icon  icon-class="setting"></svg-icon>
+			</a> -->
+
 		</el-popover>
 
 	  <!-- 上面的级联选择框 -->
@@ -131,6 +136,12 @@
 	      default: function () {
 	        return ''
 	      }
+	    },
+	    chartSetting: {
+	    	type: Object,
+	    	default: function () {
+	    		return null
+	    	}
 	    }
 		},
 		data() {
@@ -167,29 +178,56 @@
         ],
         PARAMETER_TYPE_OPTIONS: [
         	{
-        		value: "P"
-        	},
-        	{
-        		value: "Ua"
-        	},
-        	{
-        		value: "Ub"
-        	},
-        	{
-        		value: "Uc"
-        	},
-        	{
-        		value: "Ia"
-        	},
-        	{
-        		value: "Ib"
-        	},
-        	{
-        		value: "Ic"
-        	}
+        		value:"Ua",
+        		label:"Ua"
+          },
+          {
+          	value:"Ub",
+          	label:"Ub"
+          },
+          {
+          	value:"Uc",
+          	label:"Uc"
+          },
+          {
+          	value:"Ia",
+          	label:"Ia"
+          },
+          {
+          	value:"Ib",
+          	label:"Ib"
+          },
+          {
+          	value:"Ic",
+          	label:"Ic"
+          },
+          {
+          	value:"Uab",
+          	label:"Uab"
+          },
+          {
+          	value:"Ubc",
+          	label:"Ubc"
+          },
+          {
+          	value:"Uac",
+          	label:"Uac"
+          },
+          {
+          	value:"activepower",
+          	label:"有功功率"
+          },
+          {
+          	value:"reactivepower",
+          	label:"无功功率"
+          },
+          {
+          	value:"powerfactor",
+          	label:"功率因数"
+          }
         ],
         //曲线的设置
-        chartSetting: {
+        /*chartSetting: {
         	time: {
         		type: 1,  // 0 : interval, 1: real-time
         		start: Date.now(),  //timestamp
@@ -201,7 +239,7 @@
         		circuitid: 1,
         		parameter: "Ua"
         	}
-        }
+        }*/
       }
     },
     computed: {
@@ -232,6 +270,7 @@
 				else if(this.type == "chart") {
 					this.selectedOption.push(+param.circuitid)
 					//曲线模块里，popover菜单里的级联选项！
+					this.chartSetting.value.stationid = +param.electricitysubstationid;
 					this.chartSetting.value.circuitid = +param.circuitid;
 				}
 			}
@@ -303,6 +342,7 @@
 				this.$emit('box-select-bar-change', v)
 			},
 			chartSelectBarChange (v) {
+				this.chartSetting.value.stationid = v[1];
 				this.chartSetting.value.circuitid = v[2];
 			},
 			onChartSettingFormSubmit () {
@@ -396,7 +436,21 @@
 		  	margin-right: 5px;
 		  }
 		}
-
+		.btn-setting {
+			background: transparent;
+			font-weight: bold;
+			border: none;
+			font-size: 14px;
+			color: #00bcd4;
+			position: absolute;
+			top: auto;
+		  bottom: 0.1rem;
+		  right: 0.1rem;
+		  z-index: 999;
+		}
+		.btn-setting:hover {
+			filter:brightness(1.2);
+		}
 		.x,
 		.full-screen,
 		.setting {

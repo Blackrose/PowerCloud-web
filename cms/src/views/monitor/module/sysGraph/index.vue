@@ -293,7 +293,7 @@
         function setColor(ele,status) {
           let green = "#4caf50";
           let red = "#F56C6C"
-          ele.setAttribute("fill",status == 0 ?  green : red);
+          ele.setAttribute("fill",status == 0 ?  red : green);
         }
 
         function toFixed(v,num) {

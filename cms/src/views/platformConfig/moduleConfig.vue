@@ -111,8 +111,6 @@ export default {
       })
     }
 
-    console.log(this.allowed.update)
-
 		Promise.all([getMonitorfunctions(), getMontinorSelectOptions(), getMonitorConfig(), ]).then(resArr => {
 				//生成功能选择列表
 				this.functions = resArr[0].data.items;
@@ -135,6 +133,9 @@ export default {
 				    	}
 				    	else if(this.getFunctionName(item.functionid) == "transformer") {
 				    		this.selectedOptions[i].push(p.transformerid);
+				    	}
+				    	else if(this.getFunctionName(item.functionid) == "chart") {
+				    		this.selectedOptions[i].push(p.circuitid);
 				    	}
 			    	}
 			    	// item.functionname = this.getFunctionName(item.functionid);
@@ -231,9 +232,12 @@ export default {
 					if(this.getFunctionName(item.functionid) == "video") {
 						p.videoid = this.selectedOptions[i][2];
 					}
-					/*else if(item.functionname == "transformer") {
+					else if(item.functionname == "transformer") {
 						p.transformerid = this.selectedOptions[i][2];
-					}*/
+					}
+					else if(item.functionname == "chart") {
+						p.circuitid = this.selectedOptions[i][2];
+					}
 					item.paramvalue = JSON.stringify(p);
 				}
 			})

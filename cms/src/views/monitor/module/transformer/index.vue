@@ -8,7 +8,7 @@
 		@box-full-screen = "handleFullScreen"
 		@box-select-bar-change = "handleSelectBarChange"
 	>
-    <div :class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'wrapper']" v-if="data">
+    <div :class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'wrapper']" v-if="data" ref="infoBoxEle">
   		<el-row>
         <el-col class="line temperature-wrapper">
           <svg-icon class="icon"  icon-class="temperature"></svg-icon>
@@ -20,7 +20,7 @@
           <svg-icon class="icon"  icon-class="flash"></svg-icon>
           <span>功率信息</span>
         </el-col>
-        <el-col class="sub-line">功率因素：{{data.powerfactor}}</el-col>
+        <el-col class="sub-line">功率因数：{{data.powerfactor}}</el-col>
         <el-col class="sub-line">
           <span>有功功率：{{data.activepower}}</span>
           <span>无功功率：{{data.reactivepower}}</span>
@@ -48,6 +48,7 @@
         </el-col>
       </el-row>
     </div>
+    <el-row v-else class="tip"><el-col>暂无数据</el-col></el-row>
 	</monitor-box>
 </template>
 
@@ -83,7 +84,7 @@
     		titleIcon: "transformer",
         data: null, // 变压器信息
         client: null,
-        MQTT_TOPIC: "/systemStatus_test",
+        MQTT_TOPIC: "/systemStatus",
         // transformerImg,
     	}
   	},
@@ -96,9 +97,8 @@
   		//变电站视频的ID,从config里的paramValue参数中解析获取
 			let param = JSON.parse(this.paramValue);
 			//触发watch事件，init
-      this.stationId = 1 || param.stationid;
-			this.transformerId =  1 || param.transformerid;
-
+      this.stationId = param.electricitysubstationid;
+			this.transformerId =  param.transformerid;
   	},
   	watch: {
   		//监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
@@ -135,18 +135,25 @@
       handleMqttStatus (msg) {
         console.log("==== handle Mqtt TRANSFORMER station data ====");
         try {
-
           let sysData = JSON.parse(msg.payloadString);
-
-
           this.data = this.generateTransformerData(sysData);
 
-          console.log(this.data);
+          //高亮动画
+          if(this.$refs.infoBoxEle) {
+            this.$refs.infoBoxEle.classList.add("highlight");
+          }
+          setTimeout( () => {
+            if(this.$refs.infoBoxEle) {
+              this.$refs.infoBoxEle.classList.remove("highlight");
+            }
+          }, 600)
+
         } catch(e){
           console.error("Error: error in transformer handleMqttStatus", e);
         }
       },
   		handleSelectBarChange (value) {
+        this.stationId = value[1];
   			this.transformerId = value[2];
   		},
       handleClose () {
@@ -160,11 +167,9 @@
       	this.$emit("module-full-screen",this.moduleIndex);
       },
       generateTransformerData (sysDataArr) {
-        console.log(sysDataArr)
         let data = null;
         if(Array.isArray(sysDataArr)) {
           sysDataArr.forEach( (d, i) => {
-            // console.log(d,this.transformerId)
             if(d.cabinet && d.cabinet.transformid == this.transformerId) {
               data = {
                 "id": d.cabinet.transformid,
@@ -282,11 +287,10 @@
 
   }
 
+  /* 全屏 */
   .is-full-screen {
-
     .el-row {
       margin-bottom: 40px;
-
       .line {
         font-size: 20px;
       }
@@ -294,12 +298,29 @@
         margin-top: 20px;
         font-size: 30px;
       }
-
       .sub-line {
         font-size: 18px;
+        transition:textShadow .5s ease;
       }
     }
+  }
 
+  .wrapper.highlight {
+    .sub-line {
+      text-shadow:0 0 0.1em rgba(255,193,7,0.8),
+                -0 -0 0.1em rgba(255,193,7,0.8);
+    }
+
+  }
+
+  .tip {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items:center;
+    .el-col {
+      padding: 0;
+    }
   }
 
 </style>

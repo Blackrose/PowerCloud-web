@@ -113,8 +113,6 @@
 	  				try {
 	  					let resData = JSON.parse(response.data);
 	  					self.data = self.generateData(resData);
-console.log("~~~~~~~~~~~~~")
-	  					console.log(self.data)
 	  				}
 	  				catch(e) {
 	  					console.error("Error: in getStationData", e)
@@ -246,10 +244,10 @@ console.log("~~~~~~~~~~~~~")
 					margin-right: 0.066667rem;
 				}
 				.name.status-0:before {
-					background: #4caf50;  //绿色  ： 告警
+					background: #F56C6C;  //红色 ： 正常
 				}
 				.name.status-1:before {
-					background: #F56C6C;  //红色 ： 正常
+					background: #4caf50;  //绿色  ： 告警
 				}
 
 
