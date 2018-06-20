@@ -72,10 +72,10 @@
 	        fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
 	        sources: [{
 	          type: "application/x-mpegURL",
-          	src: 'http://wzfree.10043.doftp.com/tvtest/182tv.php/live/id/suntv.m3u8',
+          	src: '',
 	        }],
 	        // width: document.documentElement.clientWidth,
-	        notSupportedMessage: '此视频暂无法播放，请稍后再试', //允许覆盖Video.js无法播放媒体源时显示的默认信息。
+	        notSupportedMessage: '此视频暂无法播放 或 此变电所下暂无视频', //允许覆盖Video.js无法播放媒体源时显示的默认信息。
 	       controlBar: {
 	         timeDivider: false,
 	         durationDisplay: false,
@@ -126,8 +126,9 @@
   			fetchList("electricitySubstation_video",param).then( res => {
   				if(res.data && res.data.items) {
   					// console.log(res.data.items[0].url)
-  					this.playerOptions.sources[0].src = res.data.items[0].url
-
+  					if(this.videoId) {
+  						this.playerOptions.sources[0].src = res.data.items[0].url
+  					}
   				}
   			})
   		},

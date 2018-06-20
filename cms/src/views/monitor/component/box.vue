@@ -365,6 +365,7 @@
 		.el-input .el-input__inner{
 			background: transparent;
 		}
+
 		.el-cascader__label {
 			color: #fff;
 			& > span {
@@ -379,12 +380,15 @@
 	    border-color: #00bcd4;
 		}
 	}
+
 	.box-popover {
 		background: rgba(255,255,255,0.9);
 	}
+
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+
 	.btn svg {
 		width: 100%;
 		height: 100%;

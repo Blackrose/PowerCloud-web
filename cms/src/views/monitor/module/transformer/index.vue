@@ -12,7 +12,7 @@
   		<el-row>
         <el-col class="line temperature-wrapper">
           <svg-icon class="icon"  icon-class="temperature"></svg-icon>
-          <span>温度&nbsp;&nbsp;&nbsp;{{data.temperature}} ℃</span>
+          <span>温度&nbsp;&nbsp;&nbsp;{{data.temperature||"-"}} ℃</span>
         </el-col>
   		</el-row>
       <el-row>
@@ -20,10 +20,10 @@
           <svg-icon class="icon"  icon-class="flash"></svg-icon>
           <span>功率信息</span>
         </el-col>
-        <el-col class="sub-line">功率因数：{{data.powerfactor}}</el-col>
+        <el-col class="sub-line">功率因数：{{data.powerfactor||"-"}}</el-col>
         <el-col class="sub-line">
-          <span>有功功率：{{data.activepower}}</span>
-          <span>无功功率：{{data.reactivepower}}</span>
+          <span>有功功率：{{data.activepower||"-"}}</span>
+          <span>无功功率：{{data.reactivepower||"-"}}</span>
         </el-col>
       </el-row>
       <el-row>
@@ -32,14 +32,14 @@
           <span>电压电流信息</span>
         </el-col>
         <el-col class="sub-line current">
-          <span><i>Ia</i>:&nbsp;<b>{{data.Ia}}</b></span>
-          <span><i>Ib</i>:&nbsp;<b>{{data.Ib}}</b></span>
-          <span><i>Ic</i>:&nbsp;<b>{{data.Ic}}</b></span>
+          <span><i>Ia</i>:&nbsp;<b>{{data.Ia||"-"}}</b></span>
+          <span><i>Ib</i>:&nbsp;<b>{{data.Ib||"-"}}</b></span>
+          <span><i>Ic</i>:&nbsp;<b>{{data.Ic||"-"}}</b></span>
         </el-col>
         <el-col class="sub-line current">
-          <span><i>Ua</i>:&nbsp;<b>{{data.Ua}}</b></span>
-          <span><i>Ub</i>:&nbsp;<b>{{data.Ub}}</b></span>
-          <span><i>Uc</i>:&nbsp;<b>{{data.Uc}}</b></span>
+          <span><i>Ua</i>:&nbsp;<b>{{data.Ua||"-"}}</b></span>
+          <span><i>Ub</i>:&nbsp;<b>{{data.Ub||"-"}}</b></span>
+          <span><i>Uc</i>:&nbsp;<b>{{data.Uc||"-"}}</b></span>
         </el-col>
         <el-col class="sub-line current">
           <span><i>Uab</i>:&nbsp;<b>{{data.Uab}}</b></span>
@@ -170,7 +170,7 @@
         let data = null;
         if(Array.isArray(sysDataArr)) {
           sysDataArr.forEach( (d, i) => {
-            if(d.cabinet && d.cabinet.transformid == this.transformerId) {
+            if(d.cabinet && (d.cabinet.transformid == this.transformerId||d.cabinet.transformerid == this.transformerId)) {
               data = {
                 "id": d.cabinet.transformid,
                 "temperature": d.cabinet.temperature,
