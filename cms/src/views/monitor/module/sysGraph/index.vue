@@ -362,6 +362,7 @@
     // padding: 0.1rem 0 0 0.1rem;
     // background: rgba(255,255,255,0.2);
     text-align: left;
+    font-size: 14px;
     .name {
       font-size: 16px;
     }

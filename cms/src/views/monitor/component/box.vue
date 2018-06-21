@@ -4,7 +4,6 @@
 	  <div class="box-header">
 	  	<div class="title-wrapper"><p class="title"><svg-icon class="title-icon" :icon-class="titleIcon"></svg-icon>{{title}}</p></div>
 	  </div>
-
 		<!-- 关闭按钮 -->
 		<a href="javascript:void(0)" class="btn x"
 			@click="close()">
@@ -22,8 +21,7 @@
 		  placement="bottom"
 		  width="325"
 		  trigger="click"
-		  v-model="visibleChartSettingForm"
-		>
+		  v-model="visibleChartSettingForm">
 			<el-form ref="chartSettingForm" :model="chartSetting" label-width="40px"  size="mini">
 			  <el-form-item label="时间">
 			    <el-select v-model="chartSetting.time.type" placeholder="请选择显示时间">
@@ -87,7 +85,6 @@
 			</a> -->
 
 		</el-popover>
-
 	  <!-- 上面的级联选择框 -->
   	<el-row class="select-bar" v-else-if="paramValue && type != 'chart'">
   		<el-col>
@@ -100,7 +97,6 @@
 			  </el-cascader>
 			</el-col>
 		</el-row>
-
 		<!-- 内容 -->
 	  <div :class="['box-content',type=='chart' ? 'full-height':'']">
 	  	<slot></slot>
@@ -415,7 +411,7 @@
 		  z-index: 999;
 		}
 		.btn-setting:hover {
-			filter:brightness(1.2);
+			filter:brightness(1.5);
 		}
 		.x,
 		.full-screen,
@@ -429,9 +425,10 @@
 		  padding: 0;
 		  margin: 0;
 		  border-radius: 0;
-		  transition: transform .5s ease;
+		  // transition: transform .5s ease;
 		  z-index: 200;
 		  color: #00bcd4;
+      // transform-origin:center center;
 		}
 		.x {
 		  right: 15px;
@@ -453,7 +450,8 @@
 		.x:hover,
 		.full-screen:hover,
 		.setting:hover  {
-			transform: rotate(360deg);
+      filter:brightness(1.2);
+			// transform: rotate(360deg);
 		}
 
 		.box-content {

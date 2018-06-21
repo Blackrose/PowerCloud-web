@@ -9,7 +9,7 @@
 	>
 		<ul v-if="data.length" ref="dataListEle"
 				:class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'data-list']" >
-			<li v-for="(o, index) in data" >
+			<li v-for="(o, index) in data"  :key="index">
         <span :class="['name',o.status == 0 ? 'status-0' : 'status-1']" :style="{ minWidth: nameMinWidth}">{{o.name}}</span>
         <div class="value-box">
         	<p class="value-u">

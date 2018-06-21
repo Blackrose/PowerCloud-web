@@ -17,12 +17,10 @@
           <p class="name">当前职称：{{staffDetail.positionaltitle||"-"}}</p>
           <p class="name">办公电话：{{staffDetail.tel||"-"}}</p>
           <p class="name">移动电话：{{staffDetail.phone||"-"}}</p>
-          <p class="status">在岗状态：</p>
+          <p class="status">在岗状态：<i :class="[staffDetail.status == 0 ? 'el-icon-success success' : 'el-icon-warning warning']"></i></p>
         </div>
       </div>
     </transition>
-
-
     <div class="btn-bar">
       <el-switch class="tag-switch"
         v-model="isTagsOn"
@@ -504,6 +502,13 @@
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
+  }
+
+  .success {
+    color: green;
+  }
+  .warning {
+    color: orange;
   }
 
 

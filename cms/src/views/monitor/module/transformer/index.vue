@@ -280,7 +280,7 @@
 
           display: inline-block;
           min-width: 35px;
-          font-weight: 100;
+          font-weight: normal;
         }
       }
     }

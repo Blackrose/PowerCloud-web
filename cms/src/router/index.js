@@ -132,7 +132,7 @@ export const constantRouterMap = [
       },
       {
         path: 'customer',
-        name: 'electricitySubstation',
+        name: 'customer-electricitySubstation1',
         component: () => import('@/views/enterprise/electricitySubstation'),
         meta: { title: '企业配置', icon: 'example' },
         hidden: true,
@@ -147,14 +147,14 @@ export const constantRouterMap = [
       },
       {
         path: 'customer',
-        name: 'electricitySubstation_video',
+        name: 'customer-electricitySubstation_video',
         component: () => import('@/views/enterprise/electricitySubstation_video'),
         meta: { title: '企业配置', icon: 'example' },
         hidden: true,
         children: [
           {
             path: ':companyid/electricitySubstation',
-            name: 'electricitySubstation_video',
+            name: 'customer-electricitySubstation6',
             meta: { title: '变电所信息', icon: 'example' },
             children: [
               {
@@ -168,14 +168,14 @@ export const constantRouterMap = [
       },
       {
         path: 'customer',
-        name: 'electricitySubstation_pic',
+        name: 'customer-electricitySubstation_pic',
         component: () => import('@/views/enterprise/electricitySubstation_pic'),
         meta: { title: '企业配置', icon: 'example' },
         hidden: true,
         children: [
           {
             path: ':companyid/electricitySubstation',
-            name: 'electricitySubstation_pic',
+            name: 'customer-electricitySubstation2',
             meta: { title: '变电所信息', icon: 'example' },
             children: [
               {
@@ -189,14 +189,14 @@ export const constantRouterMap = [
       },
       {
         path: 'customer',
-        name: 'electricitySubstation_cabinets',
+        name: 'customer-electricitySubstation_cabinets',
         component: () => import('@/views/enterprise/electricitySubstation_cabinets'),
         meta: { title: '企业配置', icon: 'example' },
         hidden: true,
         children: [
           {
             path: ':companyid/electricitySubstation',
-            name: 'electricitySubstation_pic',
+            name: 'customer-electricitySubstation3',
             meta: { title: '变电所信息', icon: 'example' },
             children: [
               {
@@ -210,24 +210,24 @@ export const constantRouterMap = [
       },
       {
         path: 'customer',
-        name: 'electricitySubstation_low_pic',
+        name: 'customer-electricitySubstation_low_pic',
         component: () => import('@/views/enterprise/electricitySubstation_low_pic'),
         meta: { title: '企业配置', icon: 'example' },
         hidden: true,
         children: [
           {
             path: ':companyid/electricitySubstation',
-            name: 'electricitySubstation_pic',
+            name: 'customer-electricitySubstation4',
             meta: { title: '变电所信息', icon: 'example' },
             children: [
               {
                 path: ':electricitysubstationid/electricitySubstation_cabinets',
-                name: 'deviceElecMeter',
+                name: 'customer-electricitySubstation_cabinets2',
                 meta: { title: '机柜配置', icon: 'example' },
                 children: [
                   {
                     path: ':lowcabinetid/electricitySubstation_low_pic',
-                    name: 'deviceElecMeter',
+                    name: 'deviceElecMeter_pic',
                     meta: { title: '馈电柜图纸配置', icon: 'example' },
                   }
                 ]
@@ -238,19 +238,19 @@ export const constantRouterMap = [
       },
       {
         path: 'customer',
-        name: 'deviceElecMeter',
+        name: 'customer-deviceElecMeter',
         component: () => import('@/views/enterprise/deviceElecMeter'),
         meta: { title: '企业配置', icon: 'example' },
         hidden: true,
         children: [
           {
             path: ':companyid/electricitySubstation',
-            name: 'electricitySubstation_pic',
+            name: 'customer-electricitySubstation5',
             meta: { title: '变电所信息', icon: 'example' },
             children: [
               {
                 path: ':electricitysubstationid/electricitySubstation_cabinets',
-                name: 'deviceElecMeter',
+                name: 'customer-electricitySubstation_cabinets3',
                 meta: { title: '机柜配置', icon: 'example' },
                 children: [
                   {

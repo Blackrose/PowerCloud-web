@@ -46,9 +46,9 @@
 		  </el-header>
 		  <el-main v-if="config">
 		  	<!-- 共两行 -->
-		  	<el-row v-for="rowIndex in [0,1]" :gutter="15">
-		  		<el-col :key="index" class="grid" :span="col[index]"
-		  			v-for="(module,index) in config" v-if="[0,1,2].indexOf(index - 3*rowIndex) >= 0" >
+		  	<el-row v-for="(rowIndex,row_i) in [0,1]" :gutter="15" :key="row_i">
+		  		<el-col v-for="(module,index) in config" :key="module.functionname+index" class="grid" :span="col[index]"
+		  			 v-if="[0,1,2].indexOf(index - 3*rowIndex) >= 0" >
 		  			<!-- ishidden -->
 		  			<div v-if="config[index].ishidden == '0'" class="grid-content" :style="{ height: row[rowIndex]}">
 		  				<module-table v-if="module.functionname == 'table'"
@@ -88,7 +88,7 @@
 			  				@module-close = "handleModuleClose"
 			  				@module-full-screen = "handleFullScreen"
 				  		>
-				  	</module-transformer>
+				  	 </module-transformer>
 				  		<module-sys-graph v-else-if="module.functionname == 'sysGraph'"
 		  					:moduleIndex = "index"
 		  					:paramValue = "config[index].paramvalue"
