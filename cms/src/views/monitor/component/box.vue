@@ -178,40 +178,16 @@
         ],
         PARAMETER_TYPE_OPTIONS: [
         	{
-        		value:"Ua",
-        		label:"Ua"
+        		value:"Ua/Ub/Uc",
+        		label:"Ua/Ub/Uc"
           },
           {
-          	value:"Ub",
-          	label:"Ub"
+          	value:"Ia/Ib/Ic",
+          	label:"Ia/Ib/Ic"
           },
           {
-          	value:"Uc",
-          	label:"Uc"
-          },
-          {
-          	value:"Ia",
-          	label:"Ia"
-          },
-          {
-          	value:"Ib",
-          	label:"Ib"
-          },
-          {
-          	value:"Ic",
-          	label:"Ic"
-          },
-          {
-          	value:"Uab",
-          	label:"Uab"
-          },
-          {
-          	value:"Ubc",
-          	label:"Ubc"
-          },
-          {
-          	value:"Uac",
-          	label:"Uac"
+          	value:"Uab/Uac/Ubc",
+          	label:"Uab/Uac/Ubc"
           },
           {
           	value:"activepower",
@@ -225,21 +201,7 @@
           	value:"powerfactor",
           	label:"功率因数"
           }
-        ],
-        //曲线的设置
-        /*chartSetting: {
-        	time: {
-        		type: 1,  // 0 : interval, 1: real-time
-        		start: Date.now(),  //timestamp
-        		end: Date.now(),    //timestamp
-        		duration: 1,        //hours
-        	},
-        	value: {
-        		//曲线模块里，popover菜单里的级联选项
-        		circuitid: 1,
-        		parameter: "Ua"
-        	}
-        }*/
+        ]
       }
     },
     computed: {

@@ -81,15 +81,9 @@
         client: null,
         MQTT_TOPIC: "/systemStatus",
         YAXIS_MAP : {
-          "Ua":"Ua",
-          "Ub":"Ub",
-          "Uc":"Uc",
-          "Ia":"Ia",
-          "Ib":"Ib",
-          "Ic":"Ic",
-          "Uab":"Uab",
-          "Ubc":"Ubc",
-          "Uac":"Uac",
+          "Ua/Ub/Uc":"Ua/Ub/Uc",
+          "Ia/Ib/Ic":"Ia/Ib/Ic",
+          "Uab/Uac/Ubc":"Uab/Uac/Ubc",
           "activepower": "有功功率",
           "reactivepower": "无功功率",
           "powerfactor": "功率因数"
@@ -122,8 +116,6 @@
 			//init
 			this.chartSetting.value.circuitid =  param.circuitid ;
       this.init();
-
-
   	},
     watch: {
       //监听变电所ID选择的切换,注销旧的MQTT事件。生成新的数据
@@ -167,15 +159,14 @@
             text: "",
             show: false
           },
-          tooltip: {
-            trigger: 'axis',
-            formatter: function (params) {
-              params = params[0];
-              return '时间：'+params.axisValueLabel + '<br>数值：' + params.value;
-            },
-            axisPointer: {
-              animation: false
+          legend: {
+            data: [],
+            textStyle: {
+              color: "#fff"
             }
+          },
+          tooltip: {
+            trigger: 'axis'
           },
           grid: {
             left: 60,
@@ -199,30 +190,64 @@
               }
             }
           },
-          series: [{
-            data: [],
-            type: 'line',
-            smooth: true
-          }]
+          series: []
         };
         //要显示的曲线类型，Ua Ia等
         let category = this.chartSetting.value.parameter;
         //纵坐标名称
         options.yAxis.name = this.YAXIS_MAP[category];
+        //如果是下面的类型，要三种曲线都显示在图上
+        if(category == "Ia/Ib/Ic" || category == "Ua/Ub/Uc" || category == "Uab/Uac/Ubc") {
+          let lineColor = ["#00bcd4","#ffd03f","#d87a80"];//蓝色 黄色 红色
+          let categoryArr = category.split("/");
+          categoryArr.forEach( (o,i) => {
+            options.series.push({
+              data: [],
+              name: o,
+              type: 'line',
+              smooth: true,
+              lineStyle: {
+                color: lineColor[i]
+              }
+            })
+          })
+          //图例 和 曲线 颜色对应
+          options.color = lineColor;
+          options.legend.data = categoryArr;
+        }
+        else {
+          options.series.push({
+            data: [],
+            name: this.YAXIS_MAP[category],
+            type: 'line',
+            smooth: true
+          })
+          options.legend.data = [this.YAXIS_MAP[category]];
+        }
+        //收到的数据
         if(Array.isArray(data)) {
           data.forEach( (d,i) => {
             //X轴
             options.xAxis.data.push(this.dateFormat(d.datatime));
             //Y轴
-            if(d[category]) {
-              options.series[0].data.push(+d[category])
+            if(category == "Ia/Ib/Ic" || category == "Ua/Ub/Uc" || category == "Uab/Uac/Ubc") {
+              let categoryArr = category.split("/");
+              categoryArr.forEach( (o,j) => {
+                options.series[j].data.push(+d[o])
+              })
             }
+            else {
+              if(d[category]) {
+                options.series[0].data.push(+d[category])
+              }
+            }
+
           })
           if(data[0]) {
             options.title.text = data[0].name;  //回路名称
           }
         }
-
+console.log(options)
         return options;
       },
       dateFormat (timestamp) {
