@@ -247,7 +247,6 @@
             options.title.text = data[0].name;  //回路名称
           }
         }
-console.log(options)
         return options;
       },
       dateFormat (timestamp) {
@@ -262,7 +261,6 @@ console.log(options)
           // console.log(msg.payloadString);
           let data = JSON.parse(msg.payloadString);
           let xArr = this.chartOptions.xAxis.data;
-          let yArr = this.chartOptions.series[0].data;
 
           //横坐标，当前时间
           xArr.shift();
@@ -270,15 +268,30 @@ console.log(options)
           //纵坐标，要显示的类型
           let category = this.chartSetting.value.parameter;
           let dataArr = generateData(data);
-          yArr.shift();
+
           dataArr.forEach( (circuit, i) => {
             if(circuit.id == this.chartSetting.value.circuitid) {
-              yArr.push(circuit[category])
+              if(category == "Ia/Ib/Ic" || category == "Ua/Ub/Uc" || category == "Uab/Uac/Ubc") {
+                let categoryArr = category.split("/");
+                categoryArr.forEach( (o, j) => {
+                  let yArr = this.chartOptions.series[j].data;
+                  yArr.shift();
+                  yArr.push(circuit[o]);
+                  this.chartOptions.series[j].data = yArr;
+                })
+              }
+              else {
+                let yArr = this.chartOptions.series[0].data;
+                yArr.shift();
+                yArr.push(circuit[category]);
+                this.chartOptions.series[0].data = yArr;
+              }
+              return
             }
           })
 
           this.chartOptions.xAxis.data = xArr;
-          this.chartOptions.series[0].data = yArr;
+
 
         } catch(e){
           console.error("Error: error in table handleMqttStatus", e);

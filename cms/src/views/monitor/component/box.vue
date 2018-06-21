@@ -177,13 +177,13 @@
         	}
         ],
         PARAMETER_TYPE_OPTIONS: [
-        	{
-        		value:"Ua/Ub/Uc",
-        		label:"Ua/Ub/Uc"
-          },
           {
           	value:"Ia/Ib/Ic",
           	label:"Ia/Ib/Ic"
+          },
+          {
+        		value:"Ua/Ub/Uc",
+        		label:"Ua/Ub/Uc"
           },
           {
           	value:"Uab/Uac/Ubc",

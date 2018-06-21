@@ -170,7 +170,7 @@
         let data = null;
         if(Array.isArray(sysDataArr)) {
           sysDataArr.forEach( (d, i) => {
-            if(d.cabinet && (d.cabinet.transformid == this.transformerId||d.cabinet.transformerid == this.transformerId)) {
+            if(d.cabinet && d.cabinet.transformid == this.transformerId) {
               data = {
                 "id": d.cabinet.transformid,
                 "temperature": d.cabinet.temperature,
@@ -206,7 +206,7 @@
 
   .wrapper {
     height: 100%;
-    overflow-y: scroll;
+    overflow: overlay;
   }
   .wrapper::-webkit-scrollbar {/*滚动条整体样式*/
       width: 10px;     /*高宽分别对应横竖滚动条的尺寸*/
