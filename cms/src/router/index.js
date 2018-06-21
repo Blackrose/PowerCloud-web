@@ -19,7 +19,7 @@ import Layout from '../views/layout/Layout'
 const SysGraph = r => require.ensure([], () => r(require('../views/sysGraph/index')))
 const CircuitAlarmRule = r => require.ensure([], () => r(require('../views/circuitAlarmRule/index')))
 
-const Monitor = r => require.ensure([], () => r(require('../views/Monitor/index')))
+const Monitor = r => require.ensure([], () => r(require('../views/monitor/index')))
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -255,7 +255,7 @@ export const constantRouterMap = [
                 children: [
                   {
                     path: ':cabinetid/deviceElecMeter/:cabinettype',
-                    name: 'deviceElecMeter',
+                    name: 'customer-electricitySubstation_cabinets4',
                     meta: { title: '电表配置', icon: 'example' },
                   }
                 ]
