@@ -104,7 +104,14 @@ function bindEvent(argument) {
 
 /*请求员工信息*/
 function handleStaffClick(e) {
-  let userid = e.target.getAttribute("data-id");
+  let userid;
+  if(e.target.nodeName.toUpperCase() == "SPAN") {
+    let parent = e.target.parentNode;
+    userid = parent.getAttribute("data-id");
+  }
+  else {
+    userid = e.target.getAttribute("data-id");
+  }
   fetch(HOST + STAFF_DETAIL_PATH + `?id=${userid}`, {
     method: "POST",
     credentials: 'include',

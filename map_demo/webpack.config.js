@@ -5,6 +5,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const ZipPlugin = require('zip-webpack-plugin')
+
+
 const config = {
   // devtool: '#eval-source-map',
   // devtool: process.env.NODE_ENV === 'development' ? '#eval-source-map' : "#cheap-module-source-map",
@@ -99,7 +102,10 @@ const config = {
       // hash : true,
       minify: { removeAttributeQuotes: true, removeComments: true },
     }),
-
+    new ZipPlugin({
+      path:path.join(__dirname,'./dist'),
+      filename: 'map_demo.zip'
+    })
   ],
   optimization: {
     runtimeChunk: {
