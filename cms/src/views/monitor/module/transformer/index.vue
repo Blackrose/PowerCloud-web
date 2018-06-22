@@ -10,10 +10,16 @@
 	>
     <div :class="[monitor.fullScreenIndex == moduleIndex ? 'is-full-screen' : '', 'wrapper']" v-if="data" ref="infoBoxEle">
   		<el-row>
-        <el-col class="line temperature-wrapper">
+        <el-col class="line">
+          <svg-icon class="icon"  icon-class="load"></svg-icon>
+          <span>电流载荷：{{data.currentload||"-"}}</span>
+        </el-col>
+        <!-- <el-col class="sub-line">电流载荷：{{data.currentload||"-"}}</el-col> -->
+
+       <!--  <el-col class="line temperature-wrapper">
           <svg-icon class="icon"  icon-class="temperature"></svg-icon>
           <span>温度&nbsp;&nbsp;&nbsp;{{data.temperature||"-"}} ℃</span>
-        </el-col>
+        </el-col> -->
   		</el-row>
       <el-row>
         <el-col class="line">
@@ -173,7 +179,8 @@
             if(d.cabinet && d.cabinet.transformid == this.transformerId) {
               data = {
                 "id": d.cabinet.transformid,
-                "temperature": d.cabinet.temperature,
+                // "temperature": d.cabinet.temperature,
+                "currentload": d.cabinet.currentload,
                 "powerfactor": d.cabinet.powerfactor,
                 "activepower": d.cabinet.activepower,
                 "reactivepower": d.cabinet.reactivepower,

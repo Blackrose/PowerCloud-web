@@ -204,7 +204,7 @@
 		overflow-y: overlay;
 		margin: 0;
 		padding: 0 0.1rem;
-		font-size: 12px;
+		font-size: 14px;
 			li {
 				display: flex;
 				justify-content: space-between;

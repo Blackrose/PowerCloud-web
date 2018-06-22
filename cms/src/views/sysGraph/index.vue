@@ -48,19 +48,46 @@
 					  <el-form-item label="机柜配置">
 					  </el-form-item>
 					</el-form>
-			  	<ul>
+			  	<ul style="padding-left: 32px">
 			  		<li v-for="(item, index) in config">
-			  			<el-form  label-width="80px">
+			  			<el-form  label-width="90px">
 			  				<el-row>
 				  				<el-col :span="2" class="list-title">进电柜{{index+1}}:</el-col>
-				  				<el-col :span="1"></el-col>
+
 					  			<el-col :span="5">
 							      <el-form-item label="电容柜数">
 									    <el-input v-model.number="item.capacityNum"></el-input>
 									  </el-form-item>
 							    </el-col>
 
-							    <el-col :span="5">
+							    <el-col :span="1">&nbsp;</el-col>
+
+
+							    <el-col :span="8">
+							    	<el-row>
+							    		<el-form-item label="馈电柜配置">
+							    			<el-button class="btn" type="primary" plain icon="el-icon-plus" size="mini" @click="onAddDistributing(index)">增加馈电柜</el-button>
+							    		</el-form-item>
+							    	</el-row>
+							    	<el-row v-for="(dis, j) in item.distributing" :key="j">
+							      	<!-- <el-col :span="4">
+									      <el-form-item :label="'馈电柜'+(j+1)">
+											  </el-form-item>
+									    </el-col> -->
+							      	<el-col :span="16">
+									      <el-form-item :label="(j+1)+'-回路数'">
+											    <el-input v-model.number="dis.circuitNum"></el-input>
+											  </el-form-item>
+									    </el-col>
+									    <el-col :span="1">&nbsp;</el-col>
+									    <el-col :span="7">
+									      <el-button class="btn" type="danger" plain icon="el-icon-delete" size="mini" circle  @click="onDeleteDistributing(index,j)"></el-button>
+									    </el-col>
+							      </el-row>
+							    </el-col>
+
+
+							   <!--  <el-col :span="5">
 							      <el-form-item label="馈电柜数">
 									    <el-input v-model.number="item.distributingNum"></el-input>
 									  </el-form-item>
@@ -70,11 +97,11 @@
 							      <el-form-item label="回路数">
 									    <el-input v-model.number="item.circuitNum"></el-input>
 									  </el-form-item>
-							    </el-col>
+							    </el-col> -->
 							    <el-col :span="1">&nbsp;</el-col>
-							    <el-col :span="3">
-							    	<el-button class="btn" type="primary" plain icon="el-icon-plus" circle @click="onAdd(index)"></el-button>
-  									<el-button class="btn" type="danger" plain icon="el-icon-delete" circle  @click="onDelete(index)"></el-button>
+							    <el-col :span="6">
+							    	<el-button class="btn" type="primary" plain icon="el-icon-plus"  @click="onAdd(index)">增加机柜</el-button>
+  									<el-button class="btn" type="danger" plain icon="el-icon-delete"   @click="onDelete(index)">删除机柜</el-button>
 							    </el-col>
 							  </el-row>
 							  <el-row v-if="index !== (config.length-1)" class="connect-wrapper">
@@ -145,8 +172,9 @@ export default {
 			config: [
 				{
 					capacityNum:0,
+					distributing: [],
 					distributingNum:0,
-					circuitNum:0,
+					circuitNum:[],
 					connectNext:false
 				}
 			],
@@ -185,17 +213,30 @@ export default {
 				}
 
 				//画馈电柜
-				var distributing_w = w3*o.circuitNum + margin*(o.circuitNum-1) +15; //15是避免文字溢出的向左偏移量
-				for(var i = 0; i < o.distributingNum; i++) {
+				var distributing_w_arr = [];
+				//计算出一个机柜下，每个馈电柜的宽度
+				for(var i = 0; i < o.distributing.length; i++) {
+					var _distributing = o.distributing[i];
+					var _distributing_w = w3*_distributing.circuitNum + margin*(_distributing.circuitNum-1) +15;  //15是避免文字溢出的向左偏移量
+					distributing_w_arr.push(_distributing_w);
+				}
+
+				for(var i = 0; i < o.distributing.length; i++) {
 					var ele = this.InitDistrbuting(o,i);
 					var base_margin_left = w1 + (margin+w2)*o.capacityNum;
-					ele.move(padding+base_margin_left+margin_w2*(i+1)+distributing_w*i, base_top).addClass('s-distributing');
+					var maring_left = padding+base_margin_left+margin_w2*(i+1);
+					for(var j = 0; j < i; j++) {
+						maring_left += distributing_w_arr[j];  //加上第j个馈电柜的宽度
+					}
+					ele.move(maring_left, base_top).addClass('s-distributing');
 					G.add(ele);
 				}
 
-				// var total_w = w1 + w2*o.capacityNum + (w3*o.circuitNum + margin*(o.circuitNum-1))*o.distributingNum + margin*(1+o.capacityNum+o.distributingNum-1);
-				var total_w = w1 + (margin+w2)*o.capacityNum
-											+ (margin_w2+distributing_w)*o.distributingNum;
+				//总宽度
+				var total_w = w1 + (margin+w2)*o.capacityNum;
+				for(var i = 0; i < distributing_w_arr.length; i++) {
+					total_w += (margin_w2+distributing_w_arr[i]);
+				}
 				total_w_arr.push(total_w);
 
 			})
@@ -356,19 +397,23 @@ export default {
 		InitDistrbuting(obj,index) {
 			var G = draw.group().addClass('s-distri');
 			var offset = 15; //避免文字溢出产生的的偏移量
+
+			var _circuitNum = obj.distributing[index].circuitNum;
 			//最上面的 竖线 连接线
 			G.line(w3/2+offset,margin_h1,w3/2+offset,margin_h1+margin_h2).stroke({ width: 2, color: '#fff' });
 
 			//横线 连接线
-			var distributing_w = w3/2+(obj.circuitNum-1)*(w3+margin);
+			// var distributing_w = w3/2+(obj.circuitNum-1)*(w3+margin);
+			var distributing_w = w3/2+(_circuitNum-1)*(w3+margin);
 			G.line(offset+w3/2, margin_h1+margin_h2, offset+distributing_w, margin_h1+margin_h2).stroke({ width: 2, color: '#fff' });
 
-			for(var i=0;i<obj.circuitNum;i++) {
+			// for(var i=0;i<obj.circuitNum;i++) {
+			for(var i=0;i<_circuitNum;i++) {
 				var S_Circuit = this.initCircuit();
 				G.use(S_Circuit).move((margin+w3)*i, margin_h1+margin_h2).addClass('s-circuit');
 			}
 
-			G.text((index+1)+"#馈出柜").move(distributing_w/2-20,margin_h1+margin_h2/2).font({ fill: t_color, size: 20 });
+			G.text((index+1)+"#馈电柜").move(distributing_w/2-20,margin_h1+margin_h2/2).font({ fill: t_color, size: 20 });
 
 			return G
 		},
@@ -396,9 +441,25 @@ export default {
 
 			return Symbol;
 		},
+		//增加馈电柜
+		onAddDistributing(index) {
+			this.config[index].distributing.push({
+				circuitNum:0
+			})
+		},
+		// 删除馈电柜
+		onDeleteDistributing(index,_index) {
+			if(this.config[index].distributing.length == 1) {
+				this.config[index].distributing = []
+			}
+			else {
+				this.config[index].distributing.splice(_index, 1)
+			}
+		},
 		onAdd(index) {
 			this.config.splice(index+1, 0, {
 				capacityNum: 0,
+				distributing: [],
 				distributingNum: 0,
 				circuitNum: 0,
 				connectNext: false
@@ -408,8 +469,9 @@ export default {
 			if(this.config.length == 1) {
 				this.config = [{
 					capacityNum: 0,
+					distributing: [],
 					distributingNum: 0,
-					circuitNum: 0,
+					circuitNum: [],
 					connectNext: false
 				}]
 			}
@@ -435,8 +497,10 @@ export default {
 			this.title = ""
 			this.config = [{
 				capacityNum: 0,
+				distributing: [],
 				distributingNum: 0,
-				circuitNum: 0
+				circuitNum: 0,
+				connectNext: false
 			}]
 		}
 	}
