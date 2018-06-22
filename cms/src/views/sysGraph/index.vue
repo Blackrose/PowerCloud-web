@@ -179,12 +179,12 @@ export default {
 				for(var i = 0; i < o.capacityNum; i++) {
 					var ele = this.initCapacity();
 					var margin_left = w1 + margin*(i+1) + w2*i;
-					console.log(margin_left)
+					// console.log(margin_left)
 					ele.move(padding+margin_left, base_top+margin_h1).addClass('s-cap');
 					G.add(ele);
 				}
 
-				//画馈出柜
+				//画馈电柜
 				var distributing_w = w3*o.circuitNum + margin*(o.circuitNum-1) +15; //15是避免文字溢出的向左偏移量
 				for(var i = 0; i < o.distributingNum; i++) {
 					var ele = this.InitDistrbuting(o,i);
@@ -297,7 +297,7 @@ export default {
 			  add.tspan("Ia:").newLine()
 			  add.tspan("Ib:").newLine()
 			  add.tspan("Ic:").newLine()
-			  add.tspan("cosφ:").newLine()
+			  add.tspan("").newLine()
 			})
 			.move(60, item_h/3-40)
 			.font({ fill: "#fff", size: 18 })
@@ -318,7 +318,9 @@ export default {
 
 			G.line(35, 0, 35, 190).stroke({ width: 2, color: '#fff' });
 			G.rect(20, 50).fill("#fff").move(25,110).addClass("s-cap-rect");
-			G.polyline([[34,0], [0,70], [70,70], [34,0]]).stroke({ width: 2, color: '#fff' }).attr({ fill: 'rgba(0,0,0,0)' }).move(1, 190);
+			//三角形
+			var triangle = drawCapacityTriangle();
+			G.add(triangle.move(10, 224));
 
 			//分支
 			G.polyline([[0,0], [50,0], [50,100]]).stroke({ width: 2, color: '#fff' }).attr({ fill: 'rgba(0,0,0,0)' }).move(35, 85);
@@ -331,6 +333,24 @@ export default {
 			G.text("电容柜").move(5,h2+margin_h1).font({ fill: t_color, size: 20 })
 
 			return G;
+
+			// 电容三角形
+			function drawCapacityTriangle() {
+				var  G = draw.group();
+				G.add(drawLine().transform({ rotation: 60 }))
+				G.add(drawLine().move(-26,43));
+				G.add(drawLine().transform({ rotation: -60 }).move(-7,25));
+
+				function drawLine () {
+					var  Line = draw.group();
+					Line.line(0, 7, 45, 7).stroke({ width: 2, color: '#fff' });
+					Line.line(45, 14, 45, 0).stroke({ width: 2, color: '#fff' });
+					Line.line(55, 14, 55, 0).stroke({ width: 2, color: '#fff' });
+					Line.line(55, 7, 100, 7).stroke({ width: 2, color: '#fff' });
+					return Line;
+				}
+				return G;
+			}
 		},
 		//馈出柜
 		InitDistrbuting(obj,index) {
