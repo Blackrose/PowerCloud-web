@@ -155,6 +155,12 @@ export default {
         mainKey: true,   //主键！！！ 用于删除
       },
       {
+        key: "gatewayid",
+        label: "网关ID",
+        type: "number",
+        isEdit: false
+      },
+      {
         key: "gatewayname",
         label: "网关名称",
         type: "string",
@@ -205,6 +211,22 @@ export default {
         key: "description",
         label: "备注说明",
         type: "string",
+      },
+      {
+        key: "status",
+        label: "状态",
+        type: "select",
+        default: "0",
+        options: [
+          {
+            value: "0",
+            label: "正常"
+          },
+          {
+            value: "1",
+            label: "停用"
+          }
+        ]
       }
     ],
     subTable: [{

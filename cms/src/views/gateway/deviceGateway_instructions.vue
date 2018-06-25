@@ -25,7 +25,7 @@ export default {
       connectModule: [{
         moduleName: "deviceGateway",
         myKey: "gatewayid",
-        connectKey: "id",
+        connectKey: "gatewayid",
         displayKey: "gatewayname",
       },
       {
