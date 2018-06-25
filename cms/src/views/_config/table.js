@@ -158,7 +158,8 @@ export default {
         key: "gatewayid",
         label: "网关ID",
         type: "number",
-        isEdit: false
+        required: true,
+        errorMessage: "必填且应为数字"
       },
       {
         key: "gatewayname",
