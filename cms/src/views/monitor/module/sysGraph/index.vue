@@ -357,10 +357,7 @@
 
   .info-box {
     overflow:overlay;
-    // min-width: 120px;
     padding-left: 0.1rem;
-    // padding: 0.1rem 0 0 0.1rem;
-    // background: rgba(255,255,255,0.2);
     text-align: left;
     font-size: 14px;
     .name {
@@ -383,6 +380,7 @@
   }
 
   .value-box {
+    font-size: 12px;
     & > p {
       // max-width: 55%;
       display: flex;
