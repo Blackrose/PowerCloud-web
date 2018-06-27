@@ -41,15 +41,16 @@ function request(url) {
 
       // 因为之前已经设置了viewbox
       // 所以该SVG图已经根据屏幕大小适配，相当于已经产生过了一次 拉伸/缩小
-      let radio_before = (window_w/viewBoxWidth).toFixed(2)
+      let radio_before = (window_w/viewBoxWidth).toFixed(4)
 
-
-      // 此时再做一个旋转，SVG图的高，要适配当前屏幕的宽，
+      // 此时再做一个旋转，SVG图的高，要适配当前屏幕的宽
+      //对于特别长的SCG图，SVG图的宽 要适配当前屏幕的高，所以要取两者radio的最小值
       // 因此还有一次 拉伸/缩小
-      let radio = (window_w/viewBoxHeight).toFixed(2)
+      let radio = (window_w/viewBoxHeight).toFixed(4)
+      let radio2 = (window_h/viewBoxWidth).toFixed(4)
 
       //因此最终的拉伸或者缩小，抵消掉第一次的变形
-      let radio_final = radio / radio_before
+      let radio_final = Math.min(radio,radio2) / radio_before
 
       svgRootDom.style.transform = "rotate(90deg) scale("+radio_final+")"
 
