@@ -252,6 +252,7 @@
 
 
 				.value-box {
+					font-size: 12px;
 					& > p {
 						// max-width: 55%;
 						display: flex;
@@ -328,6 +329,7 @@
 
 		li {
 			.value-box {
+				font-size: 16px;
 				& > p {
 					& > span {
 						padding: 0.05rem 0;

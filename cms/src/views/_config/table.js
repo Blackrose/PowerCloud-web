@@ -307,9 +307,7 @@ export default {
   		{
         key: "companycode",
   			label: "组织机构代码",
-  			type: "string",
-  			required: true,
-  			errorMessage: "必填"
+  			type: "string"
   		},
   		{
       key: "address",
@@ -354,24 +352,18 @@ export default {
         key: "taxpayeridentification",
         label: "开票信息",
         type: "string",
-        required: true,
-        errorMessage: "必填",
         isDetail: true
       },
       {
         key: "bank",
         label: "开户行",
         type: "string",
-        required: true,
-        errorMessage: "必填",
         isDetail: true
       },
       {
         key: "bankaccount",
         label: "银行账户",
         type: "string",
-        required: true,
-        errorMessage: "必填",
         isDetail: true
       },
       {
@@ -384,15 +376,11 @@ export default {
         key: "financechieftel",
         label: "财务负责人办公电话",
         type: "string",
-        required: true,
-        errorMessage: "必填",
         isDetail: true
       },
       {
         key: "financechiefphone",
         label: "财务负责人移动电话",
-        required: true,
-        errorMessage: "必填",
         type: "string",
         isDetail: true,
         // errorMessage: "电话格式错误"
@@ -431,8 +419,6 @@ export default {
         label: "上级单位代码",
         type: "number",
         default: 0,
-        required: true,
-        errorMessage: "必填",
         isDetail: true
       },
       {
