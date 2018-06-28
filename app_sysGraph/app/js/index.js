@@ -5,7 +5,7 @@ let isDebug = process.env.NODE_ENV == "development";
 const HOST = "http://202.118.26.74:8080/PowerCloud";
 const PATH = "/api/electricitysubstation/getSubstationInfo";
 
-const mainEle = document.querySelector("#main");
+const bodyEle = document.querySelector("body");
 //MQTT
 const MQTT_HOST = "202.118.26.74";
 const MQTT_PORT = 8083;
@@ -28,7 +28,7 @@ function request(url) {
 
       //SVG图展示
       let res = JSON.parse(data.data);
-      mainEle.innerHTML = res.diagram;
+      bodyEle.innerHTML = res.diagram;
 
       let window_w = document.documentElement.clientWidth;
       let window_h = document.documentElement.clientHeight;
@@ -123,13 +123,13 @@ function handleMqttStatus(msg) {
 
 function setSysData(data,title) {
 
-  if(!mainEle.innerHTML) return
+  if(!bodyEle.innerHTML) return
 
   if(title) {
     document.querySelector(".s-t-title tspan").innerHTML = title;
   }
 
-  let svgRootEle = mainEle;
+  let svgRootEle = bodyEle;
 
   var groupEle = svgRootEle.querySelectorAll(".s-group");
   var vmEle = svgRootEle.querySelectorAll(".s-t-vm tspan");
