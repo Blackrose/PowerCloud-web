@@ -205,6 +205,12 @@
           ele.addEventListener("click", handleStaffClick);
         })
 
+        //点击变电站
+        let stationEles = mapRootEle.querySelectorAll(".p-station");
+        stationEles.forEach( (ele, i) => {
+          ele.addEventListener("click", handleStationClick);
+        })
+
         let self = this;
 
         function handleMouseEnter(e) {
@@ -219,14 +225,33 @@
           })
         }
 
-        function handleStaffClick(e) {
-          if(e.target) {
-            let staffid = e.target.getAttribute("data-id");
-            getStaffDetail(staffid).then( res => {
-              self.staffDetail = JSON.parse(res.data);
-              self.visibleUserInfo = true;
-            })
+        function handleStaffClick(event) {
+          let staffid;
+          if(event.target.nodeName.toUpperCase() == "SPAN") {
+            let parent = event.target.parentNode;
+            staffid = parent.getAttribute("data-id");
           }
+          else {
+            staffid = event.target.getAttribute("data-id");
+          }
+
+          getStaffDetail(staffid).then( res => {
+            self.staffDetail = JSON.parse(res.data);
+            self.visibleUserInfo = true;
+          })
+        }
+
+        function handleStationClick(e) {
+          let stationid;
+          if(event.target.nodeName.toUpperCase() == "SPAN") {
+            let parent = event.target.parentNode;
+            stationid = parent.getAttribute("data-id");
+          }
+          else {
+            stationid = event.target.getAttribute("data-id");
+          }
+          //存储此时点击的变电站ID
+          self.$store.dispatch('setMonitorStationIndex',stationid);
         }
       },
       handleMqttStatus (msg) {

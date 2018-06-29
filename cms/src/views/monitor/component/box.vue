@@ -209,6 +209,16 @@
 	    	return this.generateOptions(this.type)
 	    }
     },
+    watch: {
+      //地图中点击了变电站
+      'monitor.stationId': function(newValue, oldValue) {
+          let click_stationId = newValue;
+          //如果点击的不是当前的变电站，则更新selectedOption的值，使得选中点击的变电站
+          if(this.selectedOption.length && click_stationId != this.selectedOption[1]) {
+            this.setClickedSelectedOption(click_stationId)
+          }
+      }
+    },
 		created () {
 			let currentHour = (new Date()).getHours();
 			for(let i = 1; i <= currentHour; i++) {
@@ -254,12 +264,12 @@
       				if(type == "video") {
       					station.children = [];
       					//如果该变电站下有视频
-      					if(_o.children.video && (_o.children.video).length) {
+      					if(_o.children.video && Array.isArray(_o.children.video)) {
       						//三级目录
       						_o.children.video.forEach( (__o, __i) => {
       							let video = {};
 			      				video.value = __o.id;
-			      				video.label = "编号"+__o.num;
+			      				video.label = "编号"+(__o.num||1);
 			      				station.children.push(video);
       						})
       					}
@@ -267,12 +277,12 @@
       				else if(type == "transformer") {
       					station.children = [];
       					//如果该变电站下有变压器
-      					if(_o.children.transformer && (_o.children.transformer).length) {
+      					if(_o.children.transformer && Array.isArray(_o.children.transformer)) {
       						//三级目录
       						_o.children.transformer.forEach( (__o, __i) => {
       							let transformer = {};
 			      				transformer.value = __o.id;
-			      				transformer.label = __o.name || "编号"+__o.num;
+			      				transformer.label = __o.name || "编号"+(__o.num||1);
 			      				station.children.push(transformer);
       						})
       					}
@@ -280,7 +290,7 @@
       				else if(type == "chart") {
       					station.children = [];
       					//如果该变电站下有回路
-      					if(_o.children.circuit && (_o.children.circuit).length) {
+      					if(_o.children.circuit && Array.isArray(_o.children.circuit)) {
       						//三级目录
       						_o.children.circuit.forEach( (__o, __i) => {
       							let obj = {};
@@ -296,12 +306,73 @@
     		})
     		return options;
 			},
-			selectBarChange (v) {
-				this.$emit('box-select-bar-change', v)
+      //改变级联选项，使得选中的值变成地图模块里点击的变电站的id
+      setClickedSelectedOption (stationid) {
+        this.monitor.selectOptions.forEach( (company, i) => {
+          if(company.children && Array.isArray(company.children)) {
+            company.children.forEach( (station, j) => {
+              if(station.id == stationid) {
+                //只有二级目录
+                if(this.type == "table" || this.type == "sysGraph") {
+                  this.$set(this.selectedOption, 0, company.id);
+                  this.$set(this.selectedOption, 1, station.id);
+                  this.selectBarChange(this.selectedOption)
+                  return
+                }
+                //三级目录
+                else if(this.type == "transformer") {
+                  if(station.children.transformer && Array.isArray(station.children.transformer)) {
+                    for(let k = 0 ; k < station.children.transformer.length ; k++) {
+                      let transformer = station.children.transformer[k];
+                      //默认选择三级目录的第一个
+                      this.$set(this.selectedOption, 0, company.id);
+                      this.$set(this.selectedOption, 1, station.id);
+                      this.$set(this.selectedOption, 2, transformer.id);
+                      this.selectBarChange(this.selectedOption);
+                      break;
+                    }
+                    return
+                  }
+                }
+                else if(this.type == "video") {
+                  if(station.children.video && Array.isArray(station.children.video)) {
+                    for(let k = 0 ; k < station.children.video.length ; k++) {
+                      let video = station.children.video[k];
+                      //默认选择三级目录的第一个
+                      this.$set(this.selectedOption, 0, company.id);
+                      this.$set(this.selectedOption, 1, station.id);
+                      this.$set(this.selectedOption, 2, video.id);
+                      this.selectBarChange(this.selectedOption);
+                      break;
+                    }
+                    return
+                  }
+                }
+                else if(this.type == "chart") {
+                  for(let k = 0 ; k < station.children.circuit.length ; k++) {
+                      let circuit = station.children.circuit[k];
+                      //默认选择三级目录的第一个
+                      this.$set(this.selectedOption, 0, company.id);
+                      this.$set(this.selectedOption, 1, station.id);
+                      this.$set(this.selectedOption, 2, circuit.id);
+                      this.chartSelectBarChange(this.selectedOption);
+                      this.onChartSettingFormSubmit();
+                      break;
+                    }
+                    return
+                }
+
+              }
+            })
+          }
+        })
+      },
+			selectBarChange (selectedOption) {
+				this.$emit('box-select-bar-change', selectedOption)
 			},
-			chartSelectBarChange (v) {
-				this.chartSetting.value.stationid = v[1];
-				this.chartSetting.value.circuitid = v[2];
+			chartSelectBarChange (selectedOption) {
+				this.chartSetting.value.stationid = selectedOption[1];
+				this.chartSetting.value.circuitid = selectedOption[2];
 			},
 			onChartSettingFormSubmit () {
 				this.visibleChartSettingForm = false;

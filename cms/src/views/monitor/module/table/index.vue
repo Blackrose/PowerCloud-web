@@ -1,5 +1,6 @@
 <template>
 	<monitor-box
+    type = "table"
 		:title = "title"
 		:titleIcon = "titleIcon"
 		:paramValue = "paramValue"
@@ -98,7 +99,7 @@
   	},
   	filters: {
   		filterNumber(n) {
-  			return (+n == n) ? n : "-"
+  			return (+n == n) ? n : "-";
   		}
   	},
   	methods: {
@@ -182,6 +183,7 @@
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 	.loading {
+    font-size: 14px;
 		height: 100%;
 		text-align: center;
 		padding-top: 40%;

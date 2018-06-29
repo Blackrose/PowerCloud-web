@@ -10,21 +10,31 @@
 		@box-full-screen = "handleFullScreen"
 		@box-select-bar-change = "handleSelectBarChange"
 	>
-    <template v-if="chartOptions && chartOptions.series[0].data.length">
-      <el-row>
-        <chart class="chart" :options="chartOptions" theme="macarons"
-        :style = "{height:chartHeight}" auto-resize ></chart>
+
+      <el-row v-if="!isLoading">
+        <chart v-if="chartOptions && chartOptions.series[0].data.length"
+          class="chart" :options="chartOptions" theme="macarons"
+          :style = "{height:chartHeight}" auto-resize >
+        </chart>
+        <el-col v-else class="tip" :style = "{height:chartHeight,lineHeight:chartHeight}">暂无数据</el-col>
       </el-row>
+      <!-- loading -->
+      <el-row v-else>
+        <el-col class="loading" :style = "{height:chartHeight}">
+          <svg-icon class="loading-icon" icon-class="loading"></svg-icon>
+          <p>loading...</p>
+        </el-col>
+      </el-row>
+      <!-- 名称 -->
       <el-row class="title-bar">
-        <p>{{chartTitle}}</p>
+          <p>{{chartTitle}}</p>
       </el-row>
-    </template>
-    <el-row v-else class="tip"><el-col>暂无数据</el-col></el-row>
+
 	</monitor-box>
 </template>
 
 <script type="text/javascript">
-
+  import { mapGetters } from 'vuex'
   const ECharts = r => require.ensure([], () => r(require('vue-echarts/components/ECharts.vue')))
   // import ECharts from
 
@@ -60,7 +70,7 @@
 	  },
 	  data () {
     	return {
-    		// stationId: 0,  //mqtt时用到
+    		isLoading: true,  //是否正在请求数据曲线
     		title: "变电所数据曲线",
     		titleIcon: "chart",
         chartSetting : {
@@ -78,6 +88,7 @@
           }
         },
         chartOptions: null,
+        chartTitle: "",
         client: null,
         MQTT_TOPIC: "/systemStatus",
         YAXIS_MAP : {
@@ -92,14 +103,9 @@
 
   	},
   	computed: {
-      chartTitle: function() {
-        let title = "";
-        if(this.chartOptions) {
-          title += this.chartOptions.title.text
-          + "（" + (this.chartSetting.time.type == 0 ? "时段" : "实时") + "）";
-        }
-        return title
-      },
+      ...mapGetters([
+      'monitor'
+      ]),
   		chartHeight: function() {
   			if(this.boxHeight){
   				return `calc(${this.boxHeight} - 0.65rem)`;
@@ -133,8 +139,12 @@
     },
   	methods: {
   		init () {
+        this.isLoading = true;
+        this.chartTitle = "";
   			getChartData(this.chartSetting).then( res => {
+          this.isLoading = false;
           this.chartOptions = this.generateChartOptions(res.data);
+          this.chartTitle = this.generateChartTitle()
         })
 
         // 实时
@@ -152,6 +162,7 @@
           }
         }
   		},
+      /*生成Echarts图的options参数*/
       generateChartOptions(data) {
 
         let options = {
@@ -170,7 +181,8 @@
           },
           grid: {
             left: 60,
-            right: 40
+            right: 40,
+            bottom:20
           },
           xAxis: {
             type: 'category',
@@ -248,6 +260,35 @@
           }
         }
         return options;
+      },
+      /*生成图的名称*/
+      generateChartTitle() {
+        let title = "";
+        if(this.chartSetting) {
+          let circuitname = "";
+          //找到选择的回路ID对应的名称
+          this.monitor.selectOptions.forEach( (company,i) => {
+            if(company.children && Array.isArray(company.children)) {
+              company.children.forEach( (station,j) => {
+                if(station.id == this.chartSetting.value.stationid
+                  && station.children && station.children.circuit
+                  && Array.isArray(station.children.circuit)) {
+                  station.children.circuit.forEach( (circuit,k) => {
+                    if(circuit.id == this.chartSetting.value.circuitid) {
+                      circuitname = circuit.circuitname;
+                      return;
+                    }
+                  })
+                }
+                if(circuitname) return;
+              })
+            }
+            if(circuitname) return;
+          })
+          // title += this.chartOptions.title.text
+          title = circuitname + "（" + (this.chartSetting.time.type == 0 ? "时段" : "实时") + "）";
+        }
+        return title
       },
       dateFormat (timestamp) {
         let time = new Date(+timestamp);
@@ -333,6 +374,32 @@
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+  .loading {
+    font-size: 14px;
+    height: 100%;
+    text-align: center;
+    padding-top: 40%;
+    color: #00bcd4;
+    .loading-icon {
+      animation: loadingAnimation 1s linear infinite;
+      font-size: 30px;
+    }
+    @keyframes loadingAnimation {
+      0% {
+        transform: rotate(0);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  }
+
+  .tip {
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+  }
+
 	.chart {
     width: 98%;
     height: 100%;
@@ -348,11 +415,6 @@
     }
   }
 
-  .tip {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items:center;
-  }
+
 
 </style>

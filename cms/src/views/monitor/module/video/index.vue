@@ -76,6 +76,7 @@
 	        }],
 	        // width: document.documentElement.clientWidth,
 	        notSupportedMessage: '此视频暂无法播放 或 此变电所下暂无视频', //允许覆盖Video.js无法播放媒体源时显示的默认信息。
+          // controlBar: false
 	       // controlBar: {
 	       //   timeDivider: false,
 	       //   durationDisplay: false,
