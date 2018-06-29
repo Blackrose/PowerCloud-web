@@ -34,11 +34,11 @@
 			    </el-select>
 			    <el-row  v-if="chartSetting.time.type == 0">
 				    <el-col :span="11">
-				      <el-time-picker type="date" placeholder="起始时间"  value-format="timestamp" v-model="chartSetting.time.start" style="width: 100%;"></el-time-picker>
+				      <el-time-picker :editable="false" placeholder="起始时间"  value-format="timestamp" v-model="chartSetting.time.start" style="width: 100%;"></el-time-picker>
 				    </el-col>
 				    <el-col style="text-align: center;" :span="2">-</el-col>
 				    <el-col :span="11">
-				      <el-time-picker type="fixed-time" placeholder="结束时间"  value-format="timestamp" v-model="chartSetting.time.end" style="width: 100%;"></el-time-picker>
+				      <el-time-picker :editable="false" placeholder="结束时间"  value-format="timestamp" v-model="chartSetting.time.end" style="width: 100%;"></el-time-picker>
 				    </el-col>
 				  </el-row>
 				  <el-row v-if="chartSetting.time.type == 1">
